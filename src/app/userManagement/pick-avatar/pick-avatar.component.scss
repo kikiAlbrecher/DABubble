@@ -1,0 +1,79 @@
+ @import './../../../styles/shared';
+
+.avatar-section {
+    height: 600px;
+    width: 550px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+}
+
+.avatar-container {
+    @include dFlex(column, center, center, 0);
+    position: relative;
+}
+
+.avatar-header {
+    @include fontNunito(40px, 700);
+    color: #444DF2;
+    margin: 30px 0;
+}
+
+.backarrow {
+    position: absolute;
+    top: 47px;
+    left: 28px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer; 
+}
+
+.avatar-big-image {
+    width: 168px;
+    height: 168px;
+    margin: 0 0 30px 0;
+}
+
+.name {
+    @include fontNunito(32px, 700);
+}
+
+.text-container {
+    width: 100%;
+    padding: 0 30px;
+    margin: 20px 0;
+    span {
+        @include fontNunito(18px, 400);
+    }
+}
+
+.avatar-images-container {
+    @include dFlex(row, space-between, center, 0px);
+    width: 100%;
+    padding: 0 30px;
+    img{
+        width: 65px;
+        height: 65px;
+        cursor: pointer;
+        padding: 3px;
+        border-radius: 50%;
+        &:hover {
+            background-color: #ECEEFE;
+        }
+    }
+}
+
+.next-container {
+    @include dFlex(row, end, center, 0px);
+    width: 100%;
+    padding: 0 20px;
+    margin-top: 30px;
+    cursor: pointer;
+    .next {
+        @include fontNunito(18px, 700);
+        padding: 10px 20px;
+        background-color: #444DF2;
+        color: white;
+        border-radius: 25px;
+        text-decoration: none;
+    }
+}

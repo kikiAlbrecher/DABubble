@@ -1,0 +1,20 @@
+<section class="avatar-section">
+    <div class="avatar-container">
+        <span class="avatar-header">Wähle deinen Avatar</span>
+        <a class="backarrow" routerLink="/signup"><img src="assets/img/arrow_back.svg" alt=""></a>
+        <img class="avatar-big-image" [src]='avatarImg' alt="">
+        <span class="name">Vorname Name</span>
+        <div class="text-container">
+            <span>Aus der Liste wählen</span>
+        </div>
+        <div class="avatar-images-container">
+            @for (item of images; track $index) {
+                <img (click)="setImage(item)" [src]=item alt="">
+            }
+        </div>
+        <div class="next-container">
+            <a routerLink="/pickavatar" class="next">Weiter</a>
+        </div>
+    </div>
+
+</section>
