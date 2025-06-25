@@ -1,12 +1,27 @@
-.wrapper{
+.wrapper {
     background: linear-gradient(to bottom, #797EF3, #313AE5);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100%;
-    img{
-        width: 10%;
+
+    img {
+        width: 120px;
         position: relative;
+    }
+
+    .title-container{
+        left: 5%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .title{
+        position: relative;
+        transform: translateX(-100%);
+        font-size: 80px;
+        overflow: clip;
+        color: white;
     }
 }
