@@ -6,4 +6,17 @@ import { inject } from '@angular/core';
   providedIn: 'root'
 })
 
-export class UserSharedService {}
+export class UserSharedService {
+
+    accountSuccess: boolean = false;
+    
+    sendData() {
+        this.accountSuccess = true;
+        setTimeout(() => {
+            this.accountSuccess = false;
+        }, 3000);
+    }
+
+
+
+}

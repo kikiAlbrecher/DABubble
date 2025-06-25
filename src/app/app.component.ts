@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { IntroComponent } from "./intro/intro.component";
 import { Router } from '@angular/router';
+import { UserSharedService } from './userManagement/userManagement-service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,9 @@ import { Router } from '@angular/router';
 export class AppComponent {
   title = 'DABubble';
 
-  constructor(public router: Router) {}
+  constructor(
+    public router: Router, 
+    public sharedUser: UserSharedService
+  ) {}
 
 }

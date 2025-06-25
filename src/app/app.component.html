@@ -14,4 +14,8 @@
   <main>
     <router-outlet class="router-outlet"></router-outlet>
   </main>
+  @if (this.sharedUser.accountSuccess) {<div class="account-success">
+    <span>Konto erfolgreich erstellt!</span>
+  </div>
+  }
 </div>  

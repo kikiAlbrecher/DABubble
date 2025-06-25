@@ -56,6 +56,20 @@
     }
 }
 
-.hidden {
-    display: none;
+.account-success {
+    background-color: #444DF2;
+    position: absolute;
+    bottom: 0;
+    right: 10%;
+    width: 500px;
+    height: 100px;
+    @include dFlex(column, center, center, );
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    span {
+       @include fontNunito(36px, 700); 
+       color: white;
+       
+    }
 }
