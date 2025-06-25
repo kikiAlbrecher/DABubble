@@ -1,0 +1,119 @@
+@import './../../../styles/shared';
+
+.login-section {
+    height: 600px;
+    width: 450px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+}
+
+.login-container {
+   @include dFlex(column, center, center, 0);
+}
+
+.login-header {
+    @include fontNunito(40px, 700);
+    color: #444DF2;
+    margin: 30px 0;
+}
+
+.login-text {
+    @include fontNunito(18px, 400);
+    text-align: center;
+    margin: 0 20px
+}
+
+.input-container {
+    @include dFlex(column, center, center, 30px);
+    width: 100%;
+    padding: 30px 20px;
+    .input-field {
+        width: 100%;
+        height: 40px;
+        border-radius: 30px;
+        border: none;
+        background-color: #ECEEFE;
+    }
+}
+
+.no-passwort{
+    @include fontNunito(16px, 400);
+    color: #797EF3;
+}
+
+.or-container {
+    width: 100%;
+    @include dFlex(row, center, end, 10px);
+    padding: 0 20px;
+    margin: 15px 0 40px;
+    .line {
+    width: 100%;    
+    border-bottom: 1px solid black;
+    }
+
+    .or-text {
+        @include fontNunito(16px, 400);
+        color: #000000;
+        top: 5px;
+        position: relative;
+    }
+}
+
+
+.google-login {
+    width: calc(100% - 40px);
+    height: 40px;
+    padding: 0 20px;
+    background-color: #ECEEFE;
+    border-radius: 30px;
+    @include dFlex(row, center, center, 10px);
+    cursor: pointer;
+    .google-img {
+        width: 25px;
+        height: auto;
+    }
+    .google-text {
+        @include fontNunito(16px, 400);
+        color: #444DF2;    
+    }
+    &:hover {
+        border: 2px solid #444DF2;
+        .google-text {
+           @include fontNunito(16px, 700);
+        }
+    }
+}
+
+.login-button-container {
+    @include dFlex(row, center, center, 30px);
+    margin: 35px 0;
+    .login-button {
+        @include fontNunito(18px, 700);
+        padding: 10px 15px;
+        border-radius: 25px;
+    }
+    .button-log-in {
+        background-color: #444DF2;
+        border: none;
+        color: white;
+        border: 1px solid #444DF2;
+        cursor: pointer;
+        &:hover {
+            background-color: #797EF3;
+            border: 1px solid #797EF3;
+        }
+    }
+    .button-guest {
+        background-color: transparent;
+        border: 1px solid #444DF2;
+        color: #444DF2;
+        cursor: pointer;
+        &:hover {
+            background-color: #444DF2;
+            color: white;
+        }
+    }
+}
+
+
+

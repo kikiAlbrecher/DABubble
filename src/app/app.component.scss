@@ -1,0 +1,33 @@
+.app-wrapper {
+    background-color: #ECEEFE;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-container {
+    position: absolute;
+    top: 75px;
+    left: 75px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap:16px;
+}
+
+.logo-image {
+    width: 70px;
+    height: 70px;
+}
+
+.logo-name {
+    height: 24px;
+    width: auto;
+}
+
+.router-outlet {
+
+}
