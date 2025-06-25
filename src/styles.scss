@@ -4,4 +4,11 @@
     margin: 0;
     scroll-behavior: smooth;
     box-sizing: border-box;
+    color: #000000;
+}
+
+button {
+    border: unset;
+    border-radius: 25px;
+    padding: 12px 25px;
 }
