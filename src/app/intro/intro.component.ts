@@ -20,8 +20,8 @@ export class IntroComponent implements AfterViewInit {
   ngAfterViewInit() {
     if (this.logo?.nativeElement) {
       const factory = this.animationBuilder.build([
-        style({ transform: 'translateX(0%)' }),
-        animate('0.5s 1s ease-in-out', style({ transform: 'translateX(-100%)' }))
+        style({ transform: 'translateX(125%)' }),
+        animate('0.5s 1s ease-in-out', style({ transform: 'translateX(25%)' }))
       ]);
       this.animationPlayer = factory.create(this.logo.nativeElement);
       this.animationPlayer.play();
