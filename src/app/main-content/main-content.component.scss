@@ -17,3 +17,10 @@
     @include dFlex($jc: flex-start);
     width: 100%;
 }
+
+.logout {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement-service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -9,7 +9,6 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
   standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
     ReactiveFormsModule
   ],
   templateUrl: './login.component.html',

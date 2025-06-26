@@ -30,7 +30,12 @@
             }
         </div>
         <div class="next-container">
-            <button type="submit"  class="next">Weiter</button>
+            <button type="submit" class="next"
+            [ngClass]="{
+                'next-on' : allInputsChecked,
+                'next-off' : !allInputsChecked
+            }"
+            >Weiter</button>
         </div>       
 
 

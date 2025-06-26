@@ -121,10 +121,15 @@
     .next {
         @include fontNunito(18px, 700);
         padding: 10px 20px;
-        background-color: #444DF2;
         color: white;
         border-radius: 25px;
-        text-decoration: none;
+        text-decoration: none;        
+    }
+    .next-on {
+        background-color: #444DF2;
         cursor: pointer;
+    }
+    .next-off {
+        background-color: #686868;
     }
 }

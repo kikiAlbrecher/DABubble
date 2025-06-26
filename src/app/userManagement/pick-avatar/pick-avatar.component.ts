@@ -22,7 +22,6 @@ export class PickAvatarComponent {
   picturePicked: boolean = false;
   noPicturePicked: boolean = false;
 
-
   images = [
     'assets/img/avatar1.svg',
     'assets/img/avatar2.svg',

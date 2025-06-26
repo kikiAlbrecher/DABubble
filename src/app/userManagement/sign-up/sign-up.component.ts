@@ -23,14 +23,17 @@ export class SignUpComponent {
   nameError: boolean = false;
   mailError: boolean = false;
   passwordError: boolean = false;
-  privacyError: boolean = false;
-  
+  privacyError: boolean = false;  
   signUpForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/)]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     privacy: new FormControl(false, Validators.requiredTrue)
   });
+
+  get allInputsChecked() {
+    return this.signUpForm.valid
+  }
 
   onSubmit() {
     this.nameError = this.signUpForm.controls.name?.invalid ?? false;
@@ -47,8 +50,7 @@ export class SignUpComponent {
         picture: ''
       };
       this.router.navigate(['/pickavatar']);    
-    } 
-    
+    }     
   }
 
     

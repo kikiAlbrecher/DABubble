@@ -16,7 +16,12 @@
             }
         </div>
         <div class="next-container">
-            <a (click)="onSubmit()" routerLink="/pickavatar" class="next">Weiter</a>
+            <a (click)="onSubmit()" routerLink="/pickavatar" class="next"
+            [ngClass]="{
+                'next-on' : picturePicked,
+                'next-off' : !picturePicked
+            }"
+            >Weiter</a>
         </div>
     </div>
 
