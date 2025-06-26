@@ -2,14 +2,17 @@
 <div class="app-wrapper">
   <header>
     <div class="logo-container">
-        <img class="logo-image" src="assets/img/logo.svg" alt="">
-        <img class="logo-name" src="./../assets/img/logo-name.svg" alt="">
+      <img class="logo-image" src="assets/img/logo.svg" alt="">
+      <img class="logo-name" src="./../assets/img/logo-name.svg" alt="">
     </div>
     <div *ngIf="router.url === '/login'" class="create-account-container">
-        <span class="create-account-text">Neu bei DABubble</span>
-        <a class="create-account-link" routerLink="/signup">Konto erstellen</a>
+      <span class="create-account-text">Neu bei DABubble</span>
+      <a class="create-account-link" routerLink="/signup">Konto erstellen</a>
     </div>
-   </header>
+  </header>
+  
+<!-- woanders einfügen -->
+  <!-- <app-main-content></app-main-content>  -->
 
   <main>
     <router-outlet class="router-outlet"></router-outlet>
@@ -18,4 +21,4 @@
     <span>Konto erfolgreich erstellt!</span>
   </div>
   }
-</div>  
+</div>

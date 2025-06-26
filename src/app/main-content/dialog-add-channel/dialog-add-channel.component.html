@@ -1,0 +1,10 @@
+<div class="dialog-backdrop">
+  <div class="dialog">
+    <h2>Channel erstellen</h2>
+          <button (click)="onCancel()">X</button>
+    <input type="text" [(ngModel)]="channel.channelName" placeholder="Channel-Name" />
+    <div class="dialog-actions">
+      <button (click)="onSave()">Erstellen</button>
+    </div>
+  </div>
+</div>

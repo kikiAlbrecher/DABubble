@@ -1,0 +1,14 @@
+@import './../../styles/shared';
+
+.main-content {
+    @include dFlex($fd: column, $ai: flex-start);
+    background: $background-purple;
+    width: 100%;
+    height: 100vh;
+    padding: 16px;
+}
+
+.main-components {
+    @include dFlex($jc: flex-start);
+    width: 100%;
+}

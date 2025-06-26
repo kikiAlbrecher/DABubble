@@ -11,4 +11,9 @@ button {
     border: unset;
     border-radius: 25px;
     padding: 12px 25px;
+    background: none;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
