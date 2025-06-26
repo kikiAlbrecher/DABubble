@@ -1,0 +1,53 @@
+<div *ngIf="workspaceOpen" class="side-nav">
+    <div class="channels-btn">
+        <div class="workspace">
+            <img class="workspace-logo" src="assets/icons/workspace.svg" alt="workspace logo">
+            <span class="workspace-title">Devspace</span>
+        </div>
+        <img src="assets/icons/edit-workspace-square.svg" alt="edit workspace">
+    </div>
+    <div class="menu">
+        <div class="menu">
+            <div class="menu-category">
+                <div class="category-headline">
+                    <div class="menu-item">
+                        <img class="general-menu-icons" src="assets/icons/drop-down.svg" alt="drop-down icon">
+                        <img class="channel-menu-img" src="assets/icons/channels.svg" alt="channels">
+                        <p class="channel-menu-title">Channels</p>
+                    </div>
+                </div>
+                <img class="general-menu-icons" src="assets/icons/add.svg" alt="add channel"
+                    (click)="openDialogAddChannel()">
+                <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
+                    (save)="handleChannelCreate($event)">
+                </app-dialog-add-channel>
+            </div>
+
+            <button class="menu-item">
+                <img class="channel-menu-img" src="assets/icons/add-channel.svg" alt="add channel">
+                <span class="channel-menu-subtitle">Channel hinzufügen</span>
+            </button>
+        </div>
+
+        <div class="menu">
+            <div class="menu-category">
+                <div class="category-headline">
+                    <div class="menu-item">
+                        <img class="general-menu-icons" src="assets/icons/drop-down.svg" alt="drop-down icon">
+                        <img class="channel-menu-img" src="assets/img/person_filled.svg" alt="direct messages">
+                        <p class="channel-menu-title">Direktnachrichten</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="workspaceOpen" (click)="toggleWorkspace()" class="close-workspace toggle-workspace">
+    <span>Workspace-Menu schließen</span>
+    <img src="assets/icons/hide-workspace.svg" alt="close workspace">
+</div>
+<div *ngIf="!workspaceOpen" (click)="toggleWorkspace()" class="open-workspace toggle-workspace">
+    <span>Workspace-Menu öffnen</span>
+    <img src="assets/icons/open-workspace.svg" alt="open workspace">
+</div>
