@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { UserSharedService } from '../userManagement-service';
 
 @Component({
@@ -14,9 +14,14 @@ import { UserSharedService } from '../userManagement-service';
   styleUrl: './pick-avatar.component.scss'
 })
 export class PickAvatarComponent {
-  constructor(public shared: UserSharedService) {}
+  constructor(
+    public shared: UserSharedService,
+    private router: Router) {}
 
-  avatarImg:string = 'assets/img/avatar-placeholder.svg'
+  avatarImg:string = 'assets/img/avatar-placeholder.svg';
+  picturePicked: boolean = false;
+  noPicturePicked: boolean = false;
+
 
   images = [
     'assets/img/avatar1.svg',
@@ -29,6 +34,17 @@ export class PickAvatarComponent {
 
   setImage(item:string) {
     this.avatarImg = item;
+    this.picturePicked = true;
+  }
+
+  onSubmit() {
+    if (this.picturePicked) {   
+      this.shared.userDetails.picture = this.avatarImg ?? '';
+      this.shared.submitUser()
+      this.router.navigate(['/login']);    
+    } else {
+      this.noPicturePicked = true;
+    }
   }
  
 }

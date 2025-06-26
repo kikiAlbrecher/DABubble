@@ -100,6 +100,14 @@
     }
 }
 
+.error-message {
+    position: absolute;
+    bottom: -21px;
+    left: 5px;
+    @include fontNunito(15px, 400);
+    color: red;
+}
+
 .login-button-container {
     @include dFlex(row, center, center, 30px);
     margin: 35px 0;

@@ -50,6 +50,7 @@
     @include dFlex(row, space-between, center, 0px);
     width: 100%;
     padding: 0 30px;
+    position: relative;
     img{
         width: 65px;
         height: 65px;
@@ -76,4 +77,12 @@
         border-radius: 25px;
         text-decoration: none;
     }
+}
+
+.error-message {
+    position: absolute;
+    bottom: -20px;
+    left: 30px;
+    @include fontNunito(15px, 400);
+    color: red;
 }

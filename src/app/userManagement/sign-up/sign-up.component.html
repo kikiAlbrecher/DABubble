@@ -1,34 +1,39 @@
 <section class="sign-up-section">
-    <div class="login-container">
+    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="login-container">
         <span class="login-header">Konto erstellen</span>
         <a class="backarrow" routerLink="/login"><img src="./../../../assets/img/arrow_back.svg" alt=""></a>
         <span class="login-text">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</span>
         <div class="input-container">
             <div class="input-field-container">
-                <input placeholder="Name und Nachname" class="input-field mail" type="text">
+                <input (input)="nameError = false" placeholder="Name und Nachname" type="text" formControlName="name" class="input-field mail" type="text">
                 <img class="input-field-image" src="assets/img/person_filled.svg" alt="">
+                @if (nameError){<span class="error-message">* Bitte Namen angeben</span>}
             </div>
             <div class="input-field-container">
-                <input placeholder="beispielname@email.com" class="input-field password" type="text">
+                <input (input)="mailError = false" placeholder="beispielname@email.com" type="email" formControlName="email" class="input-field password" type="text">
                 <img class="input-field-image" src="assets/img/mail.svg" alt="">
+                @if (mailError){<span class="error-message">* Bitte E-Mail angeben.</span>}
             </div>
             <div class="input-field-container">
-                <input placeholder="Passwort" class="input-field password" type="text">
+                <input (input)="passwordError = false" placeholder="Passwort" type="password" formControlName="password" class="input-field password" type="text">
                 <img class="input-field-image" src="assets/img/lock.svg" alt="">
+                @if (passwordError) {<span class="error-message">* Bitte Passwort mit mind. 6 Zeichen angeben.</span>}
             </div>
         </div>
-        <div class="privacy-contaier">
+        <div class="privacy-container">
             <div class="privacy-checkbox-container">
-                <input class="privacy-checkbox" type="checkbox">
+                <input class="privacy-checkbox" type="checkbox" formControlName="privacy" (change)="privacyError = false">
             </div>
             <span class="privacy-text">Ich stimme der <a href="">Datenschutzerklärung</a> zu</span>
+            @if (privacyError) {
+                <span class="error-message-privacy">* Bitte Datenschutzbestimmungen akzeptieren.</span>
+            }
         </div>
         <div class="next-container">
-            <a routerLink="/pickavatar" class="next">Weiter</a>
-        </div>
-        
+            <button type="submit"  class="next">Weiter</button>
+        </div>       
 
 
-    </div>
+    </form>
 
 </section>
