@@ -41,4 +41,8 @@ export class IntroComponent implements AfterViewInit {
       this.animationPlayer.play();
     }
   }
+
+  animateLogoToTopLeft(){
+    
+  }
 }
