@@ -7,13 +7,39 @@
     color: #000000;
 }
 
+.d-none {
+    display: none;
+}
+
+a {
+    text-decoration: none;
+}
+
 button {
     border: unset;
     border-radius: 25px;
     padding: 12px 25px;
     background: none;
+    transition: all 0.3s ease-out;
 
     &:hover {
         cursor: pointer;
     }
+}
+
+input {
+    border: unset;
+    outline: none;
+}
+
+.general-main-section {
+    width: 100%;
+    @include dFlex();
+}
+
+.section-content {
+    max-width: 1920px;
+    width: 100%;
+    @include dFlex($fd: column, $jc: flex-start, $ai: stretch);
+    position: relative;
 }

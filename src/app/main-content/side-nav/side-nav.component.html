@@ -16,25 +16,33 @@
                 <div class="category-headline">
                     <div class="menu-item">
                         <img class="general-menu-icons" src="assets/icons/drop-down.svg" alt="drop-down icon">
-                        <img class="channel-menu-img" src="assets/icons/channels.svg" alt="add channel"
-                            (click)="openDialogAddChannel()">
+                        <img class="channel-menu-img" src="assets/icons/channels.svg" alt="channels">
                         <p class="channel-menu-title">Channels</p>
                     </div>
                 </div>
-                <img class="general-menu-icons" src="assets/icons/add.svg" alt="add channel">
+                <img class="general-menu-icons" src="assets/icons/add.svg" alt="add channel"
+                    (click)="openDialogAddChannel()">
+                <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
+                    (save)="handleChannelCreate($event)">
+                </app-dialog-add-channel>
             </div>
 
-            <button class="menu-item" (click)="openDialogAddChannel()">
+            <button class="menu-item">
                 <img class="channel-menu-img" src="assets/icons/add-channel.svg" alt="add channel">
                 <span class="channel-menu-subtitle">Channel hinzufügen</span>
             </button>
-            <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
-                (save)="handleChannelCreate($event)">
-            </app-dialog-add-channel>
         </div>
 
         <div class="menu">
-
+            <div class="menu-category">
+                <div class="category-headline">
+                    <div class="menu-item">
+                        <img class="general-menu-icons" src="assets/icons/drop-down.svg" alt="drop-down icon">
+                        <img class="channel-menu-img" src="assets/img/person_filled.svg" alt="direct messages">
+                        <p class="channel-menu-title">Direktnachrichten</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

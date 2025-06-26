@@ -18,14 +18,11 @@ export class DialogAddChannelComponent {
 
   private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
-  // channelName = '';
 
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<string>();
 
-  async onSave() {
-    console.log('channel:', this.channel);
-
+  async saveChannel() {
     try {
       this.cdr.detectChanges();
       const channelsCollection = collection(this.firestore, 'channels');
@@ -38,7 +35,7 @@ export class DialogAddChannelComponent {
     }
   }
 
-  onCancel() {
+  closeAddChannel() {
     this.close.emit();
   }
 }
