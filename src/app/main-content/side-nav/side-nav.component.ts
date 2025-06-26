@@ -11,6 +11,7 @@ import { DialogAddChannelComponent } from '../dialog-add-channel/dialog-add-chan
 })
 export class SideNavComponent {
   showAddChannelDialog = false;
+  workspaceOpen = true;
 
   openDialogAddChannel() {
     this.showAddChannelDialog = true;
@@ -23,5 +24,9 @@ export class SideNavComponent {
   handleChannelCreate(name: string) {
     this.showAddChannelDialog = false;
     console.log('new channel:', name);
+  }
+
+  toggleWorkspace() {
+    this.workspaceOpen = !this.workspaceOpen;
   }
 }

@@ -32,11 +32,6 @@ input {
     outline: none;
 }
 
-.general-main-section {
-    width: 100%;
-    @include dFlex();
-}
-
 .section-content {
     max-width: 1920px;
     width: 100%;

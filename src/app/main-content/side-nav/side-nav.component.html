@@ -1,8 +1,4 @@
-<div class="side-nav">
-    <div class="toggle-side-nav">
-        <img src="" alt="">
-        <span></span>
-    </div>
+<div *ngIf="workspaceOpen" class="side-nav">
     <div class="channels-btn">
         <div class="workspace">
             <img class="workspace-logo" src="assets/icons/workspace.svg" alt="workspace logo">
@@ -45,4 +41,13 @@
             </div>
         </div>
     </div>
+</div>
+
+<div *ngIf="workspaceOpen" (click)="toggleWorkspace()" class="close-workspace toggle-workspace">
+    <span>Workspace-Menu schließen</span>
+    <img src="assets/icons/hide-workspace.svg" alt="close workspace">
+</div>
+<div *ngIf="!workspaceOpen" (click)="toggleWorkspace()" class="open-workspace toggle-workspace">
+    <span>Workspace-Menu öffnen</span>
+    <img src="assets/icons/open-workspace.svg" alt="open workspace">
 </div>

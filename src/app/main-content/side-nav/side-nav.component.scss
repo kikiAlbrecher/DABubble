@@ -6,6 +6,7 @@
     border-radius: 30px;
     padding: 32px 30px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 25px);
+    position: relative;
 
     >.channels-btn {
         @include dFlex($jc: space-between);
@@ -72,5 +73,35 @@
 
     &:hover {
         cursor: pointer;
+    }
+}
+
+.toggle-workspace {
+    z-index: 99;
+    position: absolute;
+    left: 0;
+    top: 80vh;
+    transform: translateX(14px) rotate(-90deg);
+    transform-origin: left center;
+    @include dFlex($g: 8px);
+    filter: drop-shadow(4px 4px 7px rgba(0, 0, 0, 0.2));
+    padding: 20px 12px;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    background: $white;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    >span {
+        @include fontNunito($size: 20px, $weight: 500);
+        line-height: 120%;
+    }
+
+    >img {
+        height: 32px;
+        aspect-ratio: 1 / 1;
+        transform: rotate(90deg);
     }
 }
