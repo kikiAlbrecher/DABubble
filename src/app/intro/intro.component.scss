@@ -12,16 +12,24 @@
     }
 
     .title-container{
-        left: 5%;
+        width: 347px;
+        height: 91px;
+        left: 10%;
         position: relative;
         overflow: hidden;
     }
 
     .title{
-        position: relative;
+        position: absolute;
         transform: translateX(-100%);
         font-size: 80px;
         overflow: clip;
         color: white;
     }
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
