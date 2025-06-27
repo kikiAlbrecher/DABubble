@@ -56,7 +56,7 @@ export class UserSharedService {
 
     async submitUser() {
     try {
-        const auth = getAuth();
+        const auth = this.auth;
         const userCredential = await createUserWithEmailAndPassword(
         auth,
         this.userDetails.email ?? '',
@@ -75,7 +75,7 @@ export class UserSharedService {
     }
 
     logInUser(email:string, password:string) {
-        const auth = getAuth();
+        const auth = this.auth;
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
@@ -90,7 +90,7 @@ export class UserSharedService {
     }
 
     logOutUser() {
-        const auth = getAuth();
+        const auth = this.auth;
         signOut(auth).then(() => {
             //...
             this.isAuthenticated = false
@@ -102,7 +102,7 @@ export class UserSharedService {
     }
 
     changePasswordMail(email:string) {
-        const auth = getAuth();
+        const auth = this.auth;
         sendPasswordResetEmail(auth, email)
         .then(() => {
         this.router.navigate(['/login']);
