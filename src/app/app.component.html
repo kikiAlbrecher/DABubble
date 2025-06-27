@@ -30,6 +30,13 @@
     }">
     <img src="assets/icons/mail-send-button.svg" alt="">
     <span>E-Mail gesendet</span>
-  </div>
+  </div>  
+  }
+  @if (this.sharedUser.passwordChanged) {<div class="account-success slide-in"
+  [ngClass]="{
+  'slide-out': sharedUser.playSlideOut,
+  }">
+  <span>Passwort geändert</span>
+  </div>  
   }
 </div>

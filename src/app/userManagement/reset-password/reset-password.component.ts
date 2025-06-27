@@ -27,6 +27,7 @@ export class ResetPasswordComponent {
   resetForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/)]),
     });
+    
   get allInputsChecked() {
     return this.resetForm.valid
   }

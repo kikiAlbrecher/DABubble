@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
 import { User } from "./user.interface";
 import { Firestore, doc, updateDoc, addDoc, collection, setDoc } from '@angular/fire/firestore';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 
@@ -17,6 +17,7 @@ export class UserSharedService {
     auth = inject(Auth);
     accountSuccess: boolean = false;
     resetMailSend: boolean = false;
+    passwordChanged: boolean = false;
     userDetails: Partial<User> = {};
     inputData: boolean = false; 
     currentUser: FirebaseUser | null = null;
@@ -115,7 +116,21 @@ export class UserSharedService {
         });
     }
 
-    infoSlider(property: 'accountSuccess' | 'resetMailSend') {
+    updatePassword(actionCode:string, newPassword:any) {
+        console.log('hallo');
+        const auth = this.auth;
+        confirmPasswordReset(auth, actionCode, newPassword).then((resp) => {
+        this.infoSlider('passwordChanged');
+        this.router.navigate(['/login']);
+    }).catch((error) => {
+      // Error occurred during confirmation. The code might have expired or the
+      // password is too weak.
+    });
+
+        
+    }
+
+    infoSlider(property: 'accountSuccess' | 'resetMailSend' | 'passwordChanged') {
         (this as any)[property] = true;
         setTimeout(() => {
             this.playSlideOut = true;
