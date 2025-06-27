@@ -1,4 +1,4 @@
-<div class="dialog-add-channel">
+<form #addChannel="ngForm" (ngSubmit)="saveChannel()" class="dialog-add-channel">
   <div class="add-channel-headline">
     <h2>Channel erstellen</h2>
     <button (click)="closeAddChannel()">
@@ -7,8 +7,38 @@
   </div>
   <p class="add-channel-subheadline">Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen
     sein, #marketing zum Beispiel.</p>
-  <input type="text" [(ngModel)]="channel.channelName" placeholder="Channel-Name" />
-  <div class="save-action">
-    <button (click)="saveChannel()">Erstellen</button>
+  <div class="input-with-headline">
+    <p class="headline">Channel-Name</p>
+    <div class="input-container channel-input-container">
+      <div class="input-field-container channel-input-wrapper">
+        <img class="input-field-image channel-prefix" src="assets/icons/hashtag.svg" alt="# for channel name">
+        <input type="text" [(ngModel)]="channel.channelName" name="channelName" #channelName="ngModel"
+          class="input-field input-field-channel" minlength="3" placeholder="z. B. Kooperationsprojekte"
+          [required]="true">
+      </div>
+      <div *ngIf="channelName.invalid && channelName.touched && !channelName.disabled">
+        <span class="validation-fail" *ngIf="channelName.errors?.['required']">
+          Bitte ausfüllen.
+        </span>
+        <span class="validation-fail" *ngIf="channelName.errors?.['minlength']">
+          Mindestens 3 Zeichen erforderlich.
+        </span>
+      </div>
+    </div>
   </div>
-</div>
+  <div class="input-with-headline">
+    <p class="headline">Beschreibung <span class="sub-headline">(optional)</span></p>
+    <div class="input-container channel-input-container chanel-input-description">
+      <div class="input-field-container channel-input-wrapper">
+        <input type="text" [(ngModel)]="channel.channelDescription" name="channelDescription" #channelDescription="ngModel"
+          class="input-field input-field-channel input-field-description" placeholder="Dein Text hier">
+      </div>
+    </div>
+  </div>
+  <div class="save-action">
+    <button type="submit" [disabled]="!addChannel.valid"
+      [ngClass]="addChannel.valid ? 'button-abled' : 'button-disabled'">
+      Erstellen
+    </button>
+  </div>
+</form>

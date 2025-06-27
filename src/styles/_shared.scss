@@ -1,12 +1,9 @@
-/* nunito-regular - latin */
 @font-face {
   font-display: swap;
-  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
   font-family: 'Nunito';
   font-style: normal;
   font-weight: 400;
   src: url('./../assets/fonts/nunito-v31-latin-regular.woff2') format('woff2');
-  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 @mixin dFlex($fd: row, $jc: center, $ai: center, $g: 0) {
@@ -27,4 +24,10 @@ $white: #FFFFFF;
 
 $purple: #444DF2;
 
+$light-purple: #ADB0D9;
+
 $background-purple: #ECEEFE;
+
+$grey: #686868;
+
+$red: #E61C40;

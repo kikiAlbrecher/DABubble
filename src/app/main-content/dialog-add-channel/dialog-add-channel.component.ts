@@ -26,12 +26,22 @@ export class DialogAddChannelComponent {
     try {
       this.cdr.detectChanges();
       const channelsCollection = collection(this.firestore, 'channels');
+
+      this.channelNameConvention();
+
       const result = await addDoc(channelsCollection, { ...this.channel });
       console.log('Adding channel finished', result);
+      this.save.emit(this.channel.channelName);
     } catch (error) {
       console.error('Error adding channel:', error);
     } finally {
       this.cdr.detectChanges();
+    }
+  }
+
+  channelNameConvention() {
+    if (!this.channel.channelName.startsWith('#')) {
+      this.channel.channelName = `#${this.channel.channelName}`;
     }
   }
 

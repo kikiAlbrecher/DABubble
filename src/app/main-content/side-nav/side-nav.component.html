@@ -1,4 +1,4 @@
-<div *ngIf="workspaceOpen" class="side-nav">
+<div [ngClass]="{ 'closed': !workspaceOpen }" class="side-nav">
     <div class="channels-btn">
         <div class="workspace">
             <img class="workspace-logo" src="assets/icons/workspace.svg" alt="workspace logo">
@@ -18,9 +18,6 @@
                 </div>
                 <img class="general-menu-icons" src="assets/icons/add.svg" alt="add channel"
                     (click)="openDialogAddChannel()">
-                <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
-                    (save)="handleChannelCreate($event)">
-                </app-dialog-add-channel>
             </div>
 
             <button class="menu-item">
@@ -51,3 +48,6 @@
     <span>Workspace-Menu öffnen</span>
     <img src="assets/icons/open-workspace.svg" alt="open workspace">
 </div>
+
+<app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()" (save)="handleChannelCreate($event)">
+</app-dialog-add-channel>

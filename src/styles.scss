@@ -7,6 +7,13 @@
     color: #000000;
 }
 
+.section-content {
+    max-width: 1920px;
+    width: 100%;
+    @include dFlex($fd: column, $jc: flex-start, $ai: stretch);
+    position: relative;
+}
+
 .d-none {
     display: none;
 }
@@ -27,14 +34,55 @@ button {
     }
 }
 
+.button-abled,
+.button-disabled {
+    border-radius: 25px;
+}
+
+.button-abled {
+    background: $purple;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.button-disabled {
+    background: $grey;
+
+    &:hover {
+        cursor: default;
+    }
+}
+
 input {
     border: unset;
     outline: none;
 }
 
-.section-content {
-    max-width: 1920px;
+// Kommt später vielleicht in eigene Komponente, von Benjamin übernommen
+.input-container {
+    @include dFlex($fd: column, $g: 30px);
     width: 100%;
-    @include dFlex($fd: column, $jc: flex-start, $ai: stretch);
-    position: relative;
+    padding: 30px 20px;
+
+    .input-field-container {
+        position: relative;
+        width: 100%;
+
+        >.input-field-image {
+            position: absolute;
+        }
+
+        >.input-field {
+            width: 100%;
+            border-radius: 30px;
+            border: unset;
+            outline: none;
+            background: $background-purple;
+            padding: 0 15px 0 60px;
+            @include fontNunito(16px, 500);
+            color: $grey;
+        }
+    }
 }

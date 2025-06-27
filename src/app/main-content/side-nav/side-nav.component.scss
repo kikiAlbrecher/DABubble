@@ -7,6 +7,14 @@
     padding: 32px 30px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 25px);
     position: relative;
+    z-index: 10;
+    transform: translateX(0);
+    transition: transform 0.25s ease-in-out;
+    overflow-x: hidden;
+
+    &.closed {
+        transform: translateX(-110%);
+    }
 
     >.channels-btn {
         @include dFlex($jc: space-between);
@@ -83,6 +91,7 @@
     top: 80vh;
     transform: translateX(14px) rotate(-90deg);
     transform-origin: left center;
+    width: 314.5px;
     @include dFlex($g: 8px);
     filter: drop-shadow(4px 4px 7px rgba(0, 0, 0, 0.2));
     padding: 20px 12px;
