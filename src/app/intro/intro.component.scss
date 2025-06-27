@@ -5,13 +5,15 @@
     align-items: center;
     height: 100vh;
     width: 100%;
+    position: relative;
+    z-index: 100;
 
     img {
         width: 120px;
         position: relative;
     }
 
-    .title-container{
+    .title-container {
         width: 347px;
         height: 91px;
         left: 10%;
@@ -19,7 +21,7 @@
         overflow: hidden;
     }
 
-    .title{
+    .title {
         position: absolute;
         transform: translateX(-100%);
         font-size: 80px;
@@ -29,7 +31,11 @@
 }
 
 .logo-container {
+    background-color: aquamarine;
+    position: absolute;
     display: flex;
     flex-direction: row;
     align-items: center;
+    top: 40%;
+    left: 33%;
 }

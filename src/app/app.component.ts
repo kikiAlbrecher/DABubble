@@ -19,6 +19,7 @@ import { MainContentComponent } from './main-content/main-content.component';
 })
 export class AppComponent {
   title = 'DABubble';
+    showIntro = true;
 
   constructor(
     public router: Router,
