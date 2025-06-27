@@ -5,6 +5,7 @@ import { User } from "./user.interface";
 import { Firestore, doc, updateDoc, addDoc, collection, setDoc } from '@angular/fire/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
 import { NgZone } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 
 
 @Injectable({
@@ -13,6 +14,7 @@ import { NgZone } from '@angular/core';
 
 export class UserSharedService {
     firestore = inject(Firestore);
+    auth = inject(Auth);
     accountSuccess: boolean = false;
     userDetails: Partial<User> = {};
     inputData: boolean = false; 
@@ -22,28 +24,30 @@ export class UserSharedService {
     isDev = true;
 
     constructor(private router: Router, private ngZone: NgZone) {
-  const auth = getAuth();
 
-  onAuthStateChanged(auth, (user) => {
-    this.ngZone.run(() => {
+    }
+
+    initAuth() {
+    onAuthStateChanged(this.auth, (user) => {
       if (user) {
         this.currentUser = user;
         this.actualUser = user.uid;
         this.isAuthenticated = true;
 
-        setTimeout(() => {
+        // Beispiel: nur bei Bedarf navigieren
+        if (!location.pathname.includes('/main-content')) {
           this.router.navigate(['/main-content']);
-        }, 500);              
+        }
       } else {
         this.currentUser = null;
+        this.isAuthenticated = false;
 
         if (!this.isDev) {
-          this.router.navigate(['/login']); 
+          this.router.navigate(['/login']);
         }
       }
     });
-  });
-}
+  }
     
     sendData() {
         console.log(this.userDetails);
