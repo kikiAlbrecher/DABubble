@@ -17,8 +17,19 @@
   <main>
     <router-outlet class="router-outlet"></router-outlet>
   </main>
-  @if (this.sharedUser.accountSuccess) {<div class="account-success">
+  @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in"
+  [ngClass]="{
+    'slide-out': sharedUser.playSlideOut,
+    }">
     <span>Konto erfolgreich erstellt!</span>
+  </div>
+  }
+  @if (this.sharedUser.resetMailSend) {<div class="mail-success slide-in"
+    [ngClass]="{
+    'slide-out': sharedUser.playSlideOut,
+    }">
+    <img src="assets/icons/mail-send-button.svg" alt="">
+    <span>E-Mail gesendet</span>
   </div>
   }
 </div>
