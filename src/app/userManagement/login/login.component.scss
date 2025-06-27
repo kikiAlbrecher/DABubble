@@ -55,6 +55,7 @@
 .no-passwort{
     @include fontNunito(16px, 400);
     color: #797EF3;
+    cursor: pointer;
 }
 
 .or-container {

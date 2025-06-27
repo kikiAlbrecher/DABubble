@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { User } from "./user.interface";
 import { Firestore, doc, updateDoc, addDoc, collection, setDoc } from '@angular/fire/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
+import { NgZone } from '@angular/core';
 
 
 @Injectable({
@@ -20,25 +21,29 @@ export class UserSharedService {
     actualUser:string = "";
     isDev = true;
 
-    constructor(private router: Router) {
-        const auth = getAuth();
-        onAuthStateChanged(auth, (user) => {
-        if (user) {
-            this.currentUser = user;
-            this.actualUser = user.uid;
-            this.isAuthenticated = true;
-            setTimeout(() => {
-                this.router.navigate(['/main-content']);   
-            }, 500);              
-        } else {
-            this.currentUser = null;
-            if (!this.isDev) {
-                this.router.navigate(['/login']); 
-            }
-            
+    constructor(private router: Router, private ngZone: NgZone) {
+  const auth = getAuth();
+
+  onAuthStateChanged(auth, (user) => {
+    this.ngZone.run(() => {
+      if (user) {
+        this.currentUser = user;
+        this.actualUser = user.uid;
+        this.isAuthenticated = true;
+
+        setTimeout(() => {
+          this.router.navigate(['/main-content']);
+        }, 500);              
+      } else {
+        this.currentUser = null;
+
+        if (!this.isDev) {
+          this.router.navigate(['/login']); 
         }
-        });
-    } 
+      }
+    });
+  });
+}
     
     sendData() {
         console.log(this.userDetails);
