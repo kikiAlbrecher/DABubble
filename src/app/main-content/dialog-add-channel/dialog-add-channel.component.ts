@@ -5,11 +5,12 @@ import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/f
 import { inject } from '@angular/core';
 import { Channel } from '../../../models/channel.class';
 import { CollectionReference, DocumentData } from 'firebase/firestore';
+import { SubmitButtonComponent } from '../../styles/submit-button/submit-button.component';
 
 @Component({
   selector: 'app-dialog-add-channel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SubmitButtonComponent],
   templateUrl: './dialog-add-channel.component.html',
   styleUrl: './dialog-add-channel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

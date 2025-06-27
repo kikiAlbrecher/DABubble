@@ -97,11 +97,6 @@
 .save-action {
     @include dFlex($jc: flex-end, $g: 10px);
     width: 100%;
-
-    >button {
-        @include fontNunito($size: 18px, $weight: 700);
-        color: $white;
-    }
 }
 
 .transmission-confirmation {

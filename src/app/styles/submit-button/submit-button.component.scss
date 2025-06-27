@@ -1,0 +1,27 @@
+@import './../../../styles/shared';
+
+button {
+    @include fontNunito($size: 18px, $weight: 700);
+    color: $white;
+}
+
+.button-abled,
+.button-disabled {
+    border-radius: 25px;
+}
+
+.button-abled {
+    background: $purple;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.button-disabled {
+    background: $grey;
+
+    &:hover {
+        cursor: default;
+    }
+}

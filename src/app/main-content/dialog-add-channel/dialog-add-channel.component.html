@@ -43,10 +43,7 @@
     </div>
   </div>
   <div class="save-action">
-    <button type="submit" [disabled]="!addChannel.valid"
-      [ngClass]="addChannel.valid ? 'button-abled' : 'button-disabled'">
-      Erstellen
-    </button>
+    <app-submit-button [form]="addChannel" label="Erstellen"></app-submit-button>
   </div>
   <div class="transmission-confirmation" [ngClass]="{ visible: showMessage, hidden: !showMessage }">
     <span class="success-message" *ngIf="successMessage">{{ successMessage }}</span>

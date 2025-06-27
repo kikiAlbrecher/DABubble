@@ -34,27 +34,6 @@ button {
     }
 }
 
-.button-abled,
-.button-disabled {
-    border-radius: 25px;
-}
-
-.button-abled {
-    background: $purple;
-
-    &:hover {
-        cursor: pointer;
-    }
-}
-
-.button-disabled {
-    background: $grey;
-
-    &:hover {
-        cursor: default;
-    }
-}
-
 input {
     border: unset;
     outline: none;
