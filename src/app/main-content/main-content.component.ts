@@ -14,11 +14,12 @@ import { getAuth, } from "firebase/auth";
   styleUrl: './main-content.component.scss'
 })
 export class MainContentComponent {
-
   constructor(
-    public shared: UserSharedService,
-    private router: Router,
-  ) {
-    console.log(shared.actualUser);
-  }
+        public shared: UserSharedService,
+        private router: Router,
+        ) { console.log(shared.actualUser);
+         }   
 }
+
+
+

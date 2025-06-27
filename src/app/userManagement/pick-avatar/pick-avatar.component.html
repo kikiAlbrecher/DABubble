@@ -11,9 +11,17 @@
             @for (item of images; track $index) {
                 <img (click)="setImage(item)" [src]=item alt="">
             }
+            @if (noPicturePicked) {
+                <span class="error-message">* Bitte Avatar auswählen</span>
+            }
         </div>
         <div class="next-container">
-            <a (click)="shared.sendData()" routerLink="/pickavatar" class="next">Weiter</a>
+            <a (click)="onSubmit()" routerLink="/pickavatar" class="next"
+            [ngClass]="{
+                'next-on' : picturePicked,
+                'next-off' : !picturePicked
+            }"
+            >Weiter</a>
         </div>
     </div>
 

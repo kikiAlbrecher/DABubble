@@ -50,6 +50,7 @@
     @include dFlex(row, space-between, center, 0px);
     width: 100%;
     padding: 0 30px;
+    position: relative;
     img{
         width: 65px;
         height: 65px;
@@ -67,13 +68,26 @@
     width: 100%;
     padding: 0 20px;
     margin-top: 30px;
-    cursor: pointer;
     .next {
         @include fontNunito(18px, 700);
         padding: 10px 20px;
-        background-color: #444DF2;
         color: white;
         border-radius: 25px;
-        text-decoration: none;
+        text-decoration: none;        
     }
+    .next-on {
+        background-color: #444DF2;
+        cursor: pointer;
+    }
+    .next-off {
+        background-color: #686868;
+    }
+}
+
+.error-message {
+    position: absolute;
+    bottom: -20px;
+    left: 30px;
+    @include fontNunito(15px, 400);
+    color: red;
 }
