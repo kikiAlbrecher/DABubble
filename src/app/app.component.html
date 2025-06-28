@@ -3,7 +3,7 @@
   <header>
     <div class="logo-container">
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>
-      <img class="logo-name" src="./../assets/img/logo-name.svg" alt="">
+      <img class="logo-name" src="assets/img/logo-name.svg" alt="">
     </div>
     <div *ngIf="router.url === '/login'" class="create-account-container">
       <span class="create-account-text">Neu bei DABubble</span>
@@ -17,6 +17,12 @@
   <main>
     <router-outlet class="router-outlet"></router-outlet>
   </main>
+  <footer>
+    <div class="footer-container">
+      <a routerLink="/impressum">Impressum</a>
+      <a routerLink="/datenschutz">Datenschutz</a>
+    </div>
+  </footer>
   @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in"
   [ngClass]="{
     'slide-out': sharedUser.playSlideOut,

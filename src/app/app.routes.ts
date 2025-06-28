@@ -7,6 +7,8 @@ import { MainContentComponent } from './main-content/main-content.component';
 import { ResetPasswordComponent } from './userManagement/reset-password/reset-password.component';
 import { authGuard } from './userManagement/auth.guard';
 import { ChangePasswordComponent } from './userManagement/change-password/change-password.component';
+import { ImprintComponent } from './legal/imprint/imprint.component';
+import { PrivacyComponent } from './legal/privacy/privacy.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,5 +17,7 @@ export const routes: Routes = [
     { path: 'pickavatar', component: PickAvatarComponent },
     { path: 'main-content', component: MainContentComponent, canActivate: [authGuard] },
     { path: 'reset-password', component: ResetPasswordComponent },
-    { path: 'change-password', component: ChangePasswordComponent }
+    { path: 'change-password', component: ChangePasswordComponent },
+    { path: 'impressum', component: ImprintComponent },
+    { path: 'datenschutz', component: PrivacyComponent }
 ];
