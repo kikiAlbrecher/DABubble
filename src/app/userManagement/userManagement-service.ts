@@ -1,11 +1,12 @@
 import { Injectable, Input } from '@angular/core';
 import { inject } from '@angular/core';
-import { Router, CanActivate } from '@angular/router';
+import { Router } from '@angular/router';
 import { User } from "./user.interface";
-import { Firestore, doc, updateDoc, addDoc, collection, setDoc } from '@angular/fire/firestore';
-import { getAuth, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
+import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc } from '@angular/fire/firestore';
+import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
+import {  } from "firebase/auth";
 
 
 @Injectable({
@@ -93,13 +94,43 @@ export class UserSharedService {
     logOutUser() {
         const auth = this.auth;
         signOut(auth).then(() => {
-            //...
             this.isAuthenticated = false
             this.actualUser = '';
             this.router.navigate(['/login']);
         }).catch((error) => {
             //...
         });
+    }
+
+    googleLogIn() {
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+        .then(async(result) => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential!.accessToken;
+            const user = result.user;
+            console.log(user.uid, user.email);
+            const userDocRef = doc(this.firestore, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                this.actualUser = user.uid;
+                this.inputData = false;
+                this.isAuthenticated = true;             
+            } else {
+                await setDoc(userDocRef, {
+                    channelIds: {},
+                    uid: user.uid,
+                    email: user.email,
+                    name: user.displayName,
+                    photoURL: 'assets/img/avatar-placeholder.svg',
+                    status: false
+                });                
+            }            
+        }).catch((error) => {
+            const credential = GoogleAuthProvider.credentialFromError(error);
+        });
+        
     }
 
     changePasswordMail(email:string) {
