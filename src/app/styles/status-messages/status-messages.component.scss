@@ -1,0 +1,45 @@
+@import './../../../styles/shared';
+
+.transmission-confirmation {
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    background: rgba(221, 225, 255, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    @include dFlex();
+    padding: 24px;
+    transition: transform 0.3s ease-in-out, opacity 0.3 ease-in-out;
+    pointer-events: none;
+
+    &.visible {
+        transform: translateX(0);
+        pointer-events: auto;
+    }
+
+    &.hidden {
+        transform: translateX(136%);
+    }
+
+    >.success-message,
+    .error-message {
+        width: 80%;
+        padding: 32px 16px;
+        text-align: center;
+        border: unset;
+        border-radius: 25px;
+        @include fontNunito($size: 18px, $weight: 600);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    >.success-message {
+        background: $green;
+        color: $purple;
+    }
+
+    >.error-message {
+        background: $grey;
+        color: $red;
+    }
+}

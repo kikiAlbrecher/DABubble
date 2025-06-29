@@ -1,9 +1,7 @@
 <form #addChannel="ngForm" (ngSubmit)="saveChannel()" class="dialog-add-channel">
   <div class="add-channel-headline">
     <h2>Channel erstellen</h2>
-    <button (click)="closeAddChannel()">
-      <img class="closing-icon" src="assets/icons/close.svg" alt="close">
-    </button>
+    <app-close-button (close)="closeAddChannel()"></app-close-button>
   </div>
   <p class="add-channel-subheadline">Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
     themenbezogen
@@ -44,9 +42,5 @@
   </div>
   <div class="save-action">
     <app-submit-button [form]="addChannel" label="Erstellen"></app-submit-button>
-  </div>
-  <div class="transmission-confirmation" [ngClass]="{ visible: showMessage, hidden: !showMessage }">
-    <span class="success-message" *ngIf="successMessage">{{ successMessage }}</span>
-    <span class="error-message" *ngIf="errorMessage">{{ errorMessage }}</span>
   </div>
 </form>

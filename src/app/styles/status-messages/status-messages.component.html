@@ -1,0 +1,6 @@
+<div class="transmission-confirmation" [ngClass]="{ visible: statusMessage, hidden: !statusMessage }">
+    <span
+        [ngClass]="{ 'success-message': statusMessageType === 'success', 'error-message': statusMessageType === 'error' }">
+        {{ statusMessage }}
+    </span>
+</div>

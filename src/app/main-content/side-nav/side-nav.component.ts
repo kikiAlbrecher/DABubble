@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogAddChannelComponent } from '../dialog-add-channel/dialog-add-channel.component';
 
@@ -10,20 +10,11 @@ import { DialogAddChannelComponent } from '../dialog-add-channel/dialog-add-chan
   styleUrl: './side-nav.component.scss'
 })
 export class SideNavComponent {
-  showAddChannelDialog = false;
+  @Output() addChannel = new EventEmitter<void>();
   workspaceOpen = true;
 
   openDialogAddChannel() {
-    this.showAddChannelDialog = true;
-  }
-
-  handleDialogClose() {
-    this.showAddChannelDialog = false;
-  }
-
-  handleChannelCreate(name: string) {
-    this.showAddChannelDialog = false;
-    console.log('new channel:', name);
+    this.addChannel.emit();
   }
 
   toggleWorkspace() {

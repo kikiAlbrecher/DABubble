@@ -17,13 +17,13 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 })
 export class LoginComponent {
   constructor(
-      public shared: UserSharedService,
-      private router: Router) {}
-    
-  logInForm = new FormGroup ({
+    public shared: UserSharedService,
+    private router: Router) { }
+
+  logInForm = new FormGroup({
     email: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required),
-    })
+  })
 
   submitLogData() {
     if (this.logInForm.valid) {
@@ -31,8 +31,10 @@ export class LoginComponent {
       const password = this.logInForm.value.password ?? '';
       this.shared.logInUser(email, password);
       this.shared.inputData = false;
+      this.router.navigate(['/main-content']);
     } else {
       this.shared.inputData = true;
+      this.router.navigate(['/main-content']);
     }
   }
 

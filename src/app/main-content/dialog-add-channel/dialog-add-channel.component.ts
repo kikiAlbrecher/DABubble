@@ -6,11 +6,12 @@ import { inject } from '@angular/core';
 import { Channel } from '../../../models/channel.class';
 import { CollectionReference, DocumentData } from 'firebase/firestore';
 import { SubmitButtonComponent } from '../../styles/submit-button/submit-button.component';
+import { CloseButtonComponent } from '../../styles/close-button/close-button.component';
 
 @Component({
   selector: 'app-dialog-add-channel',
   standalone: true,
-  imports: [CommonModule, FormsModule, SubmitButtonComponent],
+  imports: [CommonModule, FormsModule, SubmitButtonComponent, CloseButtonComponent],
   templateUrl: './dialog-add-channel.component.html',
   styleUrl: './dialog-add-channel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,9 +19,6 @@ import { SubmitButtonComponent } from '../../styles/submit-button/submit-button.
 export class DialogAddChannelComponent {
   channel: Channel = new Channel();
   channelExistsError = false;
-  successMessage = '';
-  errorMessage = '';
-  showMessage = false;
 
   private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
@@ -41,11 +39,9 @@ export class DialogAddChannelComponent {
       }
 
       await addDoc(channelsCollection, { ...this.channel });
-      // this.showTemporaryMessage('success', 'Der Channel wurde hinzugefügt.');
       this.save.emit(this.channel.channelName);
     } catch (error) {
       if (error) return;
-        // this.showTemporaryMessage('error', 'Der Channel konnte nicht erstellt werden.');
     } finally {
       this.cdr.detectChanges();
     }
@@ -62,23 +58,6 @@ export class DialogAddChannelComponent {
       this.channel.channelName = `#${this.channel.channelName}`;
     }
   }
-
-  // private showTemporaryMessage(type: 'success' | 'error', message: string) {
-  //   this.successMessage = type === 'success' ? message : '';
-  //   this.errorMessage = type === 'error' ? message : '';
-  //   this.showMessage = true;
-  //   this.cdr.markForCheck();
-
-  //   setTimeout(() => {
-  //     this.showMessage = false;
-  //     this.cdr.markForCheck();
-  //     setTimeout(() => {
-  //       this.successMessage = '';
-  //       this.errorMessage = '';
-  //       this.cdr.markForCheck();
-  //     }, 250);
-  //   }, 2500);
-  // }
 
   closeAddChannel() {
     this.close.emit();
