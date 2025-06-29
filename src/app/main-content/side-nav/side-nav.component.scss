@@ -19,6 +19,7 @@
     >.channels-btn {
         @include dFlex($jc: space-between);
         border-radius: 30px;
+        width: 100%;
 
 
         >.workspace {
@@ -72,6 +73,66 @@
 
     >.channel-menu-subtitle {
         @include fontNunito($size: 18px, $weight: 400);
+    }
+}
+
+.menu-item-add {
+    padding-left: 25px;
+}
+
+.channel-list {
+    padding-left: 25px;
+    padding-bottom: 8px;
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
+    max-height: 20vh;
+    overflow-y: auto;
+    width: 100%;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $background-purple;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $purple;
+        cursor: pointer;
+        border-radius: 16px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: $purple-hover;
+    }
+
+    .channel-entry {
+        padding: 4px 20px;
+        @include dFlex($jc: flex-start, $ai: center, $g: 10px);
+
+        &:hover {
+            cursor: pointer;
+            background: $background-purple;
+            color: $purple-hover;
+
+            >.list-channel-name {
+                color: $purple-hover;
+                @include fontNunito($size: 18px, $weight: 700);
+            }
+
+            >svg {
+                height: 30px;
+                aspect-ratio: 1 / 1;
+            }
+
+            >svg path {
+                fill: $purple-hover;
+            }
+        }
+
+        >.list-channel-name {
+            @include fontNunito($size: 18px, $weight: 400);
+        }
     }
 }
 
