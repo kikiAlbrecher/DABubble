@@ -6,8 +6,8 @@
         <img (click)="sharedHeader.showUserEdit()" class="user-header-icon" src="assets/icons/arrow-down.svg" alt="">
         @if (sharedHeader.userEditOverlay) {
         <div class="edit-user-overlay">
-            <!-- <app-dropdown></app-dropdown> -->
-            <app-user-profile></app-user-profile>
+            @if (!sharedHeader.dropdownProfile) {<app-dropdown></app-dropdown>}
+            @if (sharedHeader.dropdownProfile) {<app-user-profile></app-user-profile>}
         </div>
         }
     </div>

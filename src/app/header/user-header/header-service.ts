@@ -13,10 +13,21 @@ import { Auth } from '@angular/fire/auth';
 
 export class HeaderSharedService {
 
-    userEditOverlay: boolean = true;
+    userEditOverlay: boolean = false;
+    editName:boolean = false;
+    newName:string = "";
+    dropdownProfile:boolean = false;
   
 
     showUserEdit() {
         this.userEditOverlay = !this.userEditOverlay 
+    }
+
+    editNameMask() {
+        this.editName = !this.editName;
+    }
+
+    changeDropdown() {
+        this.dropdownProfile = !this.dropdownProfile;
     }
 }

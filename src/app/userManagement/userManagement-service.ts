@@ -6,8 +6,6 @@ import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapsh
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import {  } from "firebase/auth";
-
 
 @Injectable({
   providedIn: 'root'
@@ -175,9 +173,15 @@ export class UserSharedService {
     }
 
     getActualUser() {
-    const unsub = onSnapshot(doc(this.firestore, "users", this.actualUserID), (doc) => {
-        this.actualUser = doc.data()
-    });
-        
-}
+        const unsub = onSnapshot(doc(this.firestore, "users", this.actualUserID), (doc) => {
+            this.actualUser = doc.data()
+        });       
+    }
+
+    async updateName(newName:string) {
+        const currentUser = doc(this.firestore, "users", this.actualUserID); 
+        await updateDoc(currentUser, {
+            name: newName
+        });
+    }
 }

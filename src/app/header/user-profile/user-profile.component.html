@@ -1,24 +1,43 @@
 <div class="dopdown">
     <div class="dropdown-container">
         <span class="header">Profil</span>
-        <img src="assets/icons/close.svg" alt="">
+        <img (click)="sharedHeader.changeDropdown()" src="assets/icons/close.svg" alt="">
     </div>
-    <img class="profile-image" src="assets/img/avatar1.svg" alt="">
-    <div class="dropdown-container">
-        <span class="name">Name</span>
-        <span class="edit">Bearbeiten</span>        
+    <img class="profile-image" src="{{sharedUser.actualUser.picture}}" alt="">
+    
+    @if (!sharedHeader.editName) {
+    <div class="change-container-info">
+        <div class="dropdown-container">
+            <span class="name">{{sharedUser.actualUser.name}}</span>
+            <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>        
+        </div>
+        <div class="baseline-container">
+            <div class="check-status online"></div>
+            <span class="active">Aktiv</span>
+        </div>
+        <div class="baseline-container-mail">
+            <img class="mail-icon" src="assets/icons/mail.svg" alt="">
+            <div class="mail-container">
+                <span class="mailtext">E-Mail Adresse</span>
+                <span class="mail-adress">{{sharedUser.actualUser.email}}</span>
+            </div>    
+        </div>
     </div>
-    <div>
-        <div class="check-status online"></div>
-        <span>Aktiv</span>
-    </div>
-    <div>
-        <img src="assets/icons/mail.svg" alt="">
-        <span>E-Mail Adress</span>
-    </div>
-    <span>xyxy.de</span>
-    <div>
-        <img src="assets/icons/message.svg" alt="">
-        <span>Nachricht</span>
-    </div>
+    }
+
+    @if (sharedHeader.editName) {
+    <form [formGroup]="updateName" (ngSubmit)="onSubmit()" class="change-container-change">
+        <div class="full-name-container">
+            <img src="assets/icons/account_circle.svg" alt="">
+            <span>Vollständiger Name</span>
+        </div>
+        <div class="input-container-profile">
+                <input class="input-field" type="text" formControlName="name">
+        </div>
+        <div class="login-button-container">
+            <div (click)="sharedHeader.editNameMask()" type="submit" class="login-button button-guest">Abbrechen</div>
+            <button type="submit" class="login-button button-log-in">Speichern</button>
+        </div>
+    </form>
+    }
 </div>
