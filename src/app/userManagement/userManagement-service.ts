@@ -24,7 +24,7 @@ export class UserSharedService {
     currentUser: FirebaseUser | null = null;
     isAuthenticated: boolean = false;
     actualUser:string = "";
-    isDev = false;
+    isDev = true;
     playSlideOut: boolean = false;
 
     constructor(private router: Router, private ngZone: NgZone) {}
@@ -110,11 +110,11 @@ export class UserSharedService {
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential!.accessToken;
             const user = result.user;
-            console.log(user.uid, user.email);
             const userDocRef = doc(this.firestore, 'users', user.uid);
             const userDocSnap = await getDoc(userDocRef);
             if (userDocSnap.exists()) {
                 this.actualUser = user.uid;
+                this.router.navigate(['/main-content']);
                 this.inputData = false;
                 this.isAuthenticated = true;             
             } else {
@@ -125,7 +125,8 @@ export class UserSharedService {
                     name: user.displayName,
                     photoURL: 'assets/img/avatar-placeholder.svg',
                     status: false
-                });                
+                });   
+                this.router.navigate(['/main-content']);             
             }            
         }).catch((error) => {
             const credential = GoogleAuthProvider.credentialFromError(error);
@@ -153,12 +154,10 @@ export class UserSharedService {
         confirmPasswordReset(auth, actionCode, newPassword).then((resp) => {
         this.infoSlider('passwordChanged');
         this.router.navigate(['/login']);
-    }).catch((error) => {
-      // Error occurred during confirmation. The code might have expired or the
-      // password is too weak.
-    });
-
-        
+        }).catch((error) => {
+        // Error occurred during confirmation. The code might have expired or the
+        // password is too weak.
+        });        
     }
 
     infoSlider(property: 'accountSuccess' | 'resetMailSend' | 'passwordChanged') {

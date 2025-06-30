@@ -1,9 +1,10 @@
 <div class="main-content">
-    <span (click)="shared.logOutUser()" class="logout">logout</span>
+    
     <div class="section-content">
         <div class="header">
             <app-logo></app-logo>
-            <!-- hier auch Suche und User-Icon einbinden -->
+            <app-searchbar></app-searchbar>
+            <span (click)="shared.logOutUser()" class="logout">logout</span>
         </div>
         <div class="main-components">
             <app-side-nav (addChannel)="openDialogAddChannel()"></app-side-nav>

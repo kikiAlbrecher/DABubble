@@ -15,7 +15,9 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'signup', component: SignUpComponent },
     { path: 'pickavatar', component: PickAvatarComponent },
-    { path: 'main-content', component: MainContentComponent, canActivate: [authGuard] },
+    { path: 'main-content', component: MainContentComponent, 
+        //canActivate: [authGuard] 
+    },
     { path: 'reset-password', component: ResetPasswordComponent },
     { path: 'change-password', component: ChangePasswordComponent },
     { path: 'impressum', component: ImprintComponent },
