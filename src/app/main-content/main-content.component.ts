@@ -8,16 +8,21 @@ import { StatusMessagesComponent } from '../styles/status-messages/status-messag
 import { DialogAddChannelComponent } from './dialog-add-channel/dialog-add-channel.component';
 import { SearchbarComponent } from '../header/searchbar/searchbar.component';
 import { LogoComponent } from '../header/logo/logo.component';
+import { MainChatComponent } from './main-chat/main-chat.component';
+import { ThreadsComponent } from './threads/threads.component';
 import { UserHeaderComponent } from '../header/user-header/user-header.component';
 
 @Component({
   selector: 'app-main-content',
   standalone: true,
-  imports: [CommonModule, 
-    SideNavComponent,  
-    StatusMessagesComponent, 
+  imports: [CommonModule,
+    SideNavComponent,
+    StatusMessagesComponent,
     DialogAddChannelComponent,
     SearchbarComponent,
+    LogoComponent,
+    MainChatComponent,
+    ThreadsComponent
     LogoComponent,
     UserHeaderComponent
   ],
@@ -33,6 +38,7 @@ export class MainContentComponent {
   }
 
   showAddChannelDialog = false;
+  threadsVisible = false;
   statusMessage = '';
   statusMessageType: 'success' | 'error' = 'success';
 

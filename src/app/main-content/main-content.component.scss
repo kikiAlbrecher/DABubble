@@ -9,7 +9,7 @@
 
 .header {
     height: 86px;
-    @include dFlex(row, space-between, center, 20px);
+    @include dFlex($jc: space-between, $g: 20px);
     padding-bottom: 16px;
     width: 100%;
     .header-searchbar{
@@ -18,10 +18,10 @@
 }
 
 .main-components {
-    @include dFlex($jc: flex-start);
+    @include dFlex($jc: flex-start, $g: 16px);
     width: 100%;
 }
 
 .logout {
     cursor: pointer;
-} 
+}

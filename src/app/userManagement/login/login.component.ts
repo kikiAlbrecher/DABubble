@@ -37,5 +37,4 @@ export class LoginComponent {
       this.router.navigate(['/main-content']);
     }
   }
-
 }
