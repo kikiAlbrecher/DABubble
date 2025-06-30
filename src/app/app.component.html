@@ -1,6 +1,5 @@
 <app-intro *ngIf="showIntro" (animationDone)="showIntro = false"></app-intro>
-
-<div *ngIf="!showIntro && !sharedUser.isAuthenticated; else appLayoutMain" class="app-wrapper">
+<div class="app-wrapper">
   <header>
     <div *ngIf="router.url != '/main-content'" class="logo-container">
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>
@@ -20,27 +19,26 @@
       <a routerLink="/datenschutz">Datenschutz</a>
     </div>
   </footer>
-  @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in" [ngClass]="{
+  @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in"
+  [ngClass]="{
     'slide-out': sharedUser.playSlideOut,
     }">
     <span>Konto erfolgreich erstellt!</span>
   </div>
   }
-  @if (this.sharedUser.resetMailSend) {<div class="mail-success slide-in" [ngClass]="{
+  @if (this.sharedUser.resetMailSend) {<div class="mail-success slide-in"
+    [ngClass]="{
     'slide-out': sharedUser.playSlideOut,
     }">
     <img src="assets/icons/mail-send-button.svg" alt="">
     <span>E-Mail gesendet</span>
-  </div>
+  </div>  
   }
-  @if (this.sharedUser.passwordChanged) {<div class="account-success slide-in" [ngClass]="{
+  @if (this.sharedUser.passwordChanged) {<div class="account-success slide-in"
+  [ngClass]="{
   'slide-out': sharedUser.playSlideOut,
   }">
-    <span>Passwort geändert</span>
-  </div>
+  <span>Passwort geändert</span>
+  </div>  
   }
 </div>
-
-<ng-template #appLayoutMain>
-  <app-main-content></app-main-content>
-</ng-template>
