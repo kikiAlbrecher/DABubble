@@ -1,5 +1,4 @@
 <div class="main-content">
-    
     <div class="section-content">
         <div class="header">
             <app-logo></app-logo>
@@ -8,7 +7,8 @@
         </div>
         <div class="main-components">
             <app-side-nav (addChannel)="openDialogAddChannel()"></app-side-nav>
-            <!-- hier auch main und threads einbinden -->
+            <app-main-chat></app-main-chat>
+            <app-threads *ngIf="threadsVisible"></app-threads>
         </div>
         <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
             (save)="handleChannelCreate($event)">
