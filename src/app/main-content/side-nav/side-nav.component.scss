@@ -62,12 +62,12 @@
     padding: 4px 10px;
     flex: 1;
 
-    >.channel-menu-img {
+    >.menu-img {
         width: 24px;
         aspect-ratio: 1 / 1;
     }
 
-    >.channel-menu-title {
+    >.menu-title {
         @include fontNunito($size: 20px, $weight: 700);
     }
 
@@ -80,11 +80,11 @@
     padding-left: 25px;
 }
 
-.channel-list {
+.list {
     padding-left: 25px;
     padding-bottom: 8px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
-    max-height: 20vh;
+    max-height: 22vh;
     overflow-y: auto;
     width: 100%;
 
@@ -106,7 +106,7 @@
         background: $purple-hover;
     }
 
-    .channel-entry {
+    .list-entry {
         padding: 4px 20px;
         @include dFlex($jc: flex-start, $ai: center, $g: 10px);
 
@@ -115,7 +115,7 @@
             background: $background-purple;
             color: $purple-hover;
 
-            >.list-channel-name {
+            >.list-name {
                 color: $purple-hover;
                 @include fontNunito($size: 18px, $weight: 700);
             }
@@ -130,8 +130,13 @@
             }
         }
 
-        >.list-channel-name {
+        >.list-name {
             @include fontNunito($size: 18px, $weight: 400);
+        }
+
+        >.user-avatar {
+            height: 50px;
+            aspect-ratio: 1 / 1;
         }
     }
 }

@@ -11,12 +11,12 @@
             <div class="menu-category">
                 <div class="category-headline">
                     <div class="menu-item">
-                        <img *ngIf="showChannels" (click)="toggleChannels()" class="general-menu-icons"
+                        <img *ngIf="showChannels" (click)="toggleDropDownChannels()" class="general-menu-icons"
                             src="assets/icons/drop-down.svg" alt="drop-down open">
-                        <img *ngIf="!showChannels" (click)="toggleChannels()" class="general-menu-icons"
+                        <img *ngIf="!showChannels" (click)="toggleDropDownChannels()" class="general-menu-icons"
                             src="assets/icons/drop-down-close.svg" alt="drop-down close">
-                        <img class="channel-menu-img" src="assets/icons/channels.svg" alt="channels">
-                        <p class="channel-menu-title">Channels</p>
+                        <img class="menu-img" src="assets/icons/channels.svg" alt="channels">
+                        <p class="menu-title">Channels</p>
                     </div>
                 </div>
                 <img class="general-menu-icons" src="assets/icons/add.svg" alt="add channel"
@@ -24,8 +24,8 @@
             </div>
 
             <div *ngIf="showChannels">
-                <div class="channel-list">
-                    <button *ngFor="let channel of channels" class="menu-item channel-entry">
+                <div class="list">
+                    <button *ngFor="let channel of channels" class="menu-item list-entry">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <mask id="mask0_139385_8743" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
                                 width="24" height="24">
@@ -37,11 +37,11 @@
                                     fill="black" />
                             </g>
                         </svg>
-                        <span class="list-channel-name">{{ channel.channelName.slice(1) }}</span>
+                        <span class="list-name">{{ channel.channelName.slice(1) }}</span>
                     </button>
                 </div>
                 <button class="menu-item menu-item-add" (click)="openDialogAddChannel()">
-                    <img class="channel-menu-img" src="assets/icons/add-channel.svg" alt="add channel">
+                    <img class="menu-img" src="assets/icons/add-channel.svg" alt="add channel">
                     <span class="channel-menu-subtitle">Channel hinzufügen</span>
                 </button>
             </div>
@@ -51,15 +51,27 @@
             <div class="menu-category">
                 <div class="category-headline">
                     <div class="menu-item">
-                        <img class="general-menu-icons" src="assets/icons/drop-down.svg" alt="drop-down icon">
-                        <img class="channel-menu-img" src="assets/img/person_filled.svg" alt="direct messages">
-                        <p class="channel-menu-title">Direktnachrichten</p>
+                        <img *ngIf="showUsers" (click)="toggleDropDownUsers()" class="general-menu-icons"
+                            src="assets/icons/drop-down.svg" alt="drop-down open">
+                        <img *ngIf="!showUsers" (click)="toggleDropDownUsers()" class="general-menu-icons"
+                            src="assets/icons/drop-down-close.svg" alt="drop-down close">
+                        <img class="menu-img" src="assets/img/person_filled.svg" alt="direct messages">
+                        <p class="menu-title">Direktnachrichten</p>
                     </div>
+                </div>
+            </div>
+            <div *ngIf="showUsers">
+                <div class="list">
+                    <button *ngFor="let user of users" class="menu-item list-entry">
+                        <img class="user-avatar" [src]="user.picture" alt="{{ user.name }}">
+                        <span class="list-name">{{ user.name }}</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <div *ngIf="workspaceOpen" (click)="toggleWorkspace()" class="close-workspace toggle-workspace">
     <span>Workspace-Menu schließen</span>
