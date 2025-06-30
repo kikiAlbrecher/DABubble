@@ -1,0 +1,27 @@
+@import './../../../styles/shared';
+
+.user-header-section {
+    @include dFlex(row, center, center, 20px);
+    span{
+    @include fontNunito(32px, 700);
+    color: black;
+    }
+    .user-header-img{
+        width: 70px;
+        height: 70px;
+    }
+    .user-header-icon {
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+}
+
+.edit-user {
+    @include dFlex(row, center, center, 20px);
+    position: relative;
+}
+
+.edit-user-overlay{
+
+}   

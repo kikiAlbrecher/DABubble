@@ -5,6 +5,7 @@ import { IntroComponent } from "./intro/intro.component";
 import { Router } from '@angular/router';
 import { UserSharedService } from './userManagement/userManagement-service';
 import { MainContentComponent } from './main-content/main-content.component';
+import { HeaderSharedService } from './header/user-header/header-service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { MainContentComponent } from './main-content/main-content.component';
     RouterModule,
     RouterOutlet,
     IntroComponent,
-    MainContentComponent],
+    MainContentComponent
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -23,6 +25,7 @@ export class AppComponent {
 
   constructor(
     public router: Router,
-    public sharedUser: UserSharedService
-  ) { }
+    public sharedUser: UserSharedService,
+    public sharedHeader: HeaderSharedService,
+  ) { this.sharedUser.initAuth();}
 }

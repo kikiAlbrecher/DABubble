@@ -3,8 +3,9 @@
     <div class="section-content">
         <div class="header">
             <app-logo></app-logo>
-            <app-searchbar></app-searchbar>
-            <span (click)="shared.logOutUser()" class="logout">logout</span>
+            <app-searchbar class="header-searchbar"></app-searchbar>
+            <app-user-header></app-user-header>
+            <!-- <span (click)="shared.logOutUser()" class="logout">logout</span> -->
         </div>
         <div class="main-components">
             <app-side-nav (addChannel)="openDialogAddChannel()"></app-side-nav>

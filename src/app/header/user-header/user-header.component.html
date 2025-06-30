@@ -1,0 +1,16 @@
+<section class="user-header-section">
+    <span>{{shared.actualUser.name}}</span>
+    <img class="user-header-img" src="{{shared.actualUser.picture}}" alt="">
+     
+    <div class="edit-user">
+        <img (click)="sharedHeader.showUserEdit()" class="user-header-icon" src="assets/icons/arrow-down.svg" alt="">
+        @if (sharedHeader.userEditOverlay) {
+        <div class="edit-user-overlay">
+            <!-- <app-dropdown></app-dropdown> -->
+            <app-user-profile></app-user-profile>
+        </div>
+        }
+    </div>
+    
+
+</section>

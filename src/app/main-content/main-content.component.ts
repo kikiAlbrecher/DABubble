@@ -8,6 +8,7 @@ import { StatusMessagesComponent } from '../styles/status-messages/status-messag
 import { DialogAddChannelComponent } from './dialog-add-channel/dialog-add-channel.component';
 import { SearchbarComponent } from '../header/searchbar/searchbar.component';
 import { LogoComponent } from '../header/logo/logo.component';
+import { UserHeaderComponent } from '../header/user-header/user-header.component';
 
 @Component({
   selector: 'app-main-content',
@@ -17,7 +18,8 @@ import { LogoComponent } from '../header/logo/logo.component';
     StatusMessagesComponent, 
     DialogAddChannelComponent,
     SearchbarComponent,
-    LogoComponent
+    LogoComponent,
+    UserHeaderComponent
   ],
   templateUrl: './main-content.component.html',
   styleUrl: './main-content.component.scss'

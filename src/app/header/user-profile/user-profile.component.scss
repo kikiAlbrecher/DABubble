@@ -1,0 +1,41 @@
+@import './../../../styles/shared';
+
+.dopdown {
+    width: 500px;
+    height: 600px;
+    background-color: white;
+    @include dFlex(column, space-between, center, 15px);
+    position: absolute;
+    top: 60px;
+    right: 0px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    z-index: 1000;
+}
+
+.dropdown-container {
+    @include dFlex(row, space-between, center, 0);
+    width: 100%;
+    padding: 0 8%;
+    margin-top: 20px;
+    img {
+        height: 34px;
+        width: 34px;
+    }
+    .header {
+        @include fontNunito(24px, 700);
+    }
+    .name{
+        @include fontNunito(32px, 700);
+    }
+    .edit {
+        @include fontNunito(18px, 600);
+        color: #535AF1;
+    }
+}
+
+.profile-image {
+    width: 200px;
+    height: 200px;
+}

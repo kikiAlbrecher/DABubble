@@ -2,7 +2,7 @@ import { Injectable, Input } from '@angular/core';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from "./user.interface";
-import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
@@ -23,7 +23,8 @@ export class UserSharedService {
     inputData: boolean = false; 
     currentUser: FirebaseUser | null = null;
     isAuthenticated: boolean = false;
-    actualUser:string = "";
+    actualUserID:string = "";
+    actualUser: any = [];
     isDev = true;
     playSlideOut: boolean = false;
 
@@ -33,11 +34,12 @@ export class UserSharedService {
       onAuthStateChanged(this.auth, (user) => {
         if (user) {
             this.currentUser = user;
-            this.actualUser = user.uid;
+            this.actualUserID = user.uid;
             this.isAuthenticated = true;
             if (!location.pathname.includes('/main-content')) {
             this.router.navigate(['/main-content']);
             }
+            this.getActualUser();
         } else {
             this.currentUser = null;
             this.isAuthenticated = false;
@@ -82,7 +84,7 @@ export class UserSharedService {
         .then((userCredential) => {
             const user = userCredential.user;
             this.router.navigate(['/main-content']);
-            this.actualUser = userCredential.user.uid;
+            this.actualUserID = userCredential.user.uid;
             this.inputData = false;
             this.isAuthenticated = true;
         })
@@ -95,7 +97,7 @@ export class UserSharedService {
         const auth = this.auth;
         signOut(auth).then(() => {
             this.isAuthenticated = false
-            this.actualUser = '';
+            this.actualUserID = '';
             this.router.navigate(['/login']);
         }).catch((error) => {
             //...
@@ -113,7 +115,8 @@ export class UserSharedService {
             const userDocRef = doc(this.firestore, 'users', user.uid);
             const userDocSnap = await getDoc(userDocRef);
             if (userDocSnap.exists()) {
-                this.actualUser = user.uid;
+                this.actualUserID = user.uid;
+                console.log(this.actualUserID);                
                 this.router.navigate(['/main-content']);
                 this.inputData = false;
                 this.isAuthenticated = true;             
@@ -123,7 +126,7 @@ export class UserSharedService {
                     uid: user.uid,
                     email: user.email,
                     name: user.displayName,
-                    photoURL: 'assets/img/avatar-placeholder.svg',
+                    picture: 'assets/img/avatar-placeholder.svg',
                     status: false
                 });   
                 this.router.navigate(['/main-content']);             
@@ -171,4 +174,10 @@ export class UserSharedService {
         }, 3000); 
     }
 
+    getActualUser() {
+    const unsub = onSnapshot(doc(this.firestore, "users", this.actualUserID), (doc) => {
+        this.actualUser = doc.data()
+    });
+        
+}
 }
