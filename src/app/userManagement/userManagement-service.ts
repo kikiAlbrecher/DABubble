@@ -25,26 +25,31 @@ export class UserSharedService {
     actualUser: any = [];
     isDev = true;
     playSlideOut: boolean = false;
+    userEditOverlay: boolean = false;
 
     constructor(private router: Router, private ngZone: NgZone) {}
 
     initAuth() {    
-      onAuthStateChanged(this.auth, (user) => {
-        if (user) {
+        onAuthStateChanged(this.auth, (user) => {
+            if (user) {
             this.currentUser = user;
             this.actualUserID = user.uid;
             this.isAuthenticated = true;
             if (!location.pathname.includes('/main-content')) {
-            this.router.navigate(['/main-content']);
+                this.ngZone.run(() => {
+                this.router.navigate(['/main-content']);
+                });
             }
             this.getActualUser();
-        } else {
+            } else {
             this.currentUser = null;
             this.isAuthenticated = false;
             if (!this.isDev) {
+                this.ngZone.run(() => {
                 this.router.navigate(['/login']);
+                });
             }
-        }
+            }
         });
     }
     
@@ -85,19 +90,25 @@ export class UserSharedService {
             this.actualUserID = userCredential.user.uid;
             this.inputData = false;
             this.isAuthenticated = true;
+            this.ngZone.run(() => {
+                this.router.navigate(['/main-content']);
+            });
+            this.updateOnlineStatusOnline();  
         })
         .catch(() => {
             this.inputData = true;
         });
     }
 
-    logOutUser() {
+    async logOutUser() {
+        await this.updateOnlineStatusOffline();
         const auth = this.auth;
         signOut(auth).then(() => {
             this.isAuthenticated = false
             this.actualUserID = '';
             this.router.navigate(['/login']);
-
+            this.userEditOverlay = false;
+            
         }).catch((error) => {
             //...
         });
@@ -129,7 +140,11 @@ export class UserSharedService {
                     status: false
                 });   
                 this.router.navigate(['/main-content']);             
-            }            
+            }     
+            this.ngZone.run(() => {
+                this.router.navigate(['/main-content']);
+            });     
+            this.updateOnlineStatusOnline();  
         }).catch((error) => {
             const credential = GoogleAuthProvider.credentialFromError(error);
         });
@@ -184,5 +199,24 @@ export class UserSharedService {
         await updateDoc(currentUser, {
             name: newName
         });
+    }
+
+    async updateOnlineStatusOnline() {
+        const currentUser = doc(this.firestore, "users", this.actualUserID); 
+        await updateDoc(currentUser, {
+            status: true
+        });
+    }
+
+    async updateOnlineStatusOffline() {
+        const currentUser = doc(this.firestore, "users", this.actualUserID); 
+        await updateDoc(currentUser, {
+            status: false
+        });
+    }
+
+
+    showUserEdit() {
+        this.userEditOverlay = !this.userEditOverlay 
     }
 }

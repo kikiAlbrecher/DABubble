@@ -9,6 +9,7 @@ import { authGuard } from './userManagement/auth.guard';
 import { ChangePasswordComponent } from './userManagement/change-password/change-password.component';
 import { ImprintComponent } from './legal/imprint/imprint.component';
 import { PrivacyComponent } from './legal/privacy/privacy.component';
+import { UserDetailComponent } from './userManagement/user-detail/user-detail.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -21,5 +22,6 @@ export const routes: Routes = [
     { path: 'reset-password', component: ResetPasswordComponent },
     { path: 'change-password', component: ChangePasswordComponent },
     { path: 'impressum', component: ImprintComponent },
-    { path: 'datenschutz', component: PrivacyComponent }
+    { path: 'datenschutz', component: PrivacyComponent },
+    { path: 'profile', component: UserDetailComponent }
 ];

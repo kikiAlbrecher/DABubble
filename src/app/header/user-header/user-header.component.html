@@ -1,10 +1,15 @@
 <section class="user-header-section">
     <span>{{shared.actualUser.name}}</span>
-    <img class="user-header-img" src="{{shared.actualUser.picture}}" alt="">
+    <div class="user-image-container">
+        <img class="user-header-img" src="{{shared.actualUser.picture}}" alt="">
+        <div class="online-status" 
+            [ngClass]= "shared.actualUser.status ? 'online' : 'offline'"
+        ></div>
+    </div>
      
     <div class="edit-user">
-        <img (click)="sharedHeader.showUserEdit()" class="user-header-icon" src="assets/icons/arrow-down.svg" alt="">
-        @if (sharedHeader.userEditOverlay) {
+        <img (click)="shared.showUserEdit()" class="user-header-icon" src="assets/icons/arrow-down.svg" alt="">
+        @if (shared.userEditOverlay) {
         <div class="edit-user-overlay">
             @if (!sharedHeader.dropdownProfile) {<app-dropdown></app-dropdown>}
             @if (sharedHeader.dropdownProfile) {<app-user-profile></app-user-profile>}

@@ -1,6 +1,6 @@
 <!-- <app-intro *ngIf="showIntro" (animationDone)="showIntro = false"></app-intro> -->
 <div class="app-wrapper">
-  @if (sharedHeader.userEditOverlay) {<div (click)="sharedHeader.showUserEdit()" class="overlay"></div>}
+  @if (sharedUser.userEditOverlay) {<div (click)="sharedUser.showUserEdit()" class="overlay"></div>}
     <header>
     <div *ngIf="router.url != '/main-content'" class="logo-container">
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>

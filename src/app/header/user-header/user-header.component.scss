@@ -22,6 +22,9 @@
     position: relative;
 }
 
-.edit-user-overlay{
-
-}   
+.edit-user-overlay {
+    position: absolute;
+    top: 60px; // Oder je nach gewünschter Position
+    right: 0;
+    z-index: 1000;
+}

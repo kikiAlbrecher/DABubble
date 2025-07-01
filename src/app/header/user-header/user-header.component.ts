@@ -4,12 +4,14 @@ import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { HeaderSharedService } from './header-service';
 import { DropdownComponent } from "../dropdown/dropdown.component";
 import { UserProfileComponent } from "../user-profile/user-profile.component";
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-user-header',
   standalone: true,
   imports: [
+    CommonModule,
     DropdownComponent,
     UserProfileComponent
 ],
