@@ -51,7 +51,7 @@
 
 .menu-item {
     @include dFlex($jc: flex-start, $g: 15px);
-    padding: 4px 10px;
+    padding: 4px 10px 4px 0;
     flex: 1;
 
     >.menu-img {
@@ -69,7 +69,7 @@
 }
 
 .menu-item-add {
-    padding-left: 25px;
+    padding-left: 45px;
 }
 
 .list {
@@ -102,6 +102,11 @@
         padding: 4px 20px;
         @include dFlex($jc: flex-start, $ai: center, $g: 10px);
 
+        .active {
+            background-color: $purple;
+            color: $white;
+        }
+
         &:hover {
             cursor: pointer;
             background: $background-purple;
@@ -124,11 +129,6 @@
 
         >.list-name {
             @include fontNunito($size: 18px, $weight: 400);
-        }
-
-        >.user-avatar {
-            height: 50px;
-            aspect-ratio: 1 / 1;
         }
     }
 }

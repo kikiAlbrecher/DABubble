@@ -10,8 +10,10 @@
 
         <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"
             [class.threads-open]="(shared.threadsVisible$ | async)">
-            <app-side-nav (addChannel)="openDialogAddChannel()"></app-side-nav>
-            <app-main-chat (addMember)="openDialogAddMember()"></app-main-chat>
+            <app-side-nav (addChannel)="openDialogAddChannel()"
+                (selectChannel)="onChannelSelected($event)"></app-side-nav>
+            <app-main-chat (addMember)="openDialogAddMember()" [selectedChannel]="selectedChannel"
+                [sideNavOpen]="true"></app-main-chat>
             <app-threads *ngIf=" shared.threadsVisible$ | async"></app-threads>
         </div>
 

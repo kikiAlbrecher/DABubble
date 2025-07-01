@@ -1,5 +1,10 @@
 @import './../../../styles/shared';
 
+.channel-chat-header {
+    @include dFlex($jc: space-between);
+    width: 100%;
+}
+
 .add-members {
     &:hover {
         cursor: pointer;

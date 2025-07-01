@@ -4,7 +4,7 @@ import { SideNavComponent } from './side-nav/side-nav.component';
 import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement/userManagement-service';
 import { getAuth } from "firebase/auth";
-import { StatusMessagesComponent } from '../styles/status-messages/status-messages.component';
+import { StatusMessagesComponent } from '../style-components/status-messages/status-messages.component';
 import { DialogAddChannelComponent } from './dialog-add-channel/dialog-add-channel.component';
 import { SearchbarComponent } from '../header/searchbar/searchbar.component';
 import { LogoComponent } from '../header/logo/logo.component';
@@ -12,11 +12,13 @@ import { ThreadsComponent } from './threads/threads.component';
 import { UserHeaderComponent } from '../header/user-header/user-header.component';
 import { MainChatComponent } from './main-chat/main-chat.component';
 import { DialogAddMemberComponent } from './dialog-add-member/dialog-add-member.component';
+import { Channel } from '../../models/channel.class';
 
 @Component({
   selector: 'app-main-content',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     SideNavComponent,
     StatusMessagesComponent,
     DialogAddChannelComponent,
@@ -43,6 +45,7 @@ export class MainContentComponent {
   threadsVisible = false;
   statusMessage = '';
   statusMessageType: 'success' | 'error' = 'success';
+  selectedChannel: Channel | null = null;
 
   openDialogAddChannel() {
     this.showAddChannelDialog = true;
@@ -73,5 +76,9 @@ export class MainContentComponent {
     this.statusMessage = `Mitglied erfolgreich hinzugefügt (ID: ${userId})`;
     this.statusMessageType = 'success';
     setTimeout(() => this.statusMessage = '', 2000);
+  }
+
+  onChannelSelected(channel: Channel) {
+    this.selectedChannel = channel;
   }
 }

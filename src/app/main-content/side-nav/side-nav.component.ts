@@ -5,22 +5,25 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Channel } from '../../../models/channel.class';
 import { User } from '../../userManagement/user.interface';
 import { Subscription } from 'rxjs';
+import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 
 @Component({
   selector: 'app-side-nav',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, UserImageStatusComponent],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.scss'
 })
 export class SideNavComponent implements OnInit, OnDestroy {
   @Output() addChannel = new EventEmitter<void>();
+  @Output() selectChannel = new EventEmitter<Channel>();
 
   workspaceOpen = true;
   showChannels = true;
   showUsers = true;
   channels: Channel[] = [];
   users: User[] = [];
+  selectedChannelId: string | null = null;
 
   private firestore = inject(Firestore);
   public userService = inject(UserSharedService);
@@ -90,5 +93,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   toggleDropDownUsers() {
     this.showUsers = !this.showUsers;
+  }
+
+  onSelectChannel(channel: Channel) {
+    this.selectedChannelId = channel.channelId;
+    this.selectChannel.emit(channel);
   }
 }

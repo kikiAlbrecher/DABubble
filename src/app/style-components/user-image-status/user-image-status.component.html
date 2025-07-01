@@ -1,0 +1,4 @@
+<div class="user-image-container">
+    <img class="user-avatar" [src]="user.picture" alt="user.name">
+    <div class="online-status" [ngClass]="user.status ? 'online' : 'offline'"></div>
+</div>

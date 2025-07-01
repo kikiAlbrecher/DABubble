@@ -25,7 +25,9 @@
 
             <div *ngIf="showChannels">
                 <div class="list">
-                    <button *ngFor="let channel of channels" class="menu-item list-entry">
+                    <button *ngFor="let channel of channels" class="menu-item list-entry"
+                    [ngClass]="{ 'active': selectedChannelId === channel.channelId }"
+                        (click)="onSelectChannel(channel)">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <mask id="mask0_139385_8743" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
                                 width="24" height="24">
@@ -55,7 +57,7 @@
                             src="assets/icons/drop-down.svg" alt="drop-down open">
                         <img *ngIf="!showUsers" (click)="toggleDropDownUsers()" class="general-menu-icons"
                             src="assets/icons/drop-down-close.svg" alt="drop-down close">
-                        <img class="menu-img" src="assets/img/person_filled.svg" alt="direct messages">
+                        <img class="menu-img" src="assets/icons/dm.svg" alt="direct messages">
                         <p class="menu-title">Direktnachrichten</p>
                     </div>
                 </div>
@@ -63,7 +65,7 @@
             <div *ngIf="showUsers">
                 <div class="list">
                     <button *ngFor="let user of users" class="menu-item list-entry">
-                        <img class="user-avatar" [src]="user.picture" alt="{{ user.name }}">
+                        <app-user-image-status [user]="user"></app-user-image-status>
                         <span class="list-name">{{ user.displayName || user.name }}</span>
                     </button>
                 </div>

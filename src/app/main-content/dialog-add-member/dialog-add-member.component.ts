@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Firestore, collectionData, collection, doc, updateDoc, query, where } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
-import { CloseButtonComponent } from '../../styles/close-button/close-button.component';
-import { SubmitButtonComponent } from '../../styles/submit-button/submit-button.component';
+import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
+import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
 import { User } from '../../userManagement/user.interface';
 
 @Component({

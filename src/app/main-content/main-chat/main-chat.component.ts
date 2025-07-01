@@ -14,13 +14,13 @@ import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })
 export class MainChatComponent implements OnInit, OnDestroy {
-  selectedChannel: Channel | null = null;
   messages: any[] = [];
   newMessage: string = '';
   mainChatOpen = true;
 
   @Output() addMember = new EventEmitter<void>();
   @Input() sideNavOpen: boolean = true;
+  @Input() selectedChannel: Channel | null = null;
 
   private firestore = inject(Firestore);
   private messagesSubscription?: Subscription;

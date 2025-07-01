@@ -5,8 +5,8 @@ import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/f
 import { inject } from '@angular/core';
 import { Channel } from '../../../models/channel.class';
 import { CollectionReference, DocumentData } from 'firebase/firestore';
-import { SubmitButtonComponent } from '../../styles/submit-button/submit-button.component';
-import { CloseButtonComponent } from '../../styles/close-button/close-button.component';
+import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
+import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 
 @Component({
   selector: 'app-dialog-add-channel',
