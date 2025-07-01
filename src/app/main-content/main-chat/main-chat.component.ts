@@ -1,11 +1,67 @@
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { collection, onSnapshot, Firestore, collectionData, addDoc } from '@angular/fire/firestore';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { Channel } from '../../../models/channel.class';
+import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 
 @Component({
   selector: 'app-main-chat',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, DialogAddMemberComponent],
   templateUrl: './main-chat.component.html',
-  styleUrl: './main-chat.component.scss'
+  styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })
-export class MainChatComponent { }
+export class MainChatComponent implements OnInit, OnDestroy {
+  selectedChannel: Channel | null = null;
+  messages: any[] = [];
+  newMessage: string = '';
+  mainChatOpen = true;
+
+  @Output() addMember = new EventEmitter<void>();
+  @Input() sideNavOpen: boolean = true;
+
+  private firestore = inject(Firestore);
+  private messagesSubscription?: Subscription;
+
+  ngOnInit() {
+    if (this.selectedChannel) {
+      // this.loadMessages(this.selectedChannel.channelId);
+    }
+  }
+
+  ngOnDestroy() {
+    this.messagesSubscription?.unsubscribe();
+  }
+
+  openDialogAddMember() {
+    this.addMember.emit();
+  }
+
+  // loadMessages(channelId: string) {
+  //   const messagesCollection = collection(this.firestore, channels / ${ channelId } / messages);
+  //   this.messagesSubscription = collectionData(messagesCollection, { idField: 'id' }).subscribe((msgs) => {
+  //     this.messages = msgs;
+  //   });
+  // }
+
+  // async sendMessage() {
+  //   if (!this.newMessage.trim() || !this.selectedChannel) return;
+
+  //   const messagesCollection = collection(this.firestore, channels / ${ this.selectedChannel.channelId } / messages);
+  //   await addDoc(messagesCollection, {
+  //     text: this.newMessage,
+  //     timestamp: new Date(),
+  //     user: {
+  //       // Aktuellen User einfügen, z.B. via AuthService
+  //     }
+  //   });
+
+  //   this.newMessage = '';
+  // }
+
+  toggleMainChat() {
+    this.mainChatOpen = !this.mainChatOpen;
+  }
+}

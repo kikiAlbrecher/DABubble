@@ -1,5 +1,16 @@
-<div class="main-blocks main-chat">
-
-    <p>main-chat works!</p>
-
+<div class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
+    <div class="channel-chat-header">
+        <div class="current-channel">
+            <!-- <h2>{{ selectedChannel?.channelName }}</h2> -->
+        </div>
+        <div class="members-add">
+            <div class="members">
+                <!-- <img *ngFor="let member of selectedChannel?.members" src="member.picture" alt="members of channel"> -->
+            </div>
+            <img class="add-members" (click)="openDialogAddMember()" src="assets/icons/add-member.svg"
+                alt="add members to channel">
+        </div>
+    </div>
+    <div class="time-separator"></div>
+    <div class="past-messages"></div>
 </div>

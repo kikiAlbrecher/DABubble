@@ -23,8 +23,8 @@
       <a class="create-account-link" routerLink="/signup">Konto erstellen</a>
     </div>
   </header>
-  
-<!-- woanders einfügen -->
+
+  <!-- woanders einfügen -->
   <!-- <app-main-content></app-main-content> -->
 
   <main [ngClass]="router.url === '/main-content' ? 'main-content' : 'center-content'">
@@ -36,26 +36,23 @@
       <a routerLink="/datenschutz">Datenschutz</a>
     </div>
   </footer>
-  @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in"
-  [ngClass]="{
+  @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in" [ngClass]="{
     'slide-out': sharedUser.playSlideOut,
     }">
     <span>Konto erfolgreich erstellt!</span>
   </div>
   }
-  @if (this.sharedUser.resetMailSend) {<div class="mail-success slide-in"
-    [ngClass]="{
+  @if (this.sharedUser.resetMailSend) {<div class="mail-success slide-in" [ngClass]="{
     'slide-out': sharedUser.playSlideOut,
     }">
     <img src="assets/icons/mail-send-button.svg" alt="">
     <span>E-Mail gesendet</span>
-  </div>  
+  </div>
   }
-  @if (this.sharedUser.passwordChanged) {<div class="account-success slide-in"
-  [ngClass]="{
+  @if (this.sharedUser.passwordChanged) {<div class="account-success slide-in" [ngClass]="{
   'slide-out': sharedUser.playSlideOut,
   }">
-  <span>Passwort geändert</span>
-  </div>  
+    <span>Passwort geändert</span>
+  </div>
   }
 </div>
