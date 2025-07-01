@@ -22,7 +22,7 @@ import { UserHeaderComponent } from '../header/user-header/user-header.component
     SearchbarComponent,
     LogoComponent,
     MainChatComponent,
-    ThreadsComponent
+    ThreadsComponent,
     LogoComponent,
     UserHeaderComponent
   ],
