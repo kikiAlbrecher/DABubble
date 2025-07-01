@@ -17,7 +17,7 @@
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
     z-index: 999;
 
-    >.add-channel-headline {
+    >.add-headline {
         @include dFlex($jc: space-between);
         width: 100%;
 

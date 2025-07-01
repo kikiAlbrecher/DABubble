@@ -14,24 +14,17 @@ import { User } from '../../userManagement/user.interface';
   styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-add-member.component.scss']
 })
 export class DialogAddMemberComponent {
-  users: User[] = [];
-  selectedUserId: string | null = null;
-
-  private firestore = inject(Firestore);
-
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<string>();
 
-  ngOnInit() {
-    const usersCollection = collection(this.firestore, 'users');
-    // collectionData(usersCollection, { idField: 'id' }).subscribe(users => this.users = users);
-  }
+  userId: string = '';
 
-  async addMember() {
-    if (!this.selectedUserId) return;
+  private cdr = inject(ChangeDetectorRef);
 
-    // Update Channel Mitglieder hier, z.B. via updateDoc
-    // this.save.emit(this.selectedUserId);
+  async saveMember() {
+    if (!this.userId || this.userId.length < 3) return;
+    this.save.emit(this.userId);
+    this.cdr.detectChanges();
   }
 
   closeAddMember() {

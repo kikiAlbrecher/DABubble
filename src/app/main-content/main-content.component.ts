@@ -11,6 +11,7 @@ import { LogoComponent } from '../header/logo/logo.component';
 import { ThreadsComponent } from './threads/threads.component';
 import { UserHeaderComponent } from '../header/user-header/user-header.component';
 import { MainChatComponent } from './main-chat/main-chat.component';
+import { DialogAddMemberComponent } from './dialog-add-member/dialog-add-member.component';
 
 @Component({
   selector: 'app-main-content',
@@ -19,6 +20,7 @@ import { MainChatComponent } from './main-chat/main-chat.component';
     SideNavComponent,
     StatusMessagesComponent,
     DialogAddChannelComponent,
+    DialogAddMemberComponent,
     SearchbarComponent,
     LogoComponent,
     MainChatComponent,
@@ -37,8 +39,8 @@ export class MainContentComponent {
   }
 
   showAddChannelDialog = false;
-  threadsVisible = false;
   showAddMemberDialog = false;
+  threadsVisible = false;
   statusMessage = '';
   statusMessageType: 'success' | 'error' = 'success';
 
@@ -60,5 +62,16 @@ export class MainContentComponent {
 
   handleDialogClose() {
     this.showAddChannelDialog = false;
+  }
+
+  handleDialogCloseAddMember() {
+    this.showAddMemberDialog = false;
+  }
+
+  handleMemberAdd(userId: string) {
+    this.showAddMemberDialog = false;
+    this.statusMessage = `Mitglied erfolgreich hinzugefügt (ID: ${userId})`;
+    this.statusMessageType = 'success';
+    setTimeout(() => this.statusMessage = '', 2000);
   }
 }

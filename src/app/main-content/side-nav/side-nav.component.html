@@ -72,13 +72,11 @@
     </div>
 </div>
 
-<div *ngIf="userService.workspaceOpen$ | async" (click)="toggleWorkspace()"
-    class="close-workspace toggle-workspace">
+<div *ngIf="userService.workspaceOpen$ | async" (click)="toggleWorkspace()" class="close-workspace toggle-workspace">
     <span>Workspace-Menu schließen</span>
     <img src="assets/icons/hide-workspace.svg" alt="close workspace">
 </div>
-<div *ngIf="!(userService.workspaceOpen$ | async)" (click)="toggleWorkspace()"
-    class="open-workspace toggle-workspace">
+<div *ngIf="!(userService.workspaceOpen$ | async)" (click)="toggleWorkspace()" class="open-workspace toggle-workspace">
     <span>Workspace-Menu öffnen</span>
     <img src="assets/icons/open-workspace.svg" alt="open workspace">
 </div>

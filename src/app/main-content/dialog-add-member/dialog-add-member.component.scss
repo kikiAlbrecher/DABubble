@@ -1,0 +1,13 @@
+@import './../../../styles/shared';
+
+.add-member-options {
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+
+    >.option {
+        @include dFlex($jc: flex-start, $g: 20px);
+
+        >label {
+            @include fontNunito($size: 18px, $weight: 400);
+        }
+    }
+}

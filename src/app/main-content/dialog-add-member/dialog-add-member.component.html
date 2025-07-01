@@ -1,10 +1,21 @@
-<!-- <form #addMember="ngForm" (ngSubmit)="addMember()" class="dialog-add-channel">
-  <div class="add-headline">
-    <h2>Personen hinzufügen</h2>
-    <app-close-button (close)="closeAddMember()"></app-close-button>
-  </div>
- 
-  <div class="save-action">
-    <app-submit-button [form]="addMember" label="Erstellen"></app-submit-button>
-  </div>
-</form> -->
+<form #addMemberForm="ngForm" (ngSubmit)="saveMember()" class="dialog-add-channel">
+    <div class="add-headline">
+        <h2>Personen hinzufügen</h2>
+        <app-close-button (close)="closeAddMember()"></app-close-button>
+    </div>
+
+    <div class="add-member-options">
+        <div class="option">
+            <input type="radio" name="add-options" value="addChannelMembers">
+            <label for="addChannelMembers">Alle Mitglieder von hinzufügen.</label>
+        </div>
+        <div class="option">
+            <input type="radio" name="add-options" value="addSelectedColleagues">
+            <label for="addSelectedColleagues">Bestimmte Personen hinzufügen.</label>
+        </div>
+    </div>
+
+    <div class="save-action">
+        <app-submit-button [form]="addMemberForm" label="Erstellen"></app-submit-button>
+    </div>
+</form>

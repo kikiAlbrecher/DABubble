@@ -21,11 +21,11 @@ import { UserDetailComponent } from "./userManagement/user-detail/user-detail.co
 })
 export class AppComponent {
   title = 'DABubble';
-    showIntro = true;
+  showIntro = true;
 
   constructor(
     public router: Router,
     public sharedUser: UserSharedService,
     public sharedHeader: HeaderSharedService,
-  ) { this.sharedUser.initAuth();}
+  ) { this.sharedUser.initAuth(); }
 }
