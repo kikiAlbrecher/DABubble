@@ -13,6 +13,7 @@ import { UserHeaderComponent } from '../header/user-header/user-header.component
 import { MainChatComponent } from './main-chat/main-chat.component';
 import { DialogAddMemberComponent } from './dialog-add-member/dialog-add-member.component';
 import { Channel } from '../../models/channel.class';
+import { User } from '../userManagement/user.interface';
 
 @Component({
   selector: 'app-main-content',
@@ -46,6 +47,7 @@ export class MainContentComponent {
   statusMessage = '';
   statusMessageType: 'success' | 'error' = 'success';
   selectedChannel: Channel | null = null;
+  selectedUser: User | null = null;
 
   openDialogAddChannel() {
     this.showAddChannelDialog = true;
@@ -80,5 +82,11 @@ export class MainContentComponent {
 
   onChannelSelected(channel: Channel) {
     this.selectedChannel = channel;
+    this.selectedUser = null;
+  }
+
+  onUserSelected(user: User) {
+    this.selectedUser = user;
+    this.selectedChannel = null;
   }
 }

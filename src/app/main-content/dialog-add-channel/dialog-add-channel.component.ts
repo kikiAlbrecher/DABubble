@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
 import { Channel } from '../../../models/channel.class';
-import { CollectionReference, DocumentData } from 'firebase/firestore';
+import { CollectionReference, DocumentData, updateDoc } from 'firebase/firestore';
 import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 
@@ -37,13 +37,18 @@ export class DialogAddChannelComponent {
         this.channelExistsError = true;
         return;
       }
-
-      await addDoc(channelsCollection, { ...this.channel });
+      this.channel = await this.channelIdUpdate(this.channel);
       this.save.emit(this.channel.channelName);
     } catch (error) {
-      if (error) return;
+      console.error('Fehler beim Speichern des Channels:', error);
     } finally {
       this.cdr.detectChanges();
+    }
+  }
+
+  channelNameConvention() {
+    if (!this.channel.channelName.startsWith('#')) {
+      this.channel.channelName = `#${this.channel.channelName}`;
     }
   }
 
@@ -53,10 +58,14 @@ export class DialogAddChannelComponent {
     return !querySnapshot.empty;
   }
 
-  channelNameConvention() {
-    if (!this.channel.channelName.startsWith('#')) {
-      this.channel.channelName = `#${this.channel.channelName}`;
-    }
+  private async channelIdUpdate(channel: Channel): Promise<Channel> {
+    const channelsCollection = collection(this.firestore, 'channels');
+    const docRef = await addDoc(channelsCollection, { ...channel });
+
+    channel.channelId = docRef.id;
+    await updateDoc(docRef, { channelId: docRef.id });
+
+    return channel;
   }
 
   closeAddChannel() {

@@ -1,6 +1,6 @@
 @import './../../../styles/shared';
 
-.channel-chat-header {
+.chat-header {
     @include dFlex($jc: space-between);
     width: 100%;
 }

@@ -25,9 +25,8 @@
 
             <div *ngIf="showChannels">
                 <div class="list">
-                    <button *ngFor="let channel of channels" class="menu-item list-entry"
-                    [ngClass]="{ 'active': selectedChannelId === channel.channelId }"
-                        (click)="onSelectChannel(channel)">
+                    <button *ngFor="let channel of channels" [class.active]="channel.channelId === selectedChannelId"
+                        class="menu-item list-entry" (click)="onSelectChannel(channel)">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <mask id="mask0_139385_8743" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
                                 width="24" height="24">
@@ -64,7 +63,8 @@
             </div>
             <div *ngIf="showUsers">
                 <div class="list">
-                    <button *ngFor="let user of users" class="menu-item list-entry">
+                    <button *ngFor="let user of users" [class.active]="user.id === selectedUserId"
+                        class="menu-item list-entry" (click)="onSelectUser(user)">
                         <app-user-image-status [user]="user"></app-user-image-status>
                         <span class="list-name">{{ user.displayName || user.name }}</span>
                     </button>
@@ -74,11 +74,11 @@
     </div>
 </div>
 
-<div *ngIf="userService.workspaceOpen$ | async" (click)="toggleWorkspace()" class="close-workspace toggle-workspace">
+<div *ngIf="userService.workspaceOpen$ | async" (click)="toggleWorkspace()" class="toggle-workspace">
     <span>Workspace-Menu schließen</span>
     <img src="assets/icons/hide-workspace.svg" alt="close workspace">
 </div>
-<div *ngIf="!(userService.workspaceOpen$ | async)" (click)="toggleWorkspace()" class="open-workspace toggle-workspace">
+<div *ngIf="!(userService.workspaceOpen$ | async)" (click)="toggleWorkspace()" class="toggle-workspace">
     <span>Workspace-Menu öffnen</span>
     <img src="assets/icons/open-workspace.svg" alt="open workspace">
 </div>

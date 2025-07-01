@@ -1,15 +1,17 @@
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { collection, onSnapshot, Firestore, collectionData, addDoc } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Channel } from '../../../models/channel.class';
 import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
+import { User } from '../../userManagement/user.interface';
+import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 
 @Component({
   selector: 'app-main-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, DialogAddMemberComponent],
+  imports: [CommonModule, FormsModule, DialogAddMemberComponent, UserImageStatusComponent],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })
@@ -21,6 +23,7 @@ export class MainChatComponent implements OnInit, OnDestroy {
   @Output() addMember = new EventEmitter<void>();
   @Input() sideNavOpen: boolean = true;
   @Input() selectedChannel: Channel | null = null;
+  @Input() selectedUser: User | null = null;
 
   private firestore = inject(Firestore);
   private messagesSubscription?: Subscription;
@@ -54,7 +57,6 @@ export class MainChatComponent implements OnInit, OnDestroy {
   //     text: this.newMessage,
   //     timestamp: new Date(),
   //     user: {
-  //       // Aktuellen User einfügen, z.B. via AuthService
   //     }
   //   });
 

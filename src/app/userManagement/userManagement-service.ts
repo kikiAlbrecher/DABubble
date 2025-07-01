@@ -32,7 +32,7 @@ export class UserSharedService {
     playSlideOut: boolean = false;
     userEditOverlay: boolean = false;
     detailOverlay: boolean = false;
-    firebaseFailure:boolean = false;
+    firebaseFailure: boolean = false;
 
     constructor(private router: Router, private ngZone: NgZone) { }
 
@@ -98,24 +98,24 @@ export class UserSharedService {
     logInUser(email: string, password: string) {
         const auth = this.auth;
         signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            this.router.navigate(['/main-content']);
-            this.actualUserID = userCredential.user.uid;
-            this.inputData = false;
-            this.isAuthenticated = true;
-            this.ngZone.run(() => {
+            .then((userCredential) => {
+                const user = userCredential.user;
                 this.router.navigate(['/main-content']);
+                this.actualUserID = userCredential.user.uid;
+                this.inputData = false;
+                this.isAuthenticated = true;
+                this.ngZone.run(() => {
+                    this.router.navigate(['/main-content']);
+                });
+                this.updateOnlineStatusOnline();
+            })
+            .catch(() => {
+                this.inputData = true;
+                this.firebaseFailure = true;
+                setTimeout(() => {
+                    this.firebaseFailure = false;
+                }, 3000);
             });
-            this.updateOnlineStatusOnline();  
-        })
-        .catch(() => {
-            this.inputData = true;
-            this.firebaseFailure = true;
-            setTimeout(() => {
-                this.firebaseFailure = false;
-            }, 3000);
-        });
     }
 
     async logOutUser() {
@@ -139,49 +139,49 @@ export class UserSharedService {
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
-        .then(async(result) => {
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential!.accessToken;
-            const user = result.user;
-            const userDocRef = doc(this.firestore, 'users', user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-                this.actualUserID = user.uid;
-                console.log(this.actualUserID);                
-                this.router.navigate(['/main-content']);
-                this.inputData = false;
-                this.isAuthenticated = true;             
-            } else {
-                await setDoc(userDocRef, {
-                    channelIds: {},
-                    uid: user.uid,
-                    email: user.email,
-                    name: user.displayName,
-                    picture: 'assets/img/avatar-placeholder.svg',
-                    status: false
-                });   
-                this.router.navigate(['/main-content']);             
-            }     
-            this.ngZone.run(() => {
-                this.router.navigate(['/main-content']);
-            });     
-            this.updateOnlineStatusOnline();  
-        }).catch((error) => {
-            this.firebaseFailure = true;
-            setTimeout(() => {
-                this.firebaseFailure = false;
-            }, 3000);
-        });        
+            .then(async (result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential!.accessToken;
+                const user = result.user;
+                const userDocRef = doc(this.firestore, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    this.actualUserID = user.uid;
+                    console.log(this.actualUserID);
+                    this.router.navigate(['/main-content']);
+                    this.inputData = false;
+                    this.isAuthenticated = true;
+                } else {
+                    await setDoc(userDocRef, {
+                        channelIds: {},
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName,
+                        picture: 'assets/img/avatar-placeholder.svg',
+                        status: false
+                    });
+                    this.router.navigate(['/main-content']);
+                }
+                this.ngZone.run(() => {
+                    this.router.navigate(['/main-content']);
+                });
+                this.updateOnlineStatusOnline();
+            }).catch((error) => {
+                this.firebaseFailure = true;
+                setTimeout(() => {
+                    this.firebaseFailure = false;
+                }, 3000);
+            });
     }
 
     guestLogIn() {
         const auth = getAuth();
         signInAnonymously(auth)
-        .then(async(result) => {            
-            const user = result.user;
-            const userDocRef = doc(this.firestore, 'users', user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            await setDoc(userDocRef, {
+            .then(async (result) => {
+                const user = result.user;
+                const userDocRef = doc(this.firestore, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                await setDoc(userDocRef, {
                     channelIds: {},
                     uid: user.uid,
                     email: "",
@@ -189,31 +189,31 @@ export class UserSharedService {
                     picture: 'assets/img/avatar-placeholder.svg',
                     status: true,
                     guest: true
-                });  
-            
-        })
-        .catch((error) => {
-            this.firebaseFailure = true;
-            setTimeout(() => {
-                this.firebaseFailure = false;
-            }, 3000);
-        });
+                });
+
+            })
+            .catch((error) => {
+                this.firebaseFailure = true;
+                setTimeout(() => {
+                    this.firebaseFailure = false;
+                }, 3000);
+            });
         this.router.navigate(['/main-content']);
     }
 
     changePasswordMail(email: string) {
         const auth = this.auth;
         sendPasswordResetEmail(auth, email)
-        .then(() => {
-        this.router.navigate(['/login']);
-        this.infoSlider('resetMailSend');
-        })
-        .catch((error) => {
-            this.firebaseFailure = true;
-            setTimeout(() => {
-                this.firebaseFailure = false;
-            }, 3000);
-        }); 
+            .then(() => {
+                this.router.navigate(['/login']);
+                this.infoSlider('resetMailSend');
+            })
+            .catch((error) => {
+                this.firebaseFailure = true;
+                setTimeout(() => {
+                    this.firebaseFailure = false;
+                }, 3000);
+            });
     }
 
     updatePassword(actionCode: string, newPassword: any) {
@@ -227,7 +227,7 @@ export class UserSharedService {
             setTimeout(() => {
                 this.firebaseFailure = false;
             }, 3000);
-        });        
+        });
     }
 
     infoSlider(property: 'accountSuccess' | 'resetMailSend' | 'passwordChanged') {

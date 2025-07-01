@@ -102,24 +102,17 @@
         padding: 4px 20px;
         @include dFlex($jc: flex-start, $ai: center, $g: 10px);
 
-        .active {
-            background-color: $purple;
-            color: $white;
+        >.list-name {
+            @include fontNunito($size: 18px, $weight: 400);
         }
 
         &:hover {
             cursor: pointer;
             background: $background-purple;
-            color: $purple-hover;
-
-            >.list-name {
-                color: $purple-hover;
-                @include fontNunito($size: 18px, $weight: 700);
-            }
 
             >svg {
                 height: 30px;
-                aspect-ratio: 1 / 1;
+                width: 30px;
             }
 
             >svg path {
@@ -127,8 +120,22 @@
             }
         }
 
-        >.list-name {
-            @include fontNunito($size: 18px, $weight: 400);
+        &.active {
+            background-color: $background-purple;
+
+            >.list-name {
+                color: $purple-hover;
+                @include fontNunito($size: 18px, $weight: 700);
+            }
+
+            >svg {
+                height: 24px;
+                width: 24px;
+            }
+
+            >svg path {
+                fill: $purple-hover;
+            }
         }
     }
 }
@@ -147,12 +154,12 @@
     position: absolute;
     left: 0;
     top: 80vh;
-    transform: translateX(14px) rotate(-90deg);
+    transform: translateX(-4px) rotate(-90deg);
     transform-origin: left center;
-    width: 314.5px;
+    width: 336px;
     @include dFlex($g: 8px);
     filter: drop-shadow(4px 4px 7px rgba(0, 0, 0, 0.2));
-    padding: 20px 12px;
+    padding: 12px 20px;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
     background: $white;

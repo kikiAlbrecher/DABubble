@@ -17,6 +17,7 @@ import { UserImageStatusComponent } from '../../style-components/user-image-stat
 export class SideNavComponent implements OnInit, OnDestroy {
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
+  @Output() selectUser = new EventEmitter<User>();
 
   workspaceOpen = true;
   showChannels = true;
@@ -24,6 +25,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   channels: Channel[] = [];
   users: User[] = [];
   selectedChannelId: string | null = null;
+  selectedUserId: string | null = null;
 
   private firestore = inject(Firestore);
   public userService = inject(UserSharedService);
@@ -98,5 +100,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
   onSelectChannel(channel: Channel) {
     this.selectedChannelId = channel.channelId;
     this.selectChannel.emit(channel);
+  }
+
+  onSelectUser(user: User) {
+    this.selectedUserId = user.id ?? null;
+    this.selectUser.emit(user);
   }
 }
