@@ -97,6 +97,7 @@ export class UserSharedService {
             this.isAuthenticated = false
             this.actualUserID = '';
             this.router.navigate(['/login']);
+
         }).catch((error) => {
             //...
         });
@@ -146,7 +147,7 @@ export class UserSharedService {
             const errorCode = error.code;
             const errorMessage = error.message;
             // ..
-        });
+        }); 
     }
 
     updatePassword(actionCode:string, newPassword:any) {
