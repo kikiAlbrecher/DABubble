@@ -6,11 +6,15 @@
             <app-user-header></app-user-header>
             <!-- <span (click)="shared.logOutUser()" class="logout">logout</span> -->
         </div>
-        <div class="main-components">
+
+        <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"
+            [class.threads-open]="(shared.threadsVisible$ | async)">
             <app-side-nav (addChannel)="openDialogAddChannel()"></app-side-nav>
-            <app-main-chat></app-main-chat>
-            <app-threads *ngIf="threadsVisible"></app-threads>
+            <!-- <app-main-chat [sideNavOpen]="shared.workspaceOpen$ | async"
+                (addMember)="openDialogAddMember()"></app-main-chat> -->
+            <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
         </div>
+
         <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
             (save)="handleChannelCreate($event)">
         </app-dialog-add-channel>

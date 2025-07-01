@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Output, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { collection, onSnapshot, Firestore } from '@angular/fire/firestore';
+import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Channel } from '../../../models/channel.class';
 import { User } from '../../userManagement/user.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-side-nav',
@@ -21,17 +23,25 @@ export class SideNavComponent implements OnInit, OnDestroy {
   users: User[] = [];
 
   private firestore = inject(Firestore);
+  public userService = inject(UserSharedService);
   private unsubscribeChannels?: () => void;
   private unsubscribeUsers?: () => void;
+  private userSub?: Subscription;
 
   ngOnInit() {
     this.listenToChannels();
-    this.listenToUsers();
+
+    this.userSub = this.userService.actualUser$.subscribe(currentUserId => {
+      if (currentUserId) {
+        this.listenToUsers(currentUserId);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     if (this.unsubscribeChannels) this.unsubscribeChannels();
     if (this.unsubscribeUsers) this.unsubscribeUsers();
+    this.userSub?.unsubscribe();
   }
 
   listenToChannels() {
@@ -42,15 +52,27 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
-  listenToUsers() {
+  listenToUsers(currentUserId: string) {
     const usersRef = collection(this.firestore, 'users');
-
+    this.unsubscribeUsers?.();
     this.unsubscribeUsers = onSnapshot(usersRef, snapshot => {
-      this.users = snapshot.docs.map(doc => {
-        const data = doc.data() as User;
-        data.id = doc.id;
-        return data;
-      });
+      const usersArray = snapshot.docs.map(doc =>
+        this.markUserName(doc.data() as User, doc.id, currentUserId)
+      );
+      this.users = this.sortUsers(usersArray, currentUserId);
+    });
+  }
+
+  private markUserName(data: User, id: string, currentUserId: string): User {
+    const displayName = id === currentUserId ? `${data.name} (Du)` : data.name;
+    return { ...data, id, displayName };
+  }
+
+  private sortUsers(users: User[], currentUserId: string): User[] {
+    return users.sort((a, b) => {
+      if (a.id === currentUserId) return -1;
+      if (b.id === currentUserId) return 1;
+      return a.name.localeCompare(b.name);
     });
   }
 
@@ -59,7 +81,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   toggleWorkspace() {
-    this.workspaceOpen = !this.workspaceOpen;
+    this.userService.toggleWorkspace();
   }
 
   toggleDropDownChannels() {

@@ -12,16 +12,60 @@
     @include dFlex($jc: space-between, $g: 20px);
     padding-bottom: 16px;
     width: 100%;
-    .header-searchbar{
+
+    .header-searchbar {
         width: 50%;
     }
+}
+
+.logout {
+    cursor: pointer;
 }
 
 .main-components {
     @include dFlex($jc: flex-start, $g: 16px);
     width: 100%;
+
+    app-side-nav,
+    app-main-chat,
+    app-threads {
+        transition: width 0.25s ease;
+    }
+
+    app-main-chat {
+        flex-grow: 1;
+    }
+
+    &.main-components.workspace-closed {
+        app-side-nav {
+            width: 0;
+            overflow: hidden;
+        }
+    }
+
+    .threads-open {
+        app-main-chat {
+            flex-grow: 0;
+            width: calc(100% - 364px - 300px);
+        }
+    }
 }
 
-.logout {
-    cursor: pointer;
+.main-components.workspace-closed.threads-open {
+    app-main-chat {
+        width: calc(100% - 300px);
+    }
+}
+
+.main-components.workspace-closed:not(.threads-open) {
+    app-main-chat {
+        width: 100%;
+    }
+}
+
+.main-components:not(.workspace-closed):not(.threads-open) {
+    app-main-chat {
+        flex-grow: 1;
+        width: auto;
+    }
 }

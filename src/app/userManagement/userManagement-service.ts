@@ -6,9 +6,10 @@ import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapsh
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 
 export class UserSharedService {
@@ -18,41 +19,49 @@ export class UserSharedService {
     resetMailSend: boolean = false;
     passwordChanged: boolean = false;
     userDetails: Partial<User> = {};
-    inputData: boolean = false; 
+    inputData: boolean = false;
     currentUser: FirebaseUser | null = null;
     isAuthenticated: boolean = false;
-    actualUserID:string = "";
+    actualUserID: string = "";
     actualUser: any = [];
+    actualUser$ = new BehaviorSubject<string>('');
+    threadsVisible$ = new BehaviorSubject<boolean>(false);
+    private _workspaceOpen = new BehaviorSubject<boolean>(true);
+    workspaceOpen$ = this._workspaceOpen.asObservable();
     isDev = true;
     playSlideOut: boolean = false;
     userEditOverlay: boolean = false;
 
-    constructor(private router: Router, private ngZone: NgZone) {}
+    constructor(private router: Router, private ngZone: NgZone) { }
 
-    initAuth() {    
+    initAuth() {
         onAuthStateChanged(this.auth, (user) => {
             if (user) {
-            this.currentUser = user;
-            this.actualUserID = user.uid;
-            this.isAuthenticated = true;
-            if (!location.pathname.includes('/main-content')) {
-                this.ngZone.run(() => {
-                this.router.navigate(['/main-content']);
-                });
-            }
-            this.getActualUser();
+                this.currentUser = user;
+                this.actualUserID = user.uid;
+                this.actualUser$.next(user.uid);
+                this.isAuthenticated = true;
+
+                if (!location.pathname.includes('/main-content')) {
+                    this.ngZone.run(() => {
+                        this.router.navigate(['/main-content']);
+                    });
+                }
+                this.getActualUser();
             } else {
-            this.currentUser = null;
-            this.isAuthenticated = false;
-            if (!this.isDev) {
-                this.ngZone.run(() => {
-                this.router.navigate(['/login']);
-                });
-            }
+                this.currentUser = null;
+                this.isAuthenticated = false;
+                this.actualUser = '';
+                this.actualUser$.next('');
+                if (!this.isDev) {
+                    this.ngZone.run(() => {
+                        this.router.navigate(['/login']);
+                    });
+                }
             }
         });
     }
-    
+
     sendData() {
         console.log(this.userDetails);
         this.accountSuccess = true;
@@ -62,42 +71,42 @@ export class UserSharedService {
     }
 
     async submitUser() {
-    try {
-        const auth = this.auth;
-        const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        this.userDetails.email ?? '',
-        this.userDetails.password ?? ''
-        );
-        const user = userCredential.user;
-        const uid = user.uid;
-        this.userDetails.id = uid;
-        const userDocRef = doc(this.firestore, 'users', uid);
-        await setDoc(userDocRef, this.userDetails); 
-        this.infoSlider('accountSuccess');
-        await signOut(auth);
+        try {
+            const auth = this.auth;
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                this.userDetails.email ?? '',
+                this.userDetails.password ?? ''
+            );
+            const user = userCredential.user;
+            const uid = user.uid;
+            this.userDetails.id = uid;
+            const userDocRef = doc(this.firestore, 'users', uid);
+            await setDoc(userDocRef, this.userDetails);
+            this.infoSlider('accountSuccess');
+            await signOut(auth);
         } catch (error) {
-        console.error("Fehler bei Registrierung:", error);
+            console.error("Fehler bei Registrierung:", error);
         }
     }
 
-    logInUser(email:string, password:string) {
+    logInUser(email: string, password: string) {
         const auth = this.auth;
         signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            this.router.navigate(['/main-content']);
-            this.actualUserID = userCredential.user.uid;
-            this.inputData = false;
-            this.isAuthenticated = true;
-            this.ngZone.run(() => {
+            .then((userCredential) => {
+                const user = userCredential.user;
                 this.router.navigate(['/main-content']);
+                this.actualUserID = userCredential.user.uid;
+                this.inputData = false;
+                this.isAuthenticated = true;
+                this.ngZone.run(() => {
+                    this.router.navigate(['/main-content']);
+                });
+                this.updateOnlineStatusOnline();
+            })
+            .catch(() => {
+                this.inputData = true;
             });
-            this.updateOnlineStatusOnline();  
-        })
-        .catch(() => {
-            this.inputData = true;
-        });
     }
 
     async logOutUser() {
@@ -108,7 +117,7 @@ export class UserSharedService {
             this.actualUserID = '';
             this.router.navigate(['/login']);
             this.userEditOverlay = false;
-            
+
         }).catch((error) => {
             //...
         });
@@ -118,63 +127,63 @@ export class UserSharedService {
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
-        .then(async(result) => {
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential!.accessToken;
-            const user = result.user;
-            const userDocRef = doc(this.firestore, 'users', user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-                this.actualUserID = user.uid;
-                console.log(this.actualUserID);                
-                this.router.navigate(['/main-content']);
-                this.inputData = false;
-                this.isAuthenticated = true;             
-            } else {
-                await setDoc(userDocRef, {
-                    channelIds: {},
-                    uid: user.uid,
-                    email: user.email,
-                    name: user.displayName,
-                    picture: 'assets/img/avatar-placeholder.svg',
-                    status: false
-                });   
-                this.router.navigate(['/main-content']);             
-            }     
-            this.ngZone.run(() => {
-                this.router.navigate(['/main-content']);
-            });     
-            this.updateOnlineStatusOnline();  
-        }).catch((error) => {
-            const credential = GoogleAuthProvider.credentialFromError(error);
-        });
-        
+            .then(async (result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential!.accessToken;
+                const user = result.user;
+                const userDocRef = doc(this.firestore, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    this.actualUserID = user.uid;
+                    console.log(this.actualUserID);
+                    this.router.navigate(['/main-content']);
+                    this.inputData = false;
+                    this.isAuthenticated = true;
+                } else {
+                    await setDoc(userDocRef, {
+                        channelIds: {},
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName,
+                        picture: 'assets/img/avatar-placeholder.svg',
+                        status: false
+                    });
+                    this.router.navigate(['/main-content']);
+                }
+                this.ngZone.run(() => {
+                    this.router.navigate(['/main-content']);
+                });
+                this.updateOnlineStatusOnline();
+            }).catch((error) => {
+                const credential = GoogleAuthProvider.credentialFromError(error);
+            });
+
     }
 
-    changePasswordMail(email:string) {
+    changePasswordMail(email: string) {
         const auth = this.auth;
         sendPasswordResetEmail(auth, email)
-        .then(() => {
-        this.router.navigate(['/login']);
-        this.infoSlider('resetMailSend');
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // ..
-        }); 
+            .then(() => {
+                this.router.navigate(['/login']);
+                this.infoSlider('resetMailSend');
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // ..
+            });
     }
 
-    updatePassword(actionCode:string, newPassword:any) {
+    updatePassword(actionCode: string, newPassword: any) {
         console.log('hallo');
         const auth = this.auth;
         confirmPasswordReset(auth, actionCode, newPassword).then((resp) => {
-        this.infoSlider('passwordChanged');
-        this.router.navigate(['/login']);
+            this.infoSlider('passwordChanged');
+            this.router.navigate(['/login']);
         }).catch((error) => {
-        // Error occurred during confirmation. The code might have expired or the
-        // password is too weak.
-        });        
+            // Error occurred during confirmation. The code might have expired or the
+            // password is too weak.
+        });
     }
 
     infoSlider(property: 'accountSuccess' | 'resetMailSend' | 'passwordChanged') {
@@ -182,41 +191,56 @@ export class UserSharedService {
         setTimeout(() => {
             this.playSlideOut = true;
             setTimeout(() => {
-             (this as any)[property] = false;
-            this.playSlideOut = false; 
-            }, 300); 
-        }, 3000); 
+                (this as any)[property] = false;
+                this.playSlideOut = false;
+            }, 300);
+        }, 3000);
     }
 
     getActualUser() {
         const unsub = onSnapshot(doc(this.firestore, "users", this.actualUserID), (doc) => {
             this.actualUser = doc.data()
-        });       
+        });
     }
 
-    async updateName(newName:string) {
-        const currentUser = doc(this.firestore, "users", this.actualUserID); 
+    async updateName(newName: string) {
+        const currentUser = doc(this.firestore, "users", this.actualUserID);
         await updateDoc(currentUser, {
             name: newName
         });
     }
 
     async updateOnlineStatusOnline() {
-        const currentUser = doc(this.firestore, "users", this.actualUserID); 
+        const currentUser = doc(this.firestore, "users", this.actualUserID);
         await updateDoc(currentUser, {
             status: true
         });
     }
 
     async updateOnlineStatusOffline() {
-        const currentUser = doc(this.firestore, "users", this.actualUserID); 
+        const currentUser = doc(this.firestore, "users", this.actualUserID);
         await updateDoc(currentUser, {
             status: false
         });
     }
 
-
     showUserEdit() {
-        this.userEditOverlay = !this.userEditOverlay 
+        this.userEditOverlay = !this.userEditOverlay
+    }
+
+    toggleWorkspace() {
+        this._workspaceOpen.next(!this._workspaceOpen.value);
+    }
+
+    get workspaceOpen(): boolean {
+        return this._workspaceOpen.value;
+    }
+
+    openThreads() {
+        this.threadsVisible$.next(true);
+    }
+
+    closeThreads() {
+        this.threadsVisible$.next(false);
     }
 }
