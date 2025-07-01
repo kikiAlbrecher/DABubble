@@ -23,5 +23,4 @@ export const routes: Routes = [
     { path: 'change-password', component: ChangePasswordComponent },
     { path: 'impressum', component: ImprintComponent },
     { path: 'datenschutz', component: PrivacyComponent },
-    { path: 'profile', component: UserDetailComponent }
 ];

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { UserSharedService } from './userManagement/userManagement-service';
 import { MainContentComponent } from './main-content/main-content.component';
 import { HeaderSharedService } from './header/user-header/header-service';
+import { UserDetailComponent } from "./userManagement/user-detail/user-detail.component";
 
 @Component({
   selector: 'app-root',
@@ -14,8 +15,7 @@ import { HeaderSharedService } from './header/user-header/header-service';
     RouterModule,
     RouterOutlet,
     IntroComponent,
-    MainContentComponent
-  ],
+    MainContentComponent, UserDetailComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

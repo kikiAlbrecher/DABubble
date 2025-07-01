@@ -1,3 +1,31 @@
 <section class="user-detail-section">
+    <div class="dropdown-container">
+        <span class="header">Profil</span>
+        <img (click)="sharedUser.userEditOverlay" src="assets/icons/close.svg" alt="">
+    </div>
+    <img class="profile-image" src="{{sharedUser.actualUser.picture}}" alt="">
+    
+
+    <div class="change-container-info">
+        <div class="dropdown-container">
+            <span class="name">{{sharedUser.actualUser.name}}</span>      
+        </div>
+        <div class="baseline-container">
+            <div class="check-status online"></div>
+            <span class="active">Aktiv</span>
+        </div>
+        <div class="baseline-container-mail">
+            <img class="mail-icon" src="assets/icons/mail.svg" alt="">
+            <div class="mail-container">
+                <span class="mailtext">E-Mail Adresse</span>
+                <span class="mail-adress">Mailadress</span>
+            </div>    
+        </div>
+    </div>
+    <div class="message-container">
+        <img src="assets/icons/message.svg" alt="">
+        <span>Nachricht</span>
+    </div>
+    
 
 </section>

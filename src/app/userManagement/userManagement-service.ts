@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from "./user.interface";
 import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut, signInAnonymously } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 
@@ -26,6 +26,8 @@ export class UserSharedService {
     isDev = true;
     playSlideOut: boolean = false;
     userEditOverlay: boolean = false;
+    detailOverlay: boolean = false;
+    firebaseFailure:boolean = false;
 
     constructor(private router: Router, private ngZone: NgZone) {}
 
@@ -77,7 +79,10 @@ export class UserSharedService {
         this.infoSlider('accountSuccess');
         await signOut(auth);
         } catch (error) {
-        console.error("Fehler bei Registrierung:", error);
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
         }
     }
 
@@ -97,6 +102,10 @@ export class UserSharedService {
         })
         .catch(() => {
             this.inputData = true;
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
         });
     }
 
@@ -110,7 +119,10 @@ export class UserSharedService {
             this.userEditOverlay = false;
             
         }).catch((error) => {
-            //...
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
         });
     }
 
@@ -146,9 +158,38 @@ export class UserSharedService {
             });     
             this.updateOnlineStatusOnline();  
         }).catch((error) => {
-            const credential = GoogleAuthProvider.credentialFromError(error);
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
+        });        
+    }
+
+    guestLogIn() {
+        const auth = getAuth();
+        signInAnonymously(auth)
+        .then(async(result) => {            
+            const user = result.user;
+            const userDocRef = doc(this.firestore, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            await setDoc(userDocRef, {
+                    channelIds: {},
+                    uid: user.uid,
+                    email: "",
+                    name: 'Gast',
+                    picture: 'assets/img/avatar-placeholder.svg',
+                    status: true,
+                    guest: true
+                });  
+            
+        })
+        .catch((error) => {
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
         });
-        
+        this.router.navigate(['/main-content']);
     }
 
     changePasswordMail(email:string) {
@@ -159,9 +200,10 @@ export class UserSharedService {
         this.infoSlider('resetMailSend');
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // ..
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
         }); 
     }
 
@@ -172,8 +214,10 @@ export class UserSharedService {
         this.infoSlider('passwordChanged');
         this.router.navigate(['/login']);
         }).catch((error) => {
-        // Error occurred during confirmation. The code might have expired or the
-        // password is too weak.
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
         });        
     }
 
@@ -215,8 +259,11 @@ export class UserSharedService {
         });
     }
 
-
     showUserEdit() {
         this.userEditOverlay = !this.userEditOverlay 
+    }
+
+    userDetailOverlay() {
+        this.detailOverlay = !this.detailOverlay
     }
 }
