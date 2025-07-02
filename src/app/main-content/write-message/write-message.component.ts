@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChange
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../userManagement/user.interface';
 import { CommonModule } from '@angular/common';
-import { Firestore, serverTimestamp, collection, getDoc, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
 import { user } from '@angular/fire/auth';
 import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -34,6 +34,7 @@ export class WriteMessageComponent {
   
   private firestore = inject(Firestore);
   chatExists: boolean = true;
+  channelMessagesExist: boolean = true;
   users: User[] = [];
   selectedChannelId: string | null = null;
   selectedUserId: string | null = null;
@@ -46,6 +47,9 @@ export class WriteMessageComponent {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedUser'] && this.selectedUser) {
       this.checkChatExists();
+    } else if (changes['selectedChannel'] && this.selectedChannel) {
+      this.checkChannelMessagesExist()
+      
     }
   }
 
@@ -56,43 +60,78 @@ export class WriteMessageComponent {
     const q = query(directMessages, where('chatId', '==', chatId));
     onSnapshot(q, (querySnapshot) => {
       this.chatExists = !querySnapshot.empty;
-    });
-    
+    }); 
+  }
+
+  async checkChannelMessagesExist() {
+    const selectedId = this.selectedChannel?.channelId ?? ''
+    const chatDocRef = doc(this.firestore, 'channels', selectedId);
+    const messagesRef = collection(chatDocRef, 'messages')
+    const snapshot = await getDocs(messagesRef);
+    if (snapshot.empty) {
+      this.channelMessagesExist = false;
+    } else {
+      this.channelMessagesExist = true;
+    }      
   }
 
   async onSubmit() {
       const message = this.messageForm.value.message?.trim();
       if (!message) return;
       if (this.selectedUser) {         
-        const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort(); 
-        const chatId = sortedIds.join('_'); 
-        const messageText = this.messageForm.value.message ?? ''; 
-        const chatDocRef = doc(this.firestore, 'directMessages', chatId);
-        const chatSnap = await getDoc(chatDocRef);
-        if (!this.chatExists) {
-          await setDoc(chatDocRef,{
-            chatId: chatId,
-          });
-        } 
-        const messagesRef = collection(this.firestore, 'directMessages', chatId, 'messages');
-        await addDoc(messagesRef, {
-          user: this.shared.actualUser.uid,
-          text: messageText,
-          timeStamp: serverTimestamp()
-        });      
-        this.messageForm.reset();
+        this.pushDirectChatMessages();
     } 
-    else if (this.selectedChannel) {
-      console.log('Channel');
-      
-    }
-  
+    else if (this.selectedChannel) {      
+      this.pushChannelMessages();      
+    }  
   }
 
-  onSelectUser(user:any) {
-    console.log(user);
+  async pushDirectChatMessages() {
+    const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort(); 
+    const chatId = sortedIds.join('_'); 
+    const messageText = this.messageForm.value.message ?? ''; 
+    const chatDocRef = doc(this.firestore, 'directMessages', chatId);
+    const chatSnap = await getDoc(chatDocRef);
+    if (!this.chatExists) {
+      await setDoc(chatDocRef,{
+        chatId: chatId,
+      });
+    } 
+    const messagesRef = collection(this.firestore, 'directMessages', chatId, 'messages');
+    await addDoc(messagesRef, {
+      user: this.shared.actualUser.uid,
+      text: messageText,
+      timeStamp: serverTimestamp()
+    });      
+    this.messageForm.reset();
+  }
+
+  async pushChannelMessages() {
+    const messageText = this.messageForm.value.message ?? ''; 
+    const selectedId = this.selectedChannel?.channelId ?? ''
+    if (!this.channelMessagesExist) {   
+      const messagesRef = collection(this.firestore, 'channels', selectedId, 'messages');
+      await addDoc(messagesRef, {
+        user: this.shared.actualUser.uid,
+        text: messageText,
+        timeStamp: serverTimestamp()
+      });   
+    } else {  
+    const chatDocRef = doc(this.firestore, 'channels', selectedId);
+    const messagesRef = collection(chatDocRef, 'messages')
+    await addDoc(messagesRef, {
+        user: this.shared.actualUser.uid,
+        text: messageText,
+        timeStamp: serverTimestamp()
+      });   
+    }
+    this.messageForm.reset();
     
   }
+
+
+
+
 
 
 }
