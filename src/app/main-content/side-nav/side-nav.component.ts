@@ -99,11 +99,13 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   onSelectChannel(channel: Channel) {
     this.selectedChannelId = channel.channelId;
+    this.selectedUserId = null;
     this.selectChannel.emit(channel);
   }
 
   onSelectUser(user: User) {
     this.selectedUserId = user.id ?? null;
+    this.selectedChannelId = null;
     this.selectUser.emit(user);
   }
 }

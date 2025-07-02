@@ -14,7 +14,7 @@
                 (selectUser)="onUserSelected($event)"></app-side-nav>
             <app-main-chat (addMember)="openDialogAddMember()" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true"></app-main-chat>
-            <app-threads *ngIf=" shared.threadsVisible$ | async"></app-threads>
+            <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
         </div>
 
         <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"

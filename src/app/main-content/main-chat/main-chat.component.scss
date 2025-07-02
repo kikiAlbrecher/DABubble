@@ -9,6 +9,7 @@
     >.selected-item {
         @include dFlex($jc: flex-start, $g: 10px);
         padding: 6px 10px;
+        border-radius: 100px;
 
         >.hashtag {
             width: 32px;
@@ -19,11 +20,20 @@
             width: 30px;
             height: 30.19px;
         }
+
+        &:hover {
+            background: $background-purple;
+        }
     }
 
     >.selected-item-dm {
         @include dFlex($jc: flex-start, $g: 15px);
         padding: 4px 8px;
+        border-radius: 30px;
+
+        &:hover {
+            background: $background-purple;
+        }
     }
 }
 
@@ -39,5 +49,5 @@
 
 .write-message-Container {
     width: 100%;
-    
+
 }

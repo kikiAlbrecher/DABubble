@@ -96,20 +96,20 @@ export class UserSharedService {
     }
 
     logInUser(email: string, password: string): Promise<boolean> {
-    const auth = this.auth;
-    return signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-        const user = userCredential.user;
-        this.actualUserID = user.uid;
-        this.inputData = false;
-        this.isAuthenticated = true;
-        this.updateOnlineStatusOnline();
-        return true;
-        })
-        .catch(() => {
-            this.inputData = true;
-            return false;
-        });
+        const auth = this.auth;
+        return signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                this.actualUserID = user.uid;
+                this.inputData = false;
+                this.isAuthenticated = true;
+                this.updateOnlineStatusOnline();
+                return true;
+            })
+            .catch(() => {
+                this.inputData = true;
+                return false;
+            });
     }
 
     async logOutUser() {
