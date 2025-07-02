@@ -70,7 +70,6 @@ input {
     background: $white;
     height: calc(100vh - 115px - 16px);
     border-radius: 30px;
-    padding: 32px 30px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 25px);
     position: relative;
     z-index: 10;
