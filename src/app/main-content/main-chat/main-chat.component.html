@@ -1,9 +1,9 @@
 <div *ngIf="selectedChannel" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selectedItem">
-            <h2 *ngIf="selectedChannel">
-                {{ selectedChannel.channelName }} 
-            </h2>
+        <div class="selected-item">
+            <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
+            <span class="title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
+            <img class="drop-down-channels" src="assets/icons/arrow-down.svg" alt="drop-down for choosing channel">
         </div>
         <div class="members-add">
             <div class="members">
@@ -13,15 +13,16 @@
                 alt="add members to channel">
         </div>
     </div>
-    <div class="time-separator"></div>
-    <div class="past-messages"></div>
     <app-write-message [selectedChannel]="selectedChannel" class="write-message-Container"></app-write-message>
+
+
 </div>
 
 <div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selectedItem">
+        <div class="selected-item-dm">
             <app-user-image-status [user]="selectedUser"></app-user-image-status>
+            <span class="title">{{ selectedUser.name }}</span>
         </div>
     </div>
     <div class="time-separator"></div>
