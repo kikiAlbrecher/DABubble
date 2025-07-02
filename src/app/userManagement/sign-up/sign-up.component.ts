@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { UserSharedService } from '../userManagement-service';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';;
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-sign-up',

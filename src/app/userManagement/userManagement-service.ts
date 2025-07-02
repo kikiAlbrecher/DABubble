@@ -95,27 +95,21 @@ export class UserSharedService {
         }
     }
 
-    logInUser(email: string, password: string) {
-        const auth = this.auth;
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                this.router.navigate(['/main-content']);
-                this.actualUserID = userCredential.user.uid;
-                this.inputData = false;
-                this.isAuthenticated = true;
-                this.ngZone.run(() => {
-                    this.router.navigate(['/main-content']);
-                });
-                this.updateOnlineStatusOnline();
-            })
-            .catch(() => {
-                this.inputData = true;
-                this.firebaseFailure = true;
-                setTimeout(() => {
-                    this.firebaseFailure = false;
-                }, 3000);
-            });
+    logInUser(email: string, password: string): Promise<boolean> {
+    const auth = this.auth;
+    return signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+        const user = userCredential.user;
+        this.actualUserID = user.uid;
+        this.inputData = false;
+        this.isAuthenticated = true;
+        this.updateOnlineStatusOnline();
+        return true;
+        })
+        .catch(() => {
+            this.inputData = true;
+            return false;
+        });
     }
 
     async logOutUser() {

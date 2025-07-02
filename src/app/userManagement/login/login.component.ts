@@ -29,12 +29,18 @@ export class LoginComponent {
     if (this.logInForm.valid) {
       const email = this.logInForm.value.email ?? '';
       const password = this.logInForm.value.password ?? '';
-      this.shared.logInUser(email, password);
-      this.shared.inputData = false;
-      this.router.navigate(['/main-content']);
+      this.shared.logInUser(email, password).then(success => {
+        if (success) {
+          this.shared.inputData = false;
+          this.router.navigate(['/main-content']);
+        } else {
+          this.shared.inputData = true;
+          
+        }
+      });
     } else {
       this.shared.inputData = true;
-      this.router.navigate(['/main-content']);
+      
     }
   }
 }

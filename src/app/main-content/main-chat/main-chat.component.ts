@@ -7,11 +7,17 @@ import { Channel } from '../../../models/channel.class';
 import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { User } from '../../userManagement/user.interface';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
+import { WriteMessageComponent } from '../write-message/write-message.component';
 
 @Component({
   selector: 'app-main-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, DialogAddMemberComponent, UserImageStatusComponent],
+  imports: [CommonModule, 
+    FormsModule, 
+    DialogAddMemberComponent, 
+    UserImageStatusComponent,
+    WriteMessageComponent
+    ],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })
