@@ -1,0 +1,31 @@
+  .imprint-wrapper {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    border-radius: 50px;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+
+  .imprint {
+    height: 93%;
+    overflow-y: auto;
+    margin: 24px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+.imprint::-webkit-scrollbar {
+    width: 8px;
+    height: 50px;
+}
+
+.imprint::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 4px;
+}
