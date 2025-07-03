@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
+import { ChatMessage } from '../message.model';
 
 @Component({
   selector: 'app-user-message',
@@ -10,6 +11,8 @@ import { MessageSharedService } from '../message-service';
   styleUrl: './user-message.component.scss'
 })
 export class UserMessageComponent {
+  @Input() message!: ChatMessage;
+  
   constructor(
     public sharedUser: UserSharedService,
     public sharedMessages: MessageSharedService

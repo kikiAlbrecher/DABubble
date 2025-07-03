@@ -4,13 +4,16 @@ import { UserMessageComponent } from "../user-message/user-message.component";
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
 import { combineLatest } from 'rxjs';
+import { ChatMessage } from '../message.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-message-board',
   standalone: true,
   imports: [
     OwnMessageComponent, 
-    UserMessageComponent
+    UserMessageComponent,
+    CommonModule,
   ],
   templateUrl: './message-board.component.html',
   styleUrl: './message-board.component.scss'
@@ -24,20 +27,20 @@ export class MessageBoardComponent {
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
-   private initialScrollDone = false;
+messagesLength = 0;
 
-  ngAfterViewChecked() {
-    if (!this.initialScrollDone) {
-      this.scrollToBottom();
-      this.initialScrollDone = true;
-    }
+ngAfterViewChecked() {
+  if (this.sharedMessages.messages.length !== this.messagesLength) {
+    this.messagesLength = this.sharedMessages.messages.length;
+    this.scrollToBottom();
   }
+}
 
-  scrollToBottom() {
-    setTimeout(() => {
-      this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
-    }, 0);
-  }
+scrollToBottom() {
+  setTimeout(() => {
+    this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+  }, 100);
+}
 
   ngOnInit() {
     combineLatest([

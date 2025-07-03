@@ -2,11 +2,11 @@
     <div class="own-message-content">
         <div class="own-message-content-left">
             <div class="own-message-content-left-top-row">
-                <span class="timestamp">timestamp</span>
+                <span class="timestamp">{{message.timeStamp | date: 'HH:mm'}}</span>
                 <span class="user-name">{{sharedUser.actualUser?.name}}</span>
             </div>
             <div class="message-text-container">
-                <span class="message-text">test</span>
+                <span class="message-text">{{message.text}}</span>
             </div>
         </div>
         <div class="own-message-content-right">

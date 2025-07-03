@@ -3,11 +3,8 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 import { User } from '../../userManagement/user.interface';
 import { CommonModule } from '@angular/common';
 import { Firestore, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
-import { user } from '@angular/fire/auth';
-import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { doc } from 'firebase/firestore';
-import { UserImageStatusComponent } from "../../style-components/user-image-status/user-image-status.component";
 import { Channel } from '../../../models/channel.class';
 
 @Component({
@@ -16,11 +13,11 @@ import { Channel } from '../../../models/channel.class';
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    UserImageStatusComponent
 ],
   templateUrl: './write-message.component.html',
   styleUrl: './write-message.component.scss'
 })
+
 export class WriteMessageComponent {
 
   constructor(
