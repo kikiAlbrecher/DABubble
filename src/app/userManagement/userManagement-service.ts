@@ -73,27 +73,31 @@ export class UserSharedService {
     }
 
     async submitUser() {
-        try {
-            const auth = this.auth;
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                this.userDetails.email ?? '',
-                this.userDetails.password ?? ''
-            );
-            const user = userCredential.user;
-            const uid = user.uid;
-            this.userDetails.id = uid;
-            const userDocRef = doc(this.firestore, 'users', uid);
-            await setDoc(userDocRef, this.userDetails);
-            this.infoSlider('accountSuccess');
-            await signOut(auth);
-        } catch (error) {
-            this.firebaseFailure = true;
-            setTimeout(() => {
-                this.firebaseFailure = false;
-            }, 3000);
-        }
+    try {
+        const auth = this.auth;
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            this.userDetails.email ?? '',
+            this.userDetails.password ?? ''
+        );
+        const user = userCredential.user;
+        const uid = user.uid;
+        this.userDetails.id = uid;
+        const userDocRef = doc(this.firestore, 'users', uid);
+        await setDoc(userDocRef, this.userDetails);
+        this.infoSlider('accountSuccess');
+        await signOut(auth);
+        this.ngZone.run(() => {
+            this.router.navigate(['/login']);
+        });
+
+    } catch (error) {
+        this.firebaseFailure = true;
+        setTimeout(() => {
+            this.firebaseFailure = false;
+        }, 3000);
     }
+}
 
     logInUser(email: string, password: string): Promise<boolean> {
         const auth = this.auth;

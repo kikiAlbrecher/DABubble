@@ -6,6 +6,7 @@ import { Channel } from '../../../models/channel.class';
 import { User } from '../../userManagement/user.interface';
 import { Subscription } from 'rxjs';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
+import { MessageSharedService } from '../message-service';
 
 @Component({
   selector: 'app-side-nav',
@@ -33,14 +34,17 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private unsubscribeUsers?: () => void;
   private userSub?: Subscription;
 
+  constructor(private messageSharedService: MessageSharedService) {}
+
+
   ngOnInit() {
     this.listenToChannels();
-
     this.userSub = this.userService.actualUser$.subscribe(currentUserId => {
       if (currentUserId) {
         this.listenToUsers(currentUserId);
       }
-    });
+    });       
+
   }
 
   ngOnDestroy(): void {
@@ -49,13 +53,17 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.userSub?.unsubscribe();
   }
 
-  listenToChannels() {
-    const channelsRef = collection(this.firestore, 'channels');
-
-    this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
-      this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-    });
-  }
+listenToChannels() {
+  const channelsRef = collection(this.firestore, 'channels');
+  this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
+    this.channels = snapshot.docs.map(doc => doc.data() as Channel);
+    if (this.channels.length > 0 && !this.selectedChannelId) {
+      const defaultChannel = this.channels[0];
+      this.selectedChannelId = defaultChannel.channelId;
+      this.selectChannel.emit(defaultChannel); 
+    }
+  });
+}
 
   listenToUsers(currentUserId: string) {
     const usersRef = collection(this.firestore, 'users');

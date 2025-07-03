@@ -13,9 +13,8 @@
                 alt="add members to channel">
         </div>
     </div>
+    <app-message-board class="main-content"></app-message-board>
     <app-write-message [selectedChannel]="selectedChannel" class="write-message-Container"></app-write-message>
-
-
 </div>
 
 <div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
@@ -27,6 +26,7 @@
     </div>
     <div class="time-separator"></div>
     <div class="past-messages"></div>
+    <app-message-board class="main-content"></app-message-board>
     <app-write-message [selectedUser]="selectedUser" class="write-message-Container"></app-write-message>
 </div>
 

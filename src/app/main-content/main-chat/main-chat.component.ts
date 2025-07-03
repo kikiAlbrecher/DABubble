@@ -8,16 +8,16 @@ import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member
 import { User } from '../../userManagement/user.interface';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 import { WriteMessageComponent } from '../write-message/write-message.component';
+import { MessageBoardComponent } from "../message-board/message-board.component";
 
 @Component({
   selector: 'app-main-chat',
   standalone: true,
-  imports: [CommonModule, 
-    FormsModule, 
-    DialogAddMemberComponent, 
+  imports: [CommonModule,
+    FormsModule,
+    DialogAddMemberComponent,
     UserImageStatusComponent,
-    WriteMessageComponent
-    ],
+    WriteMessageComponent, MessageBoardComponent],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })

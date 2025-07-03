@@ -1,0 +1,8 @@
+<section #messageContainer class="message-board">
+    @for (item of sharedMessages.messages; track $index) {
+        <app-own-message class="messages-container"></app-own-message>
+    }
+    <!-- <app-user-message class="messages-container"></app-user-message>
+    <app-own-message class="messages-container"></app-own-message>
+    <app-user-message class="messages-container"></app-user-message> -->
+</section>

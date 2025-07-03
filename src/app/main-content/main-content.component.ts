@@ -14,6 +14,7 @@ import { MainChatComponent } from './main-chat/main-chat.component';
 import { DialogAddMemberComponent } from './dialog-add-member/dialog-add-member.component';
 import { Channel } from '../../models/channel.class';
 import { User } from '../userManagement/user.interface';
+import { MessageSharedService } from './message-service';
 
 @Component({
   selector: 'app-main-content',
@@ -28,7 +29,8 @@ import { User } from '../userManagement/user.interface';
     LogoComponent,
     MainChatComponent,
     ThreadsComponent,
-    UserHeaderComponent
+    UserHeaderComponent,
+    
   ],
   templateUrl: './main-content.component.html',
   styleUrl: './main-content.component.scss'
@@ -36,6 +38,7 @@ import { User } from '../userManagement/user.interface';
 export class MainContentComponent {
   constructor(
     public shared: UserSharedService,
+    public messageService: MessageSharedService,
     private router: Router,
   ) {
     console.log(shared.actualUser);
@@ -48,6 +51,8 @@ export class MainContentComponent {
   statusMessageType: 'success' | 'error' = 'success';
   selectedChannel: Channel | null = null;
   selectedUser: User | null = null;
+
+
 
   openDialogAddChannel() {
     this.showAddChannelDialog = true;
@@ -83,10 +88,14 @@ export class MainContentComponent {
   onChannelSelected(channel: Channel) {
     this.selectedChannel = channel;
     this.selectedUser = null;
+    this.messageService.setSelectedChannel(channel);
+    this.messageService.setSelectedUser(null); 
   }
 
   onUserSelected(user: User) {
     this.selectedUser = user;
     this.selectedChannel = null;
+    this.messageService.setSelectedUser(user);
+    this.messageService.setSelectedChannel(null); 
   }
 }
