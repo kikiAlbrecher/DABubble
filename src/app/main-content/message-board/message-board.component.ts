@@ -52,7 +52,7 @@ scrollToBottom() {
         this.sharedMessages.selectedChannel = null;
         this.sharedMessages.channelSelected = false;
         this.sharedMessages.userSelected = true;
-        
+        this.sharedMessages.getUserMessages();
       } else if (channel) {
         this.sharedMessages.selectedChannel = channel;
         this.sharedMessages.selectedUser = null;

@@ -15,6 +15,7 @@ import { ChatMessage } from './message.model';
 export class MessageSharedService {
 
     private firestore = inject(Firestore);
+    private channelMessagesUnsubscribe: (() => void) | null = null;
     selectedUser: User | null = null;
     selectedChannel: Channel | null = null;
     userSelected: boolean = false;
@@ -41,11 +42,14 @@ export class MessageSharedService {
     }
 
     async getChannelMessages() {
+        if (this.channelMessagesUnsubscribe) {
+            this.channelMessagesUnsubscribe(); 
+        }
         const selectedId = this.selectedChannel?.channelId!;
         const chatDocRef = doc(this.firestore, 'channels', selectedId);
         const messagesRef = collection(chatDocRef, 'messages');
         const q = query(messagesRef, orderBy('timeStamp'));
-        onSnapshot(q, snapshot => {
+        this.channelMessagesUnsubscribe = onSnapshot(q, snapshot => {
             this.messages = snapshot.docs.map(doc => {
             const data = doc.data() as ChatMessage;
             return {
@@ -69,6 +73,49 @@ export class MessageSharedService {
 
             });        
         }
+
+    async getUserMessages(){
+        if (this.channelMessagesUnsubscribe) {
+            this.channelMessagesUnsubscribe();
+            this.channelMessagesUnsubscribe = null;
+        }
+        this.messages = [];
+        this.groupedMessages = {};
+        this.groupedMessageDates = [];
+
+
+
+        const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort(); 
+        const chatId = sortedIds.join('_'); 
+        
+        const chatDocRef = doc(this.firestore, 'directMessages', chatId);
+        const messagesRef = collection(chatDocRef, 'messages');
+        const q = query(messagesRef, orderBy('timeStamp'));
+        this.channelMessagesUnsubscribe = onSnapshot(q, snapshot => {
+            this.messages = snapshot.docs.map(doc => {
+            const data = doc.data() as ChatMessage;
+            return {
+                ...data,
+                timeStamp: data.timeStamp instanceof Timestamp 
+                ? data.timeStamp.toDate() 
+                : data.timeStamp
+            };
+            });
+            const groups = this.messages.reduce((groups:any, message:any) => {
+            const date = formatDate(message.timeStamp, 'dd. MMMM yyyy', 'de-DE');
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].push(message);
+            
+            return groups;
+            }, {});
+            this.groupedMessages = groups;                    
+            this.groupedMessageDates = Object.keys(groups);  
+
+            });        
+        
+    }
 
     async getUserName(writerId: string): Promise<string | undefined> {
         const docRef = doc(this.firestore, "users", writerId);
