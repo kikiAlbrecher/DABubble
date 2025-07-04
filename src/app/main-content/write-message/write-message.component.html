@@ -9,12 +9,11 @@
                 <div class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
             </div>
             <div class="buttons-left">
-                <div (click)="toggleChannelsOverlay()" class="at">
-                    <div class="users-overlay" *ngIf="showChannels">
-                        <app-channels [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
-                            (channelSelected)="onSelectChannel($event)">
-                        </app-channels>
-                    </div>
+                <div (click)="toggleChannelsOverlay()" class="at"></div>
+                <div class="list-overlay" *ngIf="showChannels">
+                    <app-channels [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
+                        (channelSelected)="onSelectChannel($event)">
+                    </app-channels>
                 </div>
             </div>
         </div>

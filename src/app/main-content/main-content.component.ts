@@ -30,7 +30,7 @@ import { MessageSharedService } from './message-service';
     MainChatComponent,
     ThreadsComponent,
     UserHeaderComponent,
-    
+
   ],
   templateUrl: './main-content.component.html',
   styleUrl: './main-content.component.scss'
@@ -89,13 +89,13 @@ export class MainContentComponent {
     this.selectedChannel = channel;
     this.selectedUser = null;
     this.messageService.setSelectedChannel(channel);
-    this.messageService.setSelectedUser(null); 
+    this.messageService.setSelectedUser(null);
   }
 
   onUserSelected(user: User) {
     this.selectedUser = user;
     this.selectedChannel = null;
     this.messageService.setSelectedUser(user);
-    this.messageService.setSelectedChannel(null); 
+    this.messageService.setSelectedChannel(null);
   }
 }
