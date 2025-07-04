@@ -1,18 +1,26 @@
 <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="write-message-section">
-    <textarea [placeholder]="selectedChannel ? 'Nachricht an ' + selectedChannel.channelName : 'Nachricht an ' + selectedUser?.name"
-        formControlName="message" (input)="textError = false" placeholder="Nachricht an" class="" type="text"></textarea>
+    <textarea
+        [placeholder]="selectedChannel ? 'Nachricht an ' + selectedChannel.channelName : 'Nachricht an ' + selectedUser?.name"
+        formControlName="message" (input)="textError = false" placeholder="Nachricht an" class=""
+        type="text"></textarea>
     <div class="buttons-container">
         <div class="buttons-left-container">
             <div class="buttons-left">
                 <div class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
-                
             </div>
-            <div class="buttons-left"><div class="at" src="assets/icons/smiley-button.svg" alt=""></div></div>
+            <div class="buttons-left">
+                <div (click)="toggleChannelsOverlay()" class="at">
+                    <div class="users-overlay" *ngIf="showChannels">
+                        <app-channels [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
+                            (channelSelected)="onSelectChannel($event)">
+                        </app-channels>
+                    </div>
+                </div>
+            </div>
         </div>
         <button type="submit" class="send-button" src="assets/icons/send.svg" alt=""></button>
     </div>
     <div class="users-overlay">
-
 
     </div>
 

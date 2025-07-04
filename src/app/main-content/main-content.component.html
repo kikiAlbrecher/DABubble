@@ -5,7 +5,6 @@
             <app-logo></app-logo>
             <app-searchbar class="header-searchbar"></app-searchbar>
             <app-user-header></app-user-header>
-            <!-- <span (click)="shared.logOutUser()" class="logout">logout</span> -->
         </div>
 
         <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"

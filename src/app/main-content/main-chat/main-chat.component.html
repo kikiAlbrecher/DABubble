@@ -3,12 +3,13 @@
         <div class="selected-item">
             <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
             <span class="title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
-            <img class="drop-down-channels" src="assets/icons/arrow-down.svg" alt="drop-down for choosing channel">
+            <img class="drop-down-edit" src="assets/icons/arrow-down.svg" alt="drop-down for editing channel">
         </div>
         <div class="members-add">
             <div class="members">
                 <app-user-image-status *ngFor="let member of channelMembers" [user]="member">
                 </app-user-image-status>
+                <span class="more-than-three"></span>
             </div>
             <img class="add-members" (click)="openDialogAddMember()" src="assets/icons/add-member.svg"
                 alt="add members to channel">
