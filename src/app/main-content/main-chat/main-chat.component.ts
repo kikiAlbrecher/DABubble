@@ -55,27 +55,6 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.addMember.emit();
   }
 
-  // loadMessages(channelId: string) {
-  //   const messagesCollection = collection(this.firestore, channels / ${ channelId } / messages);
-  //   this.messagesSubscription = collectionData(messagesCollection, { idField: 'id' }).subscribe((msgs) => {
-  //     this.messages = msgs;
-  //   });
-  // }
-
-  // async sendMessage() {
-  //   if (!this.newMessage.trim() || !this.selectedChannel) return;
-
-  //   const messagesCollection = collection(this.firestore, channels / ${ this.selectedChannel.channelId } / messages);
-  //   await addDoc(messagesCollection, {
-  //     text: this.newMessage,
-  //     timestamp: new Date(),
-  //     user: {
-  //     }
-  //   });
-
-  //   this.newMessage = '';
-  // }
-
   toggleMainChat() {
     this.mainChatOpen = !this.mainChatOpen;
   }

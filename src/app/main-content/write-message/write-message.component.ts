@@ -7,6 +7,7 @@ import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { ChannelsComponent } from '../../style-components/channels/channels.component';
+import { UsersComponent } from '../../style-components/users/users.component';
 
 @Component({
   selector: 'app-write-message',
@@ -14,7 +15,8 @@ import { ChannelsComponent } from '../../style-components/channels/channels.comp
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    ChannelsComponent
+    ChannelsComponent,
+    UsersComponent
   ],
   templateUrl: './write-message.component.html',
   styleUrl: './write-message.component.scss'
@@ -23,8 +25,8 @@ export class WriteMessageComponent implements OnInit, OnChanges {
 
   constructor(public shared: UserSharedService) { }
 
-  @Input() selectedUser: User | null = null;
   @Input() user!: User;
+  @Input() selectedUser: User | null = null;
   @Input() selectedChannel: Channel | null = null;
   @Output() selectUser = new EventEmitter<User>();
 
@@ -36,6 +38,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   selectedChannelId: string | null = null;
   selectedUserId: string | null = null;
   showChannels: boolean = false;
+  showUsers: boolean = false;
 
   private firestore = inject(Firestore);
 
@@ -45,6 +48,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.loadChannels();
+    this.loadUsers();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -58,9 +62,20 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   async loadChannels() {
     const channelsRef = collection(this.firestore, 'channels');
     const snapshot = await getDocs(channelsRef);
+
     this.channels = snapshot.docs.map(doc => {
       const data = doc.data();
       return new Channel({ ...data, channelId: doc.id });
+    });
+  }
+
+  async loadUsers() {
+    const usersRef = collection(this.firestore, 'users');
+    const snapshot = await getDocs(usersRef);
+
+    this.users = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return { ...data, id: doc.id } as User;
     });
   }
 
@@ -129,6 +144,12 @@ export class WriteMessageComponent implements OnInit, OnChanges {
 
   toggleChannelsOverlay() {
     this.showChannels = !this.showChannels;
+    this.showUsers = false;
+  }
+
+  toggleUsersOverlay() {
+    this.showUsers = !this.showUsers;
+    this.showChannels = false;
   }
 
   onSelectChannel(channel: Channel) {
@@ -138,12 +159,21 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.showChannels = false;
   }
 
+  onSelectUser(user: User) {
+    this.selectedUser = user;
+    this.selectedChannel = null;
+    this.selectedUserId = user.id ?? null;
+    this.showUsers = false;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const clickedInsideOverlay = target.closest('.list-overlay');
     const clickedAtButton = target.closest('.at');
 
-    if (!clickedInsideOverlay && !clickedAtButton) this.showChannels = false;
+    if (!clickedInsideOverlay && !clickedAtButton) {
+      this.showChannels = false;
+    }
   }
 }

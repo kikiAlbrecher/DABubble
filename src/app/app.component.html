@@ -2,18 +2,18 @@
 <div class="app-wrapper">
   @if (sharedUser.userEditOverlay) {<div (click)="sharedUser.showUserEdit()" class="overlay"></div>}
   @if (sharedUser.detailOverlay) {
-    <div (click)="sharedUser.userDetailOverlay()" class="overlay-user-detail">
-      <app-user-detail></app-user-detail>
-    </div>
+  <div (click)="sharedUser.userDetailOverlay()" class="overlay-user-detail">
+    <app-user-detail></app-user-detail>
+  </div>
   }
   @if (sharedUser.firebaseFailure) {
-    <div (click)="sharedUser.userDetailOverlay()" class="overlay-user-detail">
-      <div class="fail-message-container">
-        <span>Da ist etwas schiefgelaufen! Bitte versuche es nochmal.</span>
-      </div>
+  <div (click)="sharedUser.userDetailOverlay()" class="overlay-user-detail">
+    <div class="fail-message-container">
+      <span>Da ist etwas schiefgelaufen! Bitte versuche es nochmal.</span>
     </div>
+  </div>
   }
-    <header>
+  <header>
     <div *ngIf="router.url != '/main-content'" class="logo-container">
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>
       <img class="logo-name" src="assets/img/logo-name.svg" alt="">
@@ -23,9 +23,6 @@
       <a class="create-account-link" routerLink="/signup">Konto erstellen</a>
     </div>
   </header>
-
-  <!-- woanders einfügen -->
-  <!-- <app-main-content></app-main-content> -->
 
   <main [ngClass]="router.url === '/main-content' ? 'main-content' : 'center-content'">
     <router-outlet></router-outlet>
