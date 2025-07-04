@@ -4,7 +4,7 @@ export interface User {
     email: string;
     password: string;
     status: boolean;
-    channelIds: {},
+    channelIds: { [channelId: string]: true },
     picture: string,
     displayName?: string;
 }

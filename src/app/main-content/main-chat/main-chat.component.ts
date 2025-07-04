@@ -1,14 +1,16 @@
-import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Firestore } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { Channel } from '../../../models/channel.class';
-import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { User } from '../../userManagement/user.interface';
+import { Channel } from '../../../models/channel.class';
+import { UserSharedService } from '../../userManagement/userManagement-service';
+import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 import { WriteMessageComponent } from '../write-message/write-message.component';
 import { MessageBoardComponent } from "../message-board/message-board.component";
+import { ChannelUsersService } from '../../userManagement/channel-users.service';
 
 @Component({
   selector: 'app-main-chat',
@@ -17,14 +19,17 @@ import { MessageBoardComponent } from "../message-board/message-board.component"
     FormsModule,
     DialogAddMemberComponent,
     UserImageStatusComponent,
-    WriteMessageComponent, MessageBoardComponent],
+    WriteMessageComponent,
+    MessageBoardComponent,
+    UserImageStatusComponent],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })
-export class MainChatComponent implements OnInit, OnDestroy {
+export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   messages: any[] = [];
   newMessage: string = '';
   mainChatOpen = true;
+  channelMembers: User[] = [];
 
   @Output() addMember = new EventEmitter<void>();
   @Input() sideNavOpen: boolean = true;
@@ -32,6 +37,8 @@ export class MainChatComponent implements OnInit, OnDestroy {
   @Input() selectedUser: User | null = null;
 
   private firestore = inject(Firestore);
+  private channelUsersService = inject(ChannelUsersService);
+  private sharedUser = inject(UserSharedService);
   private messagesSubscription?: Subscription;
 
   ngOnInit() {
@@ -71,5 +78,11 @@ export class MainChatComponent implements OnInit, OnDestroy {
 
   toggleMainChat() {
     this.mainChatOpen = !this.mainChatOpen;
+  }
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes['selectedChannel'] && this.selectedChannel) {
+      this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
+    }
   }
 }

@@ -46,7 +46,7 @@ export class SignUpComponent {
         email: this.signUpForm.value.email ?? '',
         password: this.signUpForm.value.password ?? '',
         status: false,
-        channelIds: [],
+        channelIds: {},
         picture: ''
       };
       this.router.navigate(['/pickavatar']);    

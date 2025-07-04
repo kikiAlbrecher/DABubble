@@ -7,7 +7,8 @@
         </div>
         <div class="members-add">
             <div class="members">
-                <!-- <img *ngFor="let member of selectedChannel?.members" src="member.picture" alt="members of channel"> -->
+                <app-user-image-status *ngFor="let member of channelMembers" [user]="member">
+                </app-user-image-status>
             </div>
             <img class="add-members" (click)="openDialogAddMember()" src="assets/icons/add-member.svg"
                 alt="add members to channel">
@@ -29,4 +30,3 @@
     <app-message-board class="main-content"></app-message-board>
     <app-write-message [selectedUser]="selectedUser" class="write-message-Container"></app-write-message>
 </div>
-

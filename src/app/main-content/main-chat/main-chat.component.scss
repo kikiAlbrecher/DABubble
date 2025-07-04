@@ -41,9 +41,13 @@
     @include fontNunito($size: 24px, $weight: 700);
 }
 
-.add-members {
-    &:hover {
-        cursor: pointer;
+.members-add {
+    @include dFlex($jc: space-between, $g: 10px);
+
+    >.add-members {
+        &:hover {
+            cursor: pointer;
+        }
     }
 }
 
@@ -58,6 +62,6 @@
     height: 100%;
     width: 100%;
     padding: 0;
-    overflow-y: auto; 
+    overflow-y: auto;
     display: flex;
 }
