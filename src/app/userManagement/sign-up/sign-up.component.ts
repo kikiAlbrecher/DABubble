@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet, Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { UserSharedService } from '../userManagement-service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -18,12 +18,12 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 export class SignUpComponent {
   constructor(
     public shared: UserSharedService,
-    private router: Router) {}
+    private router: Router) { }
 
   nameError: boolean = false;
   mailError: boolean = false;
   passwordError: boolean = false;
-  privacyError: boolean = false;  
+  privacyError: boolean = false;
   signUpForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/)]),
@@ -49,10 +49,7 @@ export class SignUpComponent {
         channelIds: {},
         picture: ''
       };
-      this.router.navigate(['/pickavatar']);    
-    }     
+      this.router.navigate(['/pickavatar']);
+    }
   }
-
-    
-
 }

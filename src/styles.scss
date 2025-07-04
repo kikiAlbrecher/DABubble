@@ -1,6 +1,5 @@
 @import './styles/shared';
 
-
 * {
     margin: 0;
     scroll-behavior: smooth;
@@ -75,4 +74,82 @@ input {
     position: relative;
     z-index: 10;
     overflow-x: hidden;
+}
+
+.list {
+    padding-left: 25px;
+    padding-bottom: 8px;
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
+    max-height: 22vh;
+    overflow-y: auto;
+    width: 100%;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $background-purple;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $purple;
+        cursor: pointer;
+        border-radius: 16px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: $purple-hover;
+    }
+
+    .list-entry {
+        padding: 4px 20px;
+        @include dFlex($jc: flex-start, $ai: center, $g: 10px);
+
+        >.list-name {
+            @include fontNunito($size: 18px, $weight: 400);
+        }
+
+        &:hover {
+            cursor: pointer;
+            background: $background-purple;
+
+            >.list-name-user {
+                color: $purple-hover;
+            }
+
+            >svg {
+                height: 30px;
+                width: 30px;
+            }
+
+            >svg path {
+                fill: $purple-hover;
+            }
+        }
+
+        &.active {
+            background-color: $background-purple;
+
+            >.list-name {
+                color: $purple-hover;
+                @include fontNunito($size: 18px, $weight: 700);
+            }
+
+            >svg {
+                height: 24px;
+                width: 24px;
+            }
+
+            >svg path {
+                fill: $purple-hover;
+            }
+        }
+    }
+}
+
+.menu-item {
+    @include dFlex($jc: flex-start, $g: 15px);
+    padding: 4px 10px 4px 0;
+    flex: 1;
 }

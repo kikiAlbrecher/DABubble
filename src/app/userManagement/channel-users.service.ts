@@ -11,13 +11,11 @@ export class ChannelUsersService {
   async getUsersForChannel(channelId: string): Promise<User[]> {
     const usersCollection = collection(this.firestore, 'users');
     const snapshot = await getDocs(usersCollection);
-
     const channelMembers: User[] = [];
 
     snapshot.forEach((docSnap) => {
       const user = docSnap.data() as User;
       const id = docSnap.id;
-
       const userChannelIds = user.channelIds as { [key: string]: true };
 
       if (user.channelIds && user.channelIds[channelId]) {
