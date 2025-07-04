@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { Channel } from '../../models/channel.class';
 import { UserSharedService } from '../userManagement/userManagement-service';
 import { User } from "../userManagement/user.interface";
 import { BehaviorSubject } from 'rxjs';
-import { Firestore, Timestamp, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, Timestamp, orderBy, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
 import { doc } from 'firebase/firestore';
 import { ChatMessage } from './message.model';
 
@@ -19,6 +20,8 @@ export class MessageSharedService {
     userSelected: boolean = false;
     channelSelected: boolean = false;
     messages: ChatMessage[] = [];
+    groupedMessages: any = {};
+    groupedMessageDates: any
     
     constructor(
         public shared: UserSharedService) {}
@@ -38,25 +41,45 @@ export class MessageSharedService {
     }
 
     async getChannelMessages() {
-    const selectedId = this.selectedChannel?.channelId!;
-    const chatDocRef = doc(this.firestore, 'channels', selectedId);
-    const messagesRef = collection(chatDocRef, 'messages');
+        const selectedId = this.selectedChannel?.channelId!;
+        const chatDocRef = doc(this.firestore, 'channels', selectedId);
+        const messagesRef = collection(chatDocRef, 'messages');
+        const q = query(messagesRef, orderBy('timeStamp'));
+        onSnapshot(q, snapshot => {
+            this.messages = snapshot.docs.map(doc => {
+            const data = doc.data() as ChatMessage;
+            return {
+                ...data,
+                timeStamp: data.timeStamp instanceof Timestamp 
+                ? data.timeStamp.toDate() 
+                : data.timeStamp
+            };
+            });
+            const groups = this.messages.reduce((groups:any, message:any) => {
+            const date = formatDate(message.timeStamp, 'dd. MMMM yyyy', 'de-DE');
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].push(message);
+            
+            return groups;
+            }, {});
+            this.groupedMessages = groups;                    
+            this.groupedMessageDates = Object.keys(groups);  
 
-    onSnapshot(messagesRef, snapshot => {
-        this.messages = snapshot.docs.map(doc => {
-        const data = doc.data() as ChatMessage;
-        return {
-            ...data,
-            timeStamp: data.timeStamp instanceof Timestamp 
-            ? data.timeStamp.toDate() 
-            : data.timeStamp
-        };
-        });
-    });
-    console.log(this.messages);
-    console.log(this.shared.actualUserID);
-    
-    
+            });        
+        }
+
+    async getUserName(writerId: string): Promise<string | undefined> {
+        const docRef = doc(this.firestore, "users", writerId);
+        const messageWriter = await getDoc(docRef);
+        return messageWriter.data()?.['name'];
+    }
+
+    async getUserPicture(writerId: string): Promise<string | undefined> {
+        const docRef = doc(this.firestore, "users", writerId);
+        const messageWriter = await getDoc(docRef);
+        return messageWriter.data()?.['picture'];
     }
 
 }

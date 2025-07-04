@@ -1,13 +1,13 @@
-<section class="own-message-section">
+<section class="user-message-section">
 
-    <div class="own-message-content">
-        <div class="own-message-content-left">
-            <img src="{{sharedMessages.selectedUser?.picture}}" alt="">
+    <div class="user-message-content">
+        <div class="user-message-content-left">
+            <img src="{{userPicture}}" alt="">
         </div>
-        <div class="own-message-content-left">
-            <div class="own-message-content-left-top-row">
-                <span class="user-name">{{sharedMessages.selectedUser?.name}}</span>
-                <span class="timestamp">timestamp</span>
+        <div class="user-message-content-left">
+            <div class="user-message-content-left-top-row">
+                <span class="user-name">{{userName}}</span>
+                <span class="timestamp">{{message.timeStamp | date: 'HH:mm'}}</span>
                 
             </div>
             <div class="message-text-container">

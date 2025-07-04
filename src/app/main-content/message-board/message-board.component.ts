@@ -1,4 +1,4 @@
-import { Component, AfterViewChecked, ElementRef, ViewChild  } from '@angular/core';
+import { Component, AfterViewChecked, ElementRef, ViewChild, Input  } from '@angular/core';
 import { OwnMessageComponent } from "../own-message/own-message.component";
 import { UserMessageComponent } from "../user-message/user-message.component";
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './message-board.component.scss'
 })
 export class MessageBoardComponent {
-  
+  @Input() message!: ChatMessage;
   constructor(
       public sharedUser: UserSharedService,
       public sharedMessages: MessageSharedService

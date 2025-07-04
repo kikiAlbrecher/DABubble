@@ -1,6 +1,6 @@
  @import './../../../styles/shared';
 
-.own-message-section {
+.user-message-section {
     width: 100%;
     @include dFlex(row, start, center, 10px);
     padding: 10px 45px;
@@ -12,16 +12,16 @@
     }
 }
 
-.own-message-content {
+.user-message-content {
     @include dFlex(row, end, flex-start, 30px);
     width: 80%;
 }
 
-.own-message-content-right {
+.user-message-content-right {
     @include dFlex(column, center, flex-end, 8px);
 }
 
-.own-message-content-left-top-row {
+.user-message-content-left-top-row {
     @include dFlex(row, end, center, 20px);
     .timestamp{
         @include fontNunito(14px, 400);
@@ -46,7 +46,7 @@
     }
 }
 
-.own-message-content-left {
+.user-message-content-left {
     @include dFlex(column, center, flex-start, 0px);
     height: 100%;
     img {
