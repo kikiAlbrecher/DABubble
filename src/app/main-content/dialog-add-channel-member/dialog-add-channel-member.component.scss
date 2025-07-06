@@ -1,0 +1,52 @@
+@import './../../../styles/shared';
+
+.add-member-options {
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+
+    >.option-block {
+        @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+
+        >.option {
+            @include dFlex($jc: flex-start, $g: 20px);
+
+            >label {
+                @include fontNunito($size: 18px, $weight: 400);
+            }
+        }
+    }
+}
+
+.chosen-channel {
+    padding: 0;
+    @include fontNunito($size: 18px, $weight: 400);
+    color: $purple;
+}
+
+.channel-suggestions {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid $grey;
+    border-radius: 30px;
+    width: 100%;
+    z-index: 80;
+    position: relative;
+    background: $white;
+}
+
+.channel-entry {
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    @include fontNunito($size: 18px, $weight: 400);
+
+    &:hover {
+        background: $background-purple;
+    }
+}
+
+.channel-input-container {
+    background: $white;
+    padding: 15px 20px;
+    border: 1px solid $light-purple;
+    color: $grey;
+}

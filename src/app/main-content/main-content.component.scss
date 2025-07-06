@@ -44,6 +44,8 @@
     }
 
     &.main-components.workspace-closed {
+        gap: 0;
+
         app-side-nav {
             width: 0;
             overflow: hidden;

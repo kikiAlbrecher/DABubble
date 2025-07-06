@@ -6,11 +6,12 @@ import { Subscription } from 'rxjs';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
 import { UserSharedService } from '../../userManagement/userManagement-service';
+import { ChannelUsersService } from '../../userManagement/channel-users.service';
 import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
+import { DialogEditChannelComponent } from '../dialog-edit-channel/dialog-edit-channel.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 import { WriteMessageComponent } from '../write-message/write-message.component';
 import { MessageBoardComponent } from "../message-board/message-board.component";
-import { ChannelUsersService } from '../../userManagement/channel-users.service';
 
 @Component({
   selector: 'app-main-chat',
@@ -18,10 +19,11 @@ import { ChannelUsersService } from '../../userManagement/channel-users.service'
   imports: [CommonModule,
     FormsModule,
     DialogAddMemberComponent,
-    UserImageStatusComponent,
+    DialogEditChannelComponent,
     WriteMessageComponent,
     MessageBoardComponent,
-    UserImageStatusComponent],
+    UserImageStatusComponent
+  ],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
 })
@@ -31,10 +33,12 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   mainChatOpen = true;
   channelMembers: User[] = [];
 
-  @Output() addMember = new EventEmitter<void>();
   @Input() sideNavOpen: boolean = true;
   @Input() selectedChannel: Channel | null = null;
   @Input() selectedUser: User | null = null;
+  @Output() addMember = new EventEmitter<void>();
+  @Output() showUserProfile = new EventEmitter<void>();
+  @Output() editChannel = new EventEmitter<void>();
 
   private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
@@ -51,6 +55,10 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.messagesSubscription?.unsubscribe();
   }
 
+  openDialogEditChannel() {
+    this.editChannel.emit();
+  }
+
   openDialogAddMember() {
     this.addMember.emit();
   }
@@ -63,5 +71,9 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     if (changes['selectedChannel'] && this.selectedChannel) {
       this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
     }
+  }
+
+  openProfile() {
+    this.showUserProfile.emit();
   }
 }

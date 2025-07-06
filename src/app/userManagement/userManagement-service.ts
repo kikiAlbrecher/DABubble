@@ -73,34 +73,36 @@ export class UserSharedService {
     }
 
     async submitUser() {
-  try {
-    const auth = this.auth;
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      this.userDetails.email ?? '',
-      this.userDetails.password ?? ''
-    );
-    const user = userCredential.user;
-    const uid = user.uid;
-    // Nur diese Zeile, ohne die Zeile darüber
-    (this.userDetails as any).uid = uid;
+        try {
+            const auth = this.auth;
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                this.userDetails.email ?? '',
+                this.userDetails.password ?? ''
+            );
+            const user = userCredential.user;
+            const uid = user.uid;
+            // Nur diese Zeile, ohne die Zeile darüber
+            (this.userDetails as any).uid = uid;
+            (this.userDetails as any).displayName = this.userDetails.name;
+            (this.userDetails as any).displayNameLowercase = (this.userDetails.name ?? '').toLowerCase();
 
-    const userDocRef = doc(this.firestore, 'users', uid);
-    await setDoc(userDocRef, this.userDetails);
+            const userDocRef = doc(this.firestore, 'users', uid);
+            await setDoc(userDocRef, this.userDetails);
 
-    this.infoSlider('accountSuccess');
-    await signOut(auth);
-    this.ngZone.run(() => {
-      this.router.navigate(['/login']);
-    });
+            this.infoSlider('accountSuccess');
+            await signOut(auth);
+            this.ngZone.run(() => {
+                this.router.navigate(['/login']);
+            });
 
-  } catch (error) {
-    this.firebaseFailure = true;
-    setTimeout(() => {
-      this.firebaseFailure = false;
-    }, 3000);
-  }
-}
+        } catch (error) {
+            this.firebaseFailure = true;
+            setTimeout(() => {
+                this.firebaseFailure = false;
+            }, 3000);
+        }
+    }
 
     logInUser(email: string, password: string): Promise<boolean> {
         const auth = this.auth;
@@ -159,7 +161,9 @@ export class UserSharedService {
                         email: user.email,
                         name: user.displayName,
                         picture: 'assets/img/avatar-placeholder.svg',
-                        status: false
+                        status: false,
+                        displayName: user.displayName,
+                        displayNameLowercase: (user.displayName ?? '').toLowerCase()
                     });
                     this.router.navigate(['/main-content']);
                 }
@@ -189,7 +193,9 @@ export class UserSharedService {
                     name: 'Gast',
                     picture: 'assets/img/avatar-placeholder.svg',
                     status: true,
-                    guest: true
+                    guest: true,
+                    displayName: 'Gast',
+                    displayNameLowercase: 'gast'
                 });
 
             })

@@ -1,6 +1,6 @@
 <div *ngIf="selectedChannel" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selected-item">
+        <div class="selected-item" (click)="openDialogEditChannel()">
             <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
             <span class="title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
             <img class="drop-down-edit" src="assets/icons/arrow-down.svg" alt="drop-down for editing channel">
@@ -21,7 +21,7 @@
 
 <div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selected-item-dm">
+        <div class="selected-item selected-item-dm" (click)="openProfile()">
             <app-user-image-status [user]="selectedUser"></app-user-image-status>
             <span class="title">{{ selectedUser.name }}</span>
         </div>

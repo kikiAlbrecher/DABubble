@@ -26,7 +26,7 @@ export class DialogAddChannelComponent {
   private userShared = inject(UserSharedService);
 
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<string>();
+  @Output() save = new EventEmitter<Channel>();
 
   async saveChannel() {
     try {
@@ -37,10 +37,11 @@ export class DialogAddChannelComponent {
       const exists = await this.queryChannelNames(channelsCollection);
       if (exists) {
         this.channelExistsError = true;
+        this.cdr.detectChanges();
         return;
       }
       this.channel = await this.channelIdUpdate(this.channel);
-      this.save.emit(this.channel.channelName);
+      this.save.emit(this.channel);
     } catch (error) {
       console.error('Fehler beim Speichern des Channels:', error);
     } finally {
@@ -49,6 +50,7 @@ export class DialogAddChannelComponent {
   }
 
   channelNameConvention() {
+    this.channel.channelName = this.channel.channelName.trim();
     if (!this.channel.channelName.startsWith('#')) {
       this.channel.channelName = `#${this.channel.channelName}`;
     }
@@ -84,7 +86,6 @@ export class DialogAddChannelComponent {
       if (userSnap.exists()) {
         const userData = userSnap.data();
         const channelIds = userData['channelIds'] || {};
-
         channelIds[channelId] = true;
 
         await updateDoc(userDocRef, {
@@ -93,6 +94,8 @@ export class DialogAddChannelComponent {
       }
     } catch (error) {
       console.error('Fehler beim Hinzufügen des Channels zum User:', error);
+      //      this.errorMessage = 'Beim Speichern des Channels ist ein Fehler aufgetreten. Bitte versuche es später nochmal.';
+      // this.cdr.detectChanges(); 
     }
   }
 

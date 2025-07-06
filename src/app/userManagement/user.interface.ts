@@ -7,4 +7,5 @@ export interface User {
     channelIds: { [channelId: string]: true },
     picture: string,
     displayName?: string;
+    displayNameLowercase?: string;
 }
