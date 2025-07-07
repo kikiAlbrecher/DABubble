@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Firestore, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
@@ -34,7 +34,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   @Input() selectedUser: User | null = null;
   @Input() selectedChannel: Channel | null = null;
   @Output() selectUser = new EventEmitter<User>();
-  @Input() selectedChannel: Channel | null = null;
   @Output() selectChannel = new EventEmitter<Channel>();
   private unsubscribeChannels?: () => void;
 
@@ -80,7 +79,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   async loadUsers() {
     const usersRef = collection(this.firestore, 'users');
     const snapshot = await getDocs(usersRef);
-
     this.users = snapshot.docs.map(doc => {
       const data = doc.data();
       return { ...data, id: doc.id } as User;
@@ -108,7 +106,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   async onSubmit() {
     const message = this.messageForm.value.message?.trim();
     if (!message) return;
-
     if (this.selectedUser) {
       await this.pushDirectChatMessages();
     } else if (this.selectedChannel) {
@@ -162,27 +159,17 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     });
   }
 
-  listenToChannels() {
-    const channelsRef = collection(this.firestore, 'channels');
-    this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
-      this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-      if (this.channels.length > 0 && !this.selectedChannelId) {
-        const defaultChannel = this.channels[0];
-        this.selectedChannelId = defaultChannel.channelId;
-        this.selectChannel.emit(defaultChannel);
-      }
-    });
-  }
 
   toggleChannelsOverlay() {
-    this.showChannels = !this.showChannels;
-    this.listenToChannels();
-    this.showUsers = false;
-  }
+    if (!this.showChannels) {
+      this.showChannels = !this.showChannels;
+      this.listenToChannels();
+      this.showUsers = false;
+    } else if (this.showChannels) {
+      this.showChannels = false;
+      this.showUsers = !this.showUsers;
+    }
 
-  toggleUsersOverlay() {
-    this.showUsers = !this.showUsers;
-    this.showChannels = false;
   }
 
   onSelectChannel(channel: Channel) {
@@ -190,11 +177,11 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.selectedUser = null;
     this.selectedChannelId = channel.channelId;
     this.showChannels = false;
+    this.sharedMessages.setSelectedChannel(channel);
   }
 
     @HostListener('document:click', ['$event'])
     handleClickOutside(event: MouseEvent) {
-    // Wenn das Overlay sichtbar ist UND der Klick außerhalb der Komponente passiert
     if (this.showChannels && !this.eRef.nativeElement.contains(event.target)) {
       this.showChannels = false;
     }
@@ -205,6 +192,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.selectedChannel = null;
     this.selectedUserId = user.id ?? null;
     this.showUsers = false;
+    this.sharedMessages.setSelectedUser(user);
   }
 
   @HostListener('document:click', ['$event'])

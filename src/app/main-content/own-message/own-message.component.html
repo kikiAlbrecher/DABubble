@@ -1,5 +1,9 @@
-<section class="own-message-section">
+<section class="own-message-section"
+         (mouseover)="onMouseOver()"
+         (mouseout)="editOverlay = false">
     <div class="own-message-content">
+        
+        @if (!showEditContainer) {
         <div class="own-message-content-left">
             <div class="own-message-content-left-top-row">
                 <span class="timestamp">{{message.timeStamp | date: 'HH:mm'}}</span>
@@ -9,10 +13,41 @@
                 <span class="message-text">{{message.text}}</span>
             </div>
         </div>
+        }
+
+        @if (showEditContainer) {
+        <form [formGroup]="updateMessage" (ngSubmit)="onSubmit()" class="edit-message-form-container">
+            <textarea type="text" class="edit-message-input" formControlName="activeMessage" ></textarea>
+            <div class="buttons-container">
+                <div class="edit-message-buttons-left">
+                    <div class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
+                </div>
+                <div class="login-button-container">
+                    <div (click)="abortUpdate()" class="login-button button-guest">Abbrechen</div>
+                    <button type="submit" class="login-button button-log-in">Speichern</button>
+                </div>
+
+            </div>
+        </form>
+        }
+
         <div class="own-message-content-right">
             <img src="{{sharedUser.actualUser.picture}}" alt="">
         </div>
 
     </div>
-
+    
+    <div class="edit-overlay" [class.visible]="editOverlay">
+        <img class="edit-overlay-image" im src="assets/img/emoji-hook.png" alt="">
+        <img class="edit-overlay-image" src="assets/img/emoji-clapp.png" alt="">
+        <div class="edit-overlay-icons smiley"></div>
+        <div class="edit-overlay-icons message" (click)="answerMessage()"></div>
+        <div class="edit-overlay-icons points" (click)="showEditMessageOverlay()"></div>
+    </div>
+    @if (editMessageOverlay) {
+    <div class="edit-message" [class.visible]="editOverlay">
+        <span (click)="showEditOverlay()">Nachricht bearbeiten</span>
+    </div>
+    }
+    
 </section>

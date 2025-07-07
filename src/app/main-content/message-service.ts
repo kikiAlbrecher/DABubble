@@ -4,7 +4,7 @@ import { Channel } from '../../models/channel.class';
 import { UserSharedService } from '../userManagement/userManagement-service';
 import { User } from "../userManagement/user.interface";
 import { BehaviorSubject } from 'rxjs';
-import { Firestore, Timestamp, orderBy, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, Timestamp, orderBy, serverTimestamp, updateDoc, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
 import { doc } from 'firebase/firestore';
 import { ChatMessage } from './message.model';
 
@@ -24,7 +24,7 @@ export class MessageSharedService {
     groupedMessages: any = {};
     groupedMessageDates: any;
     writeMessageComponentOverlay:boolean = false;
-    showChannels: boolean = false;
+    showChannels: boolean = false;    
     
     constructor(
         public shared: UserSharedService) {}
@@ -56,6 +56,7 @@ export class MessageSharedService {
             const data = doc.data() as ChatMessage;
             return {
                 ...data,
+                id: doc.id,
                 timeStamp: data.timeStamp instanceof Timestamp 
                 ? data.timeStamp.toDate() 
                 : data.timeStamp
@@ -94,6 +95,7 @@ export class MessageSharedService {
             const data = doc.data() as ChatMessage;
             return {
                 ...data,
+                id: doc.id,
                 timeStamp: data.timeStamp instanceof Timestamp 
                 ? data.timeStamp.toDate() 
                 : data.timeStamp
@@ -129,6 +131,26 @@ export class MessageSharedService {
     closeOverlay() {
         this.writeMessageComponentOverlay = false
         this.showChannels = false;
+    }
+
+    async updateMessage(message:ChatMessage, newMessage:string) {
+        if (this.selectedChannel) {
+            const selectedId = this.selectedChannel?.channelId!;
+            const currentMessage = doc(this.firestore, 
+                'channels', selectedId, 'messages', message.id);
+            await updateDoc(currentMessage, {
+                text: newMessage
+            });     
+        }else if(this.selectedUser) {
+            const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort(); 
+            const chatId = sortedIds.join('_'); 
+            const currentMessage = doc(this.firestore, 
+                'directMessages', chatId, 'messages', message.id);
+            await updateDoc(currentMessage, {
+                text: newMessage
+            });               
+        }    
+ 
     }
 
 }

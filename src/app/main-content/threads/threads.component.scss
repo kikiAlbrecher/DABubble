@@ -1,4 +1,33 @@
+@import './../../../styles/shared';
+
 .threads {
     width: 300px;
     padding: 32px 30px;
+}
+
+.threads-content {
+
+    width: 100%;
+}
+
+.threads-header {
+    @include dFlex(row, space-between, center, 0px);
+    width: 100%;
+    img {
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+}
+
+.threads-header-left {
+    @include dFlex(row, center, center, 5px);
+    .threads-header-headline {
+        @include fontNunito(24px, 700);
+        color: black
+    }
+    .threads-header-channel {
+        @include fontNunito(14px, 400);
+        color: #797EF3;
+    }
 }

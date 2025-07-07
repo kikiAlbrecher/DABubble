@@ -16,7 +16,7 @@
                         (channelSelected)="onSelectChannel($event)">
                     </app-channels>
                 </div>
-                <div (click)="toggleUsersOverlay()" *ngIf="selectedUser" class="at"></div>
+                <div (click)="toggleChannelsOverlay()" *ngIf="selectedUser" class="at"></div>
                 <div class="list-overlay" *ngIf="showUsers">
                     <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null"
                         (userSelected)="onSelectUser($event)">
@@ -26,6 +26,4 @@
         </div>
         <button type="submit" class="send-button" src="assets/icons/send.svg" alt=""></button>
     </div>
-
-
 </form>
