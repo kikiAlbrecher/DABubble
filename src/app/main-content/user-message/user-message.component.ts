@@ -22,8 +22,7 @@ export class UserMessageComponent {
   constructor(
     public sharedUser: UserSharedService,
     public sharedMessages: MessageSharedService
-  ) {}
-    
+  ) {}   
  
 
   async ngOnInit() {

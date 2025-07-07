@@ -7,6 +7,7 @@ import { UserSharedService } from './userManagement/userManagement-service';
 import { MainContentComponent } from './main-content/main-content.component';
 import { HeaderSharedService } from './header/user-header/header-service';
 import { UserDetailComponent } from "./userManagement/user-detail/user-detail.component";
+import { MessageSharedService } from './main-content/message-service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,9 @@ import { UserDetailComponent } from "./userManagement/user-detail/user-detail.co
     RouterModule,
     RouterOutlet,
     IntroComponent,
-    MainContentComponent, UserDetailComponent],
+    MainContentComponent, 
+    UserDetailComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -27,5 +30,6 @@ export class AppComponent {
     public router: Router,
     public sharedUser: UserSharedService,
     public sharedHeader: HeaderSharedService,
+    public sharedMessages: MessageSharedService
   ) { this.sharedUser.initAuth(); }
 }

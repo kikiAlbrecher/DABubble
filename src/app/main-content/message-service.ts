@@ -22,7 +22,9 @@ export class MessageSharedService {
     channelSelected: boolean = false;
     messages: ChatMessage[] = [];
     groupedMessages: any = {};
-    groupedMessageDates: any
+    groupedMessageDates: any;
+    writeMessageComponentOverlay:boolean = false;
+    showChannels: boolean = false;
     
     constructor(
         public shared: UserSharedService) {}
@@ -82,12 +84,8 @@ export class MessageSharedService {
         this.messages = [];
         this.groupedMessages = {};
         this.groupedMessageDates = [];
-
-
-
         const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort(); 
-        const chatId = sortedIds.join('_'); 
-        
+        const chatId = sortedIds.join('_');         
         const chatDocRef = doc(this.firestore, 'directMessages', chatId);
         const messagesRef = collection(chatDocRef, 'messages');
         const q = query(messagesRef, orderBy('timeStamp'));
@@ -113,8 +111,7 @@ export class MessageSharedService {
             this.groupedMessages = groups;                    
             this.groupedMessageDates = Object.keys(groups);  
 
-            });        
-        
+            });       
     }
 
     async getUserName(writerId: string): Promise<string | undefined> {
@@ -127,6 +124,11 @@ export class MessageSharedService {
         const docRef = doc(this.firestore, "users", writerId);
         const messageWriter = await getDoc(docRef);
         return messageWriter.data()?.['picture'];
+    }
+
+    closeOverlay() {
+        this.writeMessageComponentOverlay = false
+        this.showChannels = false;
     }
 
 }
