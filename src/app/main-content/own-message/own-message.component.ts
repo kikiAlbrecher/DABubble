@@ -21,6 +21,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 })
 export class OwnMessageComponent {
   @Input() message!: ChatMessage;
+  @Input() mode: 'default' | 'thread' = 'default';
   editOverlay: boolean = false;
   editMessageOverlay: boolean = false;
   showEditContainer:boolean = false;
@@ -78,5 +79,6 @@ export class OwnMessageComponent {
 
   answerMessage() {
     this.sharedUser.threadsVisible$.next(true);
+    this.sharedMessages.getAnswerMessage(this.message);
   }
 }

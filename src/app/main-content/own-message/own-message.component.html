@@ -1,4 +1,5 @@
 <section class="own-message-section"
+         [ngClass]="{'thread-mode': mode === 'thread'}"
          (mouseover)="onMouseOver()"
          (mouseout)="editOverlay = false">
     <div class="own-message-content">

@@ -16,8 +16,10 @@ import { CommonModule, DatePipe } from '@angular/common';
 })
 export class UserMessageComponent {
   @Input() message!: ChatMessage;
+  @Input() mode: 'default' | 'thread' = 'default';
   userName: string = '';
   userPicture: string = '';
+  editOverlay: boolean = false;
   
   constructor(
     public sharedUser: UserSharedService,
@@ -30,6 +32,11 @@ export class UserMessageComponent {
       this.userName = await this.sharedMessages.getUserName(this.message.user) ?? 'Unbekannt';
       this.userPicture = await this.sharedMessages.getUserPicture(this.message.user) ?? 'assets/img/avatar-placeholder.svg';
     }
+  }
+
+  answerMessage() {
+    this.sharedUser.threadsVisible$.next(true);
+    this.sharedMessages.getAnswerMessage(this.message);
   }
 
 }

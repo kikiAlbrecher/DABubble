@@ -25,6 +25,7 @@ export class MessageSharedService {
     groupedMessageDates: any;
     writeMessageComponentOverlay:boolean = false;
     showChannels: boolean = false;    
+    selectedMessage: ChatMessage | undefined;
     
     constructor(
         public shared: UserSharedService) {}
@@ -151,6 +152,16 @@ export class MessageSharedService {
             });               
         }    
  
+    }
+
+    async getAnswerMessage(message:any) {
+        this.selectedMessage = message;
+        this.shared.threadsVisible$.next(true);
+        console.log(this.selectedMessage?.id);
+        console.log(this.shared.actualUserID);
+        
+        
+
     }
 
 }

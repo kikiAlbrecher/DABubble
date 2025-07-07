@@ -1,4 +1,7 @@
-<section class="user-message-section">
+<section class="user-message-section"
+    [ngClass]="{'thread-mode': mode === 'thread'}"
+    (mouseover)="editOverlay = true"
+    (mouseout)="editOverlay = false">
 
     <div class="user-message-content">
         <div class="user-message-content-left">
@@ -14,8 +17,13 @@
                 <span class="message-text">{{message.text}}</span>
             </div>
         </div>
-
-
+    </div>
+    <div class="edit-overlay" [class.visible]="editOverlay">
+        <img class="edit-overlay-image" im src="assets/img/emoji-hook.png" alt="">
+        <img class="edit-overlay-image" src="assets/img/emoji-clapp.png" alt="">
+        <div class="edit-overlay-icons smiley"></div>
+        <div class="edit-overlay-icons message" (click)="answerMessage()"></div>
+        
     </div>
 
 </section>

@@ -4,16 +4,20 @@
     width: 100%;
     @include dFlex(row, start, center, 10px);
     padding: 10px 45px;
+    position: relative;
     &:hover {
         background-color: #ECEEFE;
         .message-text-container {
             background-color: white; 
         }
     }
+    &.thread-mode {
+        padding: 0;
+    }
 }
 
 .user-message-content {
-    @include dFlex(row, end, flex-start, 30px);
+    @include dFlex(row, flex-start, flex-start, 30px);
     width: 80%;
 }
 
@@ -52,5 +56,65 @@
     img {
         width: 70px;
         height: 70px;
+    }
+}
+
+.edit-overlay {
+    position: absolute;
+    top:0;
+    right: 50px;
+    background-color: white;
+    padding: 3px 15px;
+    border: 1px solid #797EF3;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-top-right-radius: 25px;
+    @include dFlex(row, center, flex-start, 5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    
+    .edit-overlay-image {
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        &:hover{
+            background-color: #ECEEFE;
+        }
+    }
+    &.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.edit-overlay-icons {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+    &:hover{
+        background-color: #ECEEFE;
+    }
+
+}
+
+.smiley {
+    background-image: url('./../../../assets/img/add_reaction.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    &:hover {
+        background-image: url('./../../../assets/img/add_reaction-hover.png');
+    }
+}
+
+.message {
+    background-image: url('./../../../assets/img/comment.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    &:hover {
+        background-image: url('./../../../assets/img/comment-hover.png');
     }
 }

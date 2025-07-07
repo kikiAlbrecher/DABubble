@@ -8,11 +8,14 @@
     &:hover {
         background-color: #ECEEFE;
     }
+    &.thread-mode {
+        padding: 0;
+    }
 }
 
 .own-message-content {
     @include dFlex(row, end, flex-start, 30px);
-    width: 80%;
+    width: 90%;
 }
 
 .own-message-content-left {

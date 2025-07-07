@@ -42,28 +42,28 @@ scrollToBottom() {
   }, 100);
 }
 
-  ngOnInit() {
-    combineLatest([
-      this.sharedMessages.selectedUser$,
-      this.sharedMessages.selectedChannel$
-    ]).subscribe(([user, channel]) => {
-      if (user) {
-        this.sharedMessages.selectedUser = user;
-        this.sharedMessages.selectedChannel = null;
-        this.sharedMessages.channelSelected = false;
-        this.sharedMessages.userSelected = true;
-        this.sharedMessages.getUserMessages();
-      } else if (channel) {
-        this.sharedMessages.selectedChannel = channel;
-        this.sharedMessages.selectedUser = null;
-        this.sharedMessages.channelSelected = true;
-        this.sharedMessages.userSelected = false;
-        this.sharedMessages.getChannelMessages();
-      } else {
-        this.sharedMessages.selectedUser = null;
-        this.sharedMessages.selectedChannel = null;
-      }
-    });  
+ngOnInit() {
+  combineLatest([
+    this.sharedMessages.selectedUser$,
+    this.sharedMessages.selectedChannel$
+  ]).subscribe(([user, channel]) => {
+    if (user) {
+      this.sharedMessages.selectedUser = user;
+      this.sharedMessages.selectedChannel = null;
+      this.sharedMessages.channelSelected = false;
+      this.sharedMessages.userSelected = true;
+      this.sharedMessages.getUserMessages();
+    } else if (channel) {
+      this.sharedMessages.selectedChannel = channel;
+      this.sharedMessages.selectedUser = null;
+      this.sharedMessages.channelSelected = true;
+      this.sharedMessages.userSelected = false;
+      this.sharedMessages.getChannelMessages();
+    } else {
+      this.sharedMessages.selectedUser = null;
+      this.sharedMessages.selectedChannel = null;
+    }
+  });  
 }
 
 

@@ -1,14 +1,24 @@
-<div class="main-blocks threads">
-    <section class="threads-content">
-        <div class="threads-header">
+<section class="main-blocks threads">
+  
+        <header class="header">
+            <div class="threads-header">
             <div class="threads-header-left">
                 <span class="threads-header-headline">Thread</span>
                 <span class="threads-header-channel">#KVP</span>
             </div>
             <img (click)="closeThreads()" src="assets/icons/close.svg" alt="">
-        </div>
+            </div>
+        </header>
 
-    </section>
+        <main class="threads-main-chat">
+            <app-threads-main-chat></app-threads-main-chat>
+        </main>
+
+
+        <div class="write-message-container">
+            <app-write-message  class="write-message-form"></app-write-message>
+        </div>
+ 
     
 
-</div>
+</section>

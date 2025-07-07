@@ -1,0 +1,16 @@
+<section *ngIf="selectedMessage">
+    @if (sharedMessages.selectedMessage?.user === sharedUser.actualUserID) {
+    <app-own-message 
+        [message]="sharedMessages.selectedMessage!" 
+        [mode]="'thread'" 
+        class="messages-container">
+    </app-own-message>
+    } @else {
+        <app-user-message
+            [message]="sharedMessages.selectedMessage!" 
+            [mode]="'thread'" 
+            class="messages-container">
+        ></app-user-message>
+    }
+
+</section>
