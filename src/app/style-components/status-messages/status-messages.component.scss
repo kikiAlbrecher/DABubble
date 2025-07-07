@@ -25,21 +25,21 @@
     >.success-message,
     .error-message {
         width: 80%;
+        max-width: 800px;
         padding: 32px 16px;
         text-align: center;
         border: unset;
         border-radius: 25px;
         @include fontNunito($size: 18px, $weight: 600);
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        background: $purple;
     }
 
     >.success-message {
-        background: $green;
-        color: $purple;
+        color: $green;
     }
 
     >.error-message {
-        background: $grey;
         color: $red;
     }
 }

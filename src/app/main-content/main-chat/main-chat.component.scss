@@ -10,6 +10,7 @@
         @include dFlex($jc: flex-start, $g: 10px);
         padding: 6px 10px;
         border-radius: 100px;
+        // oder 0?: auf Figma (play) unterschiedliche Darstellung
 
         >.hashtag {
             width: 32px;
@@ -22,6 +23,7 @@
         }
 
         &:hover {
+            cursor: pointer;
             background: $background-purple;
         }
     }
@@ -30,10 +32,6 @@
         @include dFlex($jc: flex-start, $g: 15px);
         padding: 4px 8px;
         border-radius: 30px;
-
-        &:hover {
-            background: $background-purple;
-        }
     }
 }
 
@@ -44,14 +42,25 @@
 .members-add {
     @include dFlex($jc: space-between, $g: 10px);
 
+    >.members {
+        @include dFlex($jc: flex-end);
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
     >.add-members {
+        width: 40px;
+        height: 40px;
+
         &:hover {
             cursor: pointer;
         }
     }
 }
 
-.write-message-Container {
+.write-message-container {
     width: 100%;
     padding: 45px 45px 30px 45px;
 

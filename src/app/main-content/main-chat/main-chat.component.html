@@ -1,6 +1,6 @@
 <div *ngIf="selectedChannel" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selected-item">
+        <div class="selected-item" (click)="openDialogEditChannel()">
             <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
             <span class="title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
             <img class="drop-down-edit" src="assets/icons/arrow-down.svg" alt="drop-down for editing channel">
@@ -16,12 +16,12 @@
         </div>
     </div>
     <app-message-board class="main-content"></app-message-board>
-    <app-write-message [selectedChannel]="selectedChannel" class="write-message-Container"></app-write-message>
+    <app-write-message [selectedChannel]="selectedChannel" class="write-message-container"></app-write-message>
 </div>
 
 <div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selected-item-dm">
+        <div class="selected-item selected-item-dm" (click)="openProfile()">
             <app-user-image-status [user]="selectedUser"></app-user-image-status>
             <span class="title">{{ selectedUser.name }}</span>
         </div>
@@ -29,5 +29,5 @@
     <div class="time-separator"></div>
     <div class="past-messages"></div>
     <app-message-board class="main-content"></app-message-board>
-    <app-write-message [selectedUser]="selectedUser" class="write-message-Container"></app-write-message>
+    <app-write-message [selectedUser]="selectedUser" class="write-message-container"></app-write-message>
 </div>

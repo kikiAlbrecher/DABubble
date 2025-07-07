@@ -1,5 +1,4 @@
 <div class="main-content">
-
     <div class="section-content">
         <div class="header">
             <app-logo></app-logo>
@@ -11,17 +10,24 @@
             [class.threads-open]="(shared.threadsVisible$ | async)">
             <app-side-nav (addChannel)="openDialogAddChannel()" (selectChannel)="onChannelSelected($event)"
                 (selectUser)="onUserSelected($event)"></app-side-nav>
-            <app-main-chat (addMember)="openDialogAddMember()" [selectedChannel]="selectedChannel"
+            <app-main-chat (addMember)="openDialogAddMember()" (showUserProfile)="openProfile()"
+                (editChannel)="openDialogEditChannel()" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true"></app-main-chat>
             <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
+            <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">
+                <app-user-profile [user]="selectedUser!" [allowEdit]="false"></app-user-profile>
+            </div>
         </div>
 
-        <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="handleDialogClose()"
-            (save)="handleChannelCreate($event)">
+        <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="closeDialogAddChannel()"
+            (save)="createChannel($event)">
         </app-dialog-add-channel>
-        <app-dialog-add-member *ngIf="showAddMemberDialog" (close)="handleDialogCloseAddMember()"
-            (save)="handleMemberAdd($event)">
+        <app-dialog-add-channel-member *ngIf="addChannelMember" [currentChannelId]="selectedChannel?.channelId"
+            (close)="closeAddChannelMember()" (save)="saveAddChannelMember($event)">
+        </app-dialog-add-channel-member>
+        <app-dialog-add-member *ngIf="showAddMemberDialog" (close)="closeDialogAddMember()">
         </app-dialog-add-member>
+        <app-dialog-edit-channel *ngIf="editChannel" (close)="closeDialogEditChannel()"></app-dialog-edit-channel>
         <app-status-messages *ngIf="statusMessage" [statusMessage]="statusMessage"
             [statusMessageType]="statusMessageType">
         </app-status-messages>

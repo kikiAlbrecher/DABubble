@@ -1,0 +1,56 @@
+<div class="outside-overlay" (click)="closeAddMember()">
+    <form (click)="$event.stopPropagation()" #addMemberForm="ngForm" (ngSubmit)="saveMember()"
+        class="dialog-add-channel dialog-add-member">
+        <div class="add-headline">
+            <h2>Personen hinzufügen</h2>
+            <app-close-button (close)="closeAddMember()"></app-close-button>
+        </div>
+
+        <div class="add-member-options">
+            <div class="option-block">
+                <div class="option">
+                    <input type="radio" id="addChannelMembers" name="add-options" [(ngModel)]="mode" value="allChannels"
+                        (ngModelChange)="onModeChange($event)" required>
+                    <label for="addChannelMembers">
+                        Alle Mitglieder von
+                        <button type="button" (click)="openChannelList()" class="chosen-channel">
+                            {{ chosenChannelName || 'Produktion' }}
+                        </button>
+                        hinzufügen.
+                    </label>
+                </div>
+                <div *ngIf="channelListVisible" class="channel-suggestions">
+                    <div class="channel-entry" *ngFor="let channel of channelList" (click)="selectChannel(channel)">
+                        {{ channel.channelName.slice(1) }}
+                    </div>
+                </div>
+            </div>
+            <div class="option-block">
+                <div class="option">
+                    <input type="radio" id="addSelectedColleagues" name="add-options" [(ngModel)]="mode"
+                        value="selectedColleagues" (ngModelChange)="onModeChange($event)" required>
+                    <label for="addSelectedColleagues">Bestimmte Personen hinzufügen.</label>
+                </div>
+                <div *ngIf="mode==='selectedColleagues'" class="input-colleagues-name">
+                    <input type="text" placeholder="Name eingeben …" [(ngModel)]="userSearchTerm" name="userSearchTerm"
+                        (ngModelChange)="onUserSearch(userSearchTerm)" class="input-field channel-input-container"
+                        autocomplete="off">
+                    <div class="suggestions" *ngIf="suggestedUsers.length">
+                        <app-users [users]="suggestedUsers" (userSelected)="addUser($event)"></app-users>
+                    </div>
+                    <div class="selected-users" *ngIf="selectedUsers.length">
+                        <div class="user-entry" *ngFor="let u of selectedUsers">
+                            <app-user-image-status [user]="u"></app-user-image-status>
+                            <span class="list-name-user">{{ u.displayName || u.name }}</span>
+                            <button type="button" (click)="removeUser(u)">x</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-action">
+            <app-submit-button [form]="addMemberForm" label="Erstellen"></app-submit-button>
+        </div>
+    </form>
+</div>

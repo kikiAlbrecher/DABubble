@@ -7,27 +7,16 @@ import { SubmitButtonComponent } from '../../style-components/submit-button/subm
 import { User } from '../../userManagement/user.interface';
 
 @Component({
-  selector: 'app-dialog-add-member',
+  selector: 'app-dialog-edit-channel',
   standalone: true,
   imports: [CommonModule, FormsModule, SubmitButtonComponent, CloseButtonComponent],
-  templateUrl: './dialog-add-member.component.html',
-  styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-add-member.component.scss']
+  templateUrl: './dialog-edit-channel.component.html',
+  styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-edit-channel.component.scss']
 })
-export class DialogAddMemberComponent {
+export class DialogEditChannelComponent {
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<string>();
 
-  userId: string = '';
-
-  private cdr = inject(ChangeDetectorRef);
-
-  async saveMember() {
-    if (!this.userId || this.userId.length < 3) return;
-    this.save.emit(this.userId);
-    this.cdr.detectChanges();
-  }
-
-  handleDialogCloseAddMember() {
+  closeEditChannel() {
     this.close.emit();
   }
 }

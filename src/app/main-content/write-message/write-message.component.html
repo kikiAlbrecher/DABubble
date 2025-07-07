@@ -10,12 +10,17 @@
                 <div class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
             </div>
             <div class="buttons-left">
-                <div (click)="toggleChannelsOverlay()" class="at">
-                    <div class="users-overlay" *ngIf="showChannels">
-                        <app-channels class="overpay-app-input" [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
-                            (channelSelected)="onSelectChannel($event)">
-                        </app-channels>
-                    </div>
+                <div (click)="toggleChannelsOverlay()" *ngIf="selectedChannel" class="at"></div>
+                <div class="list-overlay" *ngIf="showChannels">
+                    <app-channels [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
+                        (channelSelected)="onSelectChannel($event)">
+                    </app-channels>
+                </div>
+                <div (click)="toggleUsersOverlay()" *ngIf="selectedUser" class="at"></div>
+                <div class="list-overlay" *ngIf="showUsers">
+                    <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null"
+                        (userSelected)="onSelectUser($event)">
+                    </app-users>
                 </div>
             </div>
         </div>

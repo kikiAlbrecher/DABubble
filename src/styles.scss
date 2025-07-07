@@ -34,6 +34,19 @@ button {
     }
 }
 
+.outside-overlay {
+    position: absolute;
+    top: -16px;
+    left: -32px;
+    bottom: -16px;
+    right: 32px;
+    height: 100vh;
+    width: calc(100% + 64px);
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 550;
+    @include dFlex($fd: column);
+}
+
 input {
     border: unset;
     outline: none;
@@ -52,18 +65,40 @@ input {
         >.input-field-image {
             position: absolute;
         }
-
-        >.input-field {
-            width: 100%;
-            border-radius: 30px;
-            border: unset;
-            outline: none;
-            background: $background-purple;
-            padding: 0 15px 0 60px;
-            @include fontNunito(16px, 500);
-            color: $grey;
-        }
     }
+}
+
+.input-field {
+    width: 100%;
+    border-radius: 30px;
+    border: unset;
+    outline: none;
+    background: $background-purple;
+    padding: 0 15px 0 60px;
+    @include fontNunito(16px, 500);
+    color: $grey;
+}
+
+.user-image-container {
+  position: relative;
+}
+
+.online-status {
+  width: 17px;
+  height: 17px;
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.online {
+  background-color: #92C83E;
+}
+
+.offline {
+  background-color: red;
 }
 
 .main-blocks {

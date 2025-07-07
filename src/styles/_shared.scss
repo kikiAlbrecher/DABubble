@@ -35,25 +35,3 @@ $grey: #686868;
 $red: #E61C40;
 
 $green: #92C83E;
-
-.user-image-container {
-  position: relative;
-}
-
-.online-status {
-  width: 17px;
-  height: 17px;
-  position: absolute;
-  bottom: 1px;
-  right: 1px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-}
-
-.online {
-  background-color: #92C83E;
-}
-
-.offline {
-  background-color: red;
-}

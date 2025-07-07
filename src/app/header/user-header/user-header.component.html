@@ -2,20 +2,18 @@
     <span>{{shared.actualUser.name}}</span>
     <div class="user-image-container">
         <img class="user-header-img" src="{{shared.actualUser.picture}}" alt="">
-        <div class="online-status" 
-            [ngClass]= "shared.actualUser.status ? 'online' : 'offline'"
-        ></div>
+        <div class="online-status" [ngClass]="shared.actualUser.status ? 'online' : 'offline'"></div>
     </div>
-     
+
     <div class="edit-user">
         <img (click)="shared.showUserEdit()" class="user-header-icon" src="assets/icons/arrow-down.svg" alt="">
         @if (shared.userEditOverlay) {
         <div class="edit-user-overlay">
             @if (!sharedHeader.dropdownProfile) {<app-dropdown></app-dropdown>}
-            @if (sharedHeader.dropdownProfile) {<app-user-profile></app-user-profile>}
+            @if (sharedHeader.dropdownProfile) { 
+            <app-user-profile [user]="shared.actualUser" [allowEdit]="true">
+            </app-user-profile> }
         </div>
         }
     </div>
-    
-
 </section>

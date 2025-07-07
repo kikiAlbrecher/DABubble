@@ -6,7 +6,7 @@
     background-color: white;
     @include dFlex(column, space-between, center, 15px);
     position: absolute;
-    top: 60px;
+    top: 0;
     right: 0px;
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;

@@ -1,0 +1,17 @@
+<div class="outside-overlay" (click)="closeEditChannel()">
+    <form (click)="$event.stopPropagation()" #editChannelForm="ngForm" class="dialog-add-channel">
+        <div class="add-headline">
+            <div>
+                <!-- <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
+                <span class="title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span> -->
+            </div>
+            <app-close-button (close)="closeEditChannel()"></app-close-button>
+        </div>
+
+
+
+        <div class="save-action">
+            <app-submit-button [form]="editChannelForm" label="Verlassen"></app-submit-button>
+        </div>
+    </form>
+</div>
