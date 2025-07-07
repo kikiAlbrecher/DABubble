@@ -94,11 +94,11 @@ input {
 }
 
 .online {
-  background-color: #92C83E;
+  background-color: $green;
 }
 
 .offline {
-  background-color: red;
+  background-color: $red;
 }
 
 .main-blocks {

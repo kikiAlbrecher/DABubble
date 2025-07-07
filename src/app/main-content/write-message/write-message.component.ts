@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Firestore, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
@@ -34,7 +34,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   @Input() selectedUser: User | null = null;
   @Input() selectedChannel: Channel | null = null;
   @Output() selectUser = new EventEmitter<User>();
-  @Input() selectedChannel: Channel | null = null;
   @Output() selectChannel = new EventEmitter<Channel>();
   private unsubscribeChannels?: () => void;
 
@@ -148,18 +147,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     });
 
     this.messageForm.reset();
-  }
-
-  listenToChannels() {
-    const channelsRef = collection(this.firestore, 'channels');
-    this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
-      this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-      if (this.channels.length > 0 && !this.selectedChannelId) {
-        const defaultChannel = this.channels[0];
-        this.selectedChannelId = defaultChannel.channelId;
-        this.selectChannel.emit(defaultChannel);
-      }
-    });
   }
 
   listenToChannels() {
