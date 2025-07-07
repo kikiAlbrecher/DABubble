@@ -26,6 +26,14 @@
             cursor: pointer;
             background: $background-purple;
         }
+
+        &:hover svg path {
+            fill: $purple-hover;
+        }
+
+        &:hover .title {
+            color: $purple;
+        }
     }
 
     >.selected-item-dm {
