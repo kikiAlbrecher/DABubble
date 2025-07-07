@@ -14,7 +14,6 @@
         border-radius: 30px;
         width: 100%;
 
-
         >.workspace {
             @include dFlex($jc: flex-start, $g: 15px);
 
@@ -28,7 +27,7 @@
             }
         }
 
-        >img {
+        >svg {
             height: 40px;
             aspect-ratio: 1 / 1;
         }
@@ -71,15 +70,27 @@
 
 .menu-item-add {
     padding-left: 45px;
+
+    &:hover {
+        >svg g path {
+            fill: $purple-hover;
+        }
+
+        >span {
+            color: $purple-hover;
+        }
+    }
+
+    &.btn-active {
+        >svg g path {
+            fill: $purple-hover;
+        }
+    }
 }
 
 .general-menu-icons {
     width: 30px;
     aspect-ratio: 1 / 1;
-
-    &:hover {
-        cursor: pointer;
-    }
 }
 
 .toggle-workspace {
@@ -97,18 +108,30 @@
     border-bottom-right-radius: 30px;
     background: $white;
 
-    &:hover {
-        cursor: pointer;
-    }
-
     >span {
         @include fontNunito($size: 20px, $weight: 500);
         line-height: 120%;
     }
 
-    >img {
+    >svg {
         height: 32px;
         aspect-ratio: 1 / 1;
         transform: rotate(90deg);
+    }
+
+    &:hover {
+        cursor: pointer;
+
+        >span {
+            color: $purple-hover;
+            @include fontNunito($size: 20px, $weight: 700);
+        }
+
+        >svg rect,
+        svg path,
+        svg path {
+            stroke: $purple-hover;
+            stroke-width: 2.4px;
+        }
     }
 }

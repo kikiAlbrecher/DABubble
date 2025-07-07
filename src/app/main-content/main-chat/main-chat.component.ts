@@ -36,6 +36,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Input() sideNavOpen: boolean = true;
   @Input() selectedChannel: Channel | null = null;
   @Input() selectedUser: User | null = null;
+  @Input() showAddMemberDialog = false;
   @Output() addMember = new EventEmitter<void>();
   @Output() showUserProfile = new EventEmitter<void>();
   @Output() editChannel = new EventEmitter<void>();

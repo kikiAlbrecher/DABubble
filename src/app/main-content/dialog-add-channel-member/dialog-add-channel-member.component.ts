@@ -84,7 +84,7 @@ export class DialogAddChannelMemberComponent implements OnInit {
   addUser(user: User) {
     if (!this.selectedUsers.find(u => u.id === user.id)) this.selectedUsers.push(user);
     this.suggestedUsers = [];
-    this.userSearchTerm = user.displayName || user.name || '';
+    this.userSearchTerm = user.picture + user.displayName || user.name || '';
   }
 
   removeUser(user: User) {

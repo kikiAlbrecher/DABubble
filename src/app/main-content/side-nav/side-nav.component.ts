@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, inject, OnDestroy, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { collection, onSnapshot, Firestore } from '@angular/fire/firestore';
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -18,6 +18,7 @@ import { UsersComponent } from '../../style-components/users/users.component';
   styleUrl: './side-nav.component.scss'
 })
 export class SideNavComponent implements OnInit, OnDestroy {
+  @Input() showAddChannelDialog = false;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
@@ -37,7 +38,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private userSub?: Subscription;
 
   constructor(private messageSharedService: MessageSharedService) { }
-
 
   ngOnInit() {
     this.listenToChannels();
