@@ -184,7 +184,6 @@ export class MessageSharedService {
                 : data.timeStamp
             };            
             })
-            console.log(this.answerMessages);
             });           
         }  
          
