@@ -40,6 +40,9 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Output() addMember = new EventEmitter<void>();
   @Output() showUserProfile = new EventEmitter<void>();
   @Output() editChannel = new EventEmitter<void>();
+  @Output() showMembers = new EventEmitter<void>();
+  @Output() members = new EventEmitter<User[]>();
+  @Output() selectedUserChange = new EventEmitter<User | null>();
 
   private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
@@ -58,6 +61,11 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
 
   openDialogEditChannel() {
     this.editChannel.emit();
+  }
+
+  openShowMembers() {
+    this.members.emit(this.channelMembers);
+    this.selectedUserChange.emit(this.selectedUser);
   }
 
   openDialogAddMember() {

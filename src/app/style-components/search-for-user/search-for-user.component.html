@@ -1,0 +1,18 @@
+<div class="input-wrapper">
+    <div class="input-wrapper-content">
+        <input #userInput type="text"
+            [placeholder]="userSearchTerm.length === 0 && selectedUsers.length === 0 ? 'Name(n) eingeben …' : ''"
+            [(ngModel)]="userSearchTerm" name="userSearchTerm" (ngModelChange)="onUserSearch(userSearchTerm)"
+            autocomplete="off">
+        <div class="selected-user" *ngFor="let u of selectedUsers">
+            <img [src]="u.picture" alt="chosen user image">
+            <div class="name-x">
+                <span class="name">{{ u.displayName || u.name }}</span>
+                <img class="x" (click)="removeUser(u)" src="assets/icons/close.svg" alt="erase chosen user">
+            </div>
+        </div>
+    </div>
+    <div class="suggestions" *ngIf="suggestedUsers.length">
+        <app-users [users]="suggestedUsers" (userSelected)="addUser($event)"></app-users>
+    </div>
+</div>

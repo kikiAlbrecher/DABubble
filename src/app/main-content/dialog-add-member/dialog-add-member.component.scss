@@ -1,13 +1,23 @@
 @import './../../../styles/shared';
 
-.add-member-options {
-    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+.dialog-add-members {
+    top: 183px;
+    right: 77px;
+    border-top-right-radius: 0;
+    width: 415px;
+    height: 411px;
+}
 
-    >.option {
-        @include dFlex($jc: flex-start, $g: 20px);
+.header {
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 5px);
+    width: 100%;
 
-        >label {
+    >.subheadline {
+        @include dFlex($jc: flex-start, $g: 15px);
+
+        >span {
             @include fontNunito($size: 18px, $weight: 400);
+            color: #797EF3;
         }
     }
 }

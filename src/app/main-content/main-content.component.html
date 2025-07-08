@@ -11,7 +11,8 @@
             <app-side-nav (addChannel)="openDialogAddChannel()" (selectChannel)="onChannelSelected($event)"
                 (selectUser)="onUserSelected($event)" [showAddChannelDialog]="showAddChannelDialog"></app-side-nav>
             <app-main-chat (addMember)="openDialogAddMember()" (showUserProfile)="openProfile()"
-                (editChannel)="openDialogEditChannel()" [selectedChannel]="selectedChannel"
+                (editChannel)="openDialogEditChannel()" (members)="onReceiveMembers($event)"
+                (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true"
                 [showAddMemberDialog]="showAddMemberDialog"></app-main-chat>
             <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
@@ -26,9 +27,15 @@
         <app-dialog-add-channel-member *ngIf="addChannelMember" [currentChannelId]="selectedChannel?.channelId"
             (close)="closeAddChannelMember()" (save)="saveAddChannelMember($event)">
         </app-dialog-add-channel-member>
-        <app-dialog-add-member *ngIf="showAddMemberDialog" (close)="closeDialogAddMember()">
+        <app-dialog-add-member *ngIf="showAddMemberDialog" [selectedChannel]="selectedChannel" (close)="closeDialogAddMember()"
+        (save)="saveAddChannelMember($event)">
         </app-dialog-add-member>
-        <app-dialog-edit-channel *ngIf="editChannel" (close)="closeDialogEditChannel()"></app-dialog-edit-channel>
+        <app-dialog-edit-channel *ngIf="editChannel" [selectedChannel]="selectedChannel"
+            (close)="closeDialogEditChannel()">
+        </app-dialog-edit-channel>
+        <app-dialog-show-channel-members *ngIf="showMembers" [users]="users" [selectedUserId]="selectedUser?.id ?? null"
+            (close)="closeDialogShowMembers()" (openAddMembers)="openDialogAddMember()">
+        </app-dialog-show-channel-members>
         <app-status-messages *ngIf="statusMessage" [statusMessage]="statusMessage"
             [statusMessageType]="statusMessageType">
         </app-status-messages>

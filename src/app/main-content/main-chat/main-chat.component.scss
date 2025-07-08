@@ -51,10 +51,28 @@
     @include dFlex($jc: space-between, $g: 10px);
 
     >.members {
-        @include dFlex($jc: flex-end);
+        @include dFlex($jc: flex-end, $g: 10px);
+        height: 40px;
+        padding: 3px 10px;
+        position: relative;
 
         &:hover {
             cursor: pointer;
+            border-radius: 30px;
+            background-color: $background-purple;
+        }
+
+        >.member-avatar {
+            position: absolute;
+            top: 0;
+            width: 40px;
+            aspect-ratio: 1 / 1;
+            border-radius: 30px;
+            border: 2px solid $white;
+        }
+
+        >.more-than-three {
+            @include fontNunito($size: 20px, $weight: 600);
         }
     }
 

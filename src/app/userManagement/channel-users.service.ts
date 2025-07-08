@@ -18,9 +18,7 @@ export class ChannelUsersService {
       const id = docSnap.id;
       const userChannelIds = user.channelIds as { [key: string]: true };
 
-      if (user.channelIds && user.channelIds[channelId]) {
-        channelMembers.push({ ...user, id });
-      }
+      if (user.channelIds && user.channelIds[channelId]) channelMembers.push({ ...user, id });
     });
 
     return channelMembers;

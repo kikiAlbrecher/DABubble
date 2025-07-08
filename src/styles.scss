@@ -213,6 +213,8 @@ input {
 
     &:hover svg g path {
         fill: $purple-hover;
+        // transform: scale(1.05);
+        // oder bissi fetter
     }
 
     &:hover .title {

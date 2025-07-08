@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, OnInit, inject, ChangeDetectorRef, Input } from '@angular/core';
-import { Firestore, collectionData, collection, doc, updateDoc, query, where, getDocs, writeBatch } from '@angular/fire/firestore';
+import { Firestore, collection, doc, query, where, getDocs, writeBatch } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
@@ -8,11 +8,14 @@ import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
 import { UsersComponent } from '../../style-components/users/users.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
+import { SearchForUserComponent } from '../../style-components/search-for-user/search-for-user.component';
 
 @Component({
   selector: 'app-dialog-add-channel-member',
   standalone: true,
-  imports: [CommonModule, FormsModule, SubmitButtonComponent, CloseButtonComponent, UsersComponent, UserImageStatusComponent],
+  imports: [CommonModule, FormsModule, SubmitButtonComponent, CloseButtonComponent, UsersComponent, UserImageStatusComponent,
+    SearchForUserComponent
+  ],
   templateUrl: './dialog-add-channel-member.component.html',
   styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-add-channel-member.component.scss']
 })
@@ -27,8 +30,6 @@ export class DialogAddChannelMemberComponent implements OnInit {
   channelListVisible = false;
   chosenChannelId?: string;
   chosenChannelName?: string;
-  userSearchTerm = '';
-  suggestedUsers: User[] = [];
   selectedUsers: User[] = [];
 
   private cdr = inject(ChangeDetectorRef);
@@ -69,26 +70,6 @@ export class DialogAddChannelMemberComponent implements OnInit {
     } else {
       this.chosenChannelName = '#Produktion';
     }
-  }
-
-  async onUserSearch(term: string) {
-    if (term.length < 1) return;
-    const usersRef = collection(this.firestore, 'users');
-    const q = query(usersRef, where('displayNameLowercase', '>=', term.toLowerCase()),
-      where('displayNameLowercase', '<=', term.toLowerCase() + '\uf8ff'));
-    const snap = await getDocs(q);
-    this.suggestedUsers = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }))
-      .filter(u => !this.selectedUsers.find(su => su.id === u.id));
-  }
-
-  addUser(user: User) {
-    if (!this.selectedUsers.find(u => u.id === user.id)) this.selectedUsers.push(user);
-    this.suggestedUsers = [];
-    this.userSearchTerm = user.picture + user.displayName || user.name || '';
-  }
-
-  removeUser(user: User) {
-    this.selectedUsers = this.selectedUsers.filter(u => u.id !== user.id);
   }
 
   onModeChange(newMode: 'allChannels' | 'selectedColleagues') {

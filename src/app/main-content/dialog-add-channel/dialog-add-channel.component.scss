@@ -15,17 +15,17 @@
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
     z-index: 999;
 
-    >.add-headline {
-        @include dFlex($jc: space-between);
-        width: 100%;
-
-        >h2 {
-            @include fontNunito($size: 24px, $weight: 700);
-        }
-    }
-
     >.add-channel-subheadline {
         @include fontNunito($size: 18px, $weight: 400);
+    }
+}
+
+.add-headline {
+    @include dFlex($jc: space-between);
+    width: 100%;
+
+    >h2 {
+        @include fontNunito($size: 24px, $weight: 700);
     }
 }
 

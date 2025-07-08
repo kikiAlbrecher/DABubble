@@ -17,6 +17,7 @@ import { MessageSharedService } from './message-service';
 import { DialogAddChannelMemberComponent } from './dialog-add-channel-member/dialog-add-channel-member.component';
 import { DialogEditChannelComponent } from './dialog-edit-channel/dialog-edit-channel.component';
 import { UserProfileComponent } from '../header/user-profile/user-profile.component';
+import { DialogShowChannelMembersComponent } from './dialog-show-channel-members/dialog-show-channel-members.component';
 
 @Component({
   selector: 'app-main-content',
@@ -29,6 +30,7 @@ import { UserProfileComponent } from '../header/user-profile/user-profile.compon
     DialogAddChannelMemberComponent,
     DialogAddMemberComponent,
     DialogEditChannelComponent,
+    DialogShowChannelMembersComponent,
     SearchbarComponent,
     LogoComponent,
     MainChatComponent,
@@ -46,9 +48,11 @@ export class MainContentComponent {
     private router: Router,
   ) { }
 
+  users: User[] = [];
   showAddChannelDialog = false;
   addChannelMember = false;
   showAddMemberDialog = false;
+  showMembers = false;
   editChannel = false;
   threadsVisible = false;
   statusMessage = '';
@@ -109,6 +113,19 @@ export class MainContentComponent {
 
   closeDialogAddMember() {
     this.showAddMemberDialog = false;
+  }
+
+  onReceiveMembers(users: User[]) {
+    this.users = users;
+    this.showMembers = true;
+  }
+
+  onSelectedUserChanged(user: User | null) {
+    this.selectedUser = user;
+  }
+
+  closeDialogShowMembers() {
+    this.showMembers = false;
   }
 
   openDialogEditChannel() {
