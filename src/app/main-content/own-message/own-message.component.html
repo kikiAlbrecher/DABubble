@@ -20,9 +20,9 @@
                 @if (answerDetails.length > 0) {
                 <div class="answer-contaier">
                     @if (answerDetails.length == 1) {
-                        <Span class="answer-count">{{ answerDetails.length }} Antwort</Span>
+                        <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antwort</Span>
                     }@else {
-                        <Span class="answer-count">{{ answerDetails.length }} Antworten</Span>
+                        <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antworten</Span>
                     }
                     
                     <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>

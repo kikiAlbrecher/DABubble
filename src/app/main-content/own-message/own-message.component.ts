@@ -1,13 +1,12 @@
-import { Injectable, inject } from '@angular/core';
-import { SimpleChanges } from '@angular/core';
-import { Component, Input, HostListener, ElementRef, OnInit } from '@angular/core';
+import { inject } from '@angular/core';
+import { Component, Input, HostListener, ElementRef} from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
 import { ChatMessage } from '../message.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Firestore, Timestamp, orderBy, serverTimestamp, updateDoc, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, Timestamp, orderBy, collection, query, onSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-own-message',
@@ -52,8 +51,7 @@ export class OwnMessageComponent {
 
   ngOnChanges(): void {
     if (this.message?.id && this.message?.channelId) {
-      this.getAnswerDetails();
-    
+      this.getAnswerDetails();    
     }
   }
 
@@ -93,7 +91,12 @@ export class OwnMessageComponent {
   async answerMessage() {
     this.sharedUser.threadsVisible$.next(true);
     await this.sharedMessages.getAnswerMessage(this.message);
-    this.sharedMessages.getChannelAnswerMessages ();
+    this.sharedMessages.getChannelOrUserName();
+    if (this.sharedMessages.channelSelected) {
+      this.sharedMessages.getChannelAnswerMessages ();      
+    } else if (this.sharedMessages.userSelected) {
+      this.sharedMessages.getUserAnswerMessages (); 
+    }
   }
 
   async getAnswerDetails() {

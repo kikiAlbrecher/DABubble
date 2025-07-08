@@ -12,7 +12,11 @@
     }
 
     <div class="thread-border">
-        <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antworten</span>
+        @if (sharedMessages.answerMessages.length == 1) {
+            <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antwort</span>
+        } @else {
+            <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antworten</span>
+        }
         <div class="thread-border-line"></div>
     </div>
 

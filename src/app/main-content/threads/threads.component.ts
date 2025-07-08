@@ -5,6 +5,7 @@ import { MessageSharedService } from '../message-service';
 import { WriteMessageComponent } from "../write-message/write-message.component";
 import { ThreadsMainChatComponent } from "../../threads/threads-main-chat/threads-main-chat.component";
 
+
 @Component({
   selector: 'app-threads',
   standalone: true,
@@ -17,6 +18,8 @@ import { ThreadsMainChatComponent } from "../../threads/threads-main-chat/thread
   styleUrl: './threads.component.scss'
 })
 export class ThreadsComponent {
+  actualChannelOrUserName:any = "";
+  
   constructor(
       public sharedUser: UserSharedService,
       public sharedMessages: MessageSharedService,

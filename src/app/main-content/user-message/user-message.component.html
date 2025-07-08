@@ -16,6 +16,26 @@
             <div class="message-text-container">
                 <span class="message-text">{{message.text}}</span>
             </div>
+
+             @if (mode !== 'thread') {
+            <div 
+                [ngClass]="answerDetails.length > 0 ? 'answer-emoji-container' : 'answer-emoji-container-only-emoji'">
+                @if (answerDetails.length > 0) {
+                <div class="answer-contaier">
+                    @if (answerDetails.length == 1) {
+                        <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antwort</Span>
+                    }@else {
+                        <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antworten</Span>
+                    }
+                    
+                    <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>
+                </div>
+                }
+                <div class="emoji-container">
+                    <div class="add-emoji"></div>
+                </div>
+            </div>     
+            }
         </div>
     </div>
     <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay" [class.visible]="editOverlay">

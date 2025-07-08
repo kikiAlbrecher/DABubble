@@ -55,6 +55,11 @@
     @include dFlex(row, space-between, center, 10px);
 }
 
+.answer-emoji-container-only-emoji {
+    width: 100%;
+    @include dFlex(row, end, center, 10px);
+}
+
 .add-emoji {
     width: 24px;
     height: 24px;
@@ -99,7 +104,7 @@
 .edit-overlay {
     position: absolute;
     top:0;
-    right: 250px;
+    left: 70px;
     background-color: white;
     padding: 3px 15px;
     border: 1px solid #797EF3;
@@ -222,7 +227,7 @@
     @include dFlex(column, center, flex-start, 5px);
     background-color: white;
     border: 1px solid #ADB0D9;
-    min-width: 100%;
+    min-width: 85%;
     border-radius: 20px;
     padding: 10px 15px;
     .edit-message-input{

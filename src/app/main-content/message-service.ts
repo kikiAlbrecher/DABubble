@@ -27,7 +27,8 @@ export class MessageSharedService {
     writeMessageComponentOverlay:boolean = false;
     showChannels: boolean = false;    
     selectedMessage: ChatMessage | undefined;
-    answerMessages: ChatMessage[] = []
+    answerMessages: ChatMessage[] = [];
+    threadChannelOrUserName:string = "";
     
     constructor(
         public shared: UserSharedService) {}
@@ -172,25 +173,58 @@ export class MessageSharedService {
         const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');
         const q = query(answerRef, orderBy('timeStamp'));
         if(answerRef) {
-        this.answerMessagesUnsubscribe = onSnapshot(q, snapshot => {
-            this.answerMessages = snapshot.docs.map(doc => {
-            const data = doc.data() as ChatMessage;
-                       
-            return {
-                ...data,
-                id: doc.id,
-                timeStamp: data.timeStamp instanceof Timestamp 
-                ? data.timeStamp.toDate() 
-                : data.timeStamp
-            };            
-            })
-            });           
-        }  
-         
-        
-          
+            this.answerMessagesUnsubscribe = onSnapshot(q, snapshot => {
+                this.answerMessages = snapshot.docs.map(doc => {
+                const data = doc.data() as ChatMessage;                       
+                return {
+                    ...data,
+                    id: doc.id,
+                    timeStamp: data.timeStamp instanceof Timestamp 
+                    ? data.timeStamp.toDate() 
+                    : data.timeStamp
+                };            
+                })
+            });          
+        }          
     }
 
+    async getUserAnswerMessages() {
+        if (this.answerMessagesUnsubscribe) {
+            this.answerMessagesUnsubscribe(); 
+        }
+        this.answerMessages = [];
+        const messageId = this.selectedMessage?.id ?? '';
+        const channelId = this.selectedMessage?.channelId ?? "";
+        const answerRef = collection(this.firestore, 'directMessages', channelId, 'messages', messageId, 'answers');
+        const q = query(answerRef, orderBy('timeStamp'));
+        if(answerRef) {
+            this.answerMessagesUnsubscribe = onSnapshot(q, snapshot => {
+                this.answerMessages = snapshot.docs.map(doc => {
+                const data = doc.data() as ChatMessage;                       
+                return {
+                    ...data,
+                    id: doc.id,
+                    timeStamp: data.timeStamp instanceof Timestamp 
+                    ? data.timeStamp.toDate() 
+                    : data.timeStamp
+                };            
+                })
+            });          
+        }          
+    }
+
+    async getChannelOrUserName() {
+        const actualChannelId = this.selectedMessage?.channelId ?? '';        
+        if (this.channelSelected) {
+            const channelRef = doc(this.firestore, 'channels', actualChannelId);
+            const docSnap = await getDoc(channelRef);
+            const data = docSnap.data() as Channel;        
+            this.threadChannelOrUserName = data.channelName   
+        } else if (this.userSelected) {  
+            const displayName = this.selectedUser?.displayName ?? '';    
+            this.threadChannelOrUserName = displayName;            
+        }       
+    }
 
 }
 

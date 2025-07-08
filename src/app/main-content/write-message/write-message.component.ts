@@ -223,12 +223,21 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     const messageText = this.messageForm.value.message ?? '';
     const messageId = this.sharedMessages.selectedMessage?.id ?? '';
     const channelId = this.sharedMessages.selectedMessage?.channelId ?? "";
-    const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers'); 
-    await addDoc(answerRef, {
-      user: this.shared.actualUser.uid,
-      text: messageText,
-      timeStamp: serverTimestamp()
-    });
+    if (this.sharedMessages.channelSelected) {
+      const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers'); 
+      await addDoc(answerRef, {
+        user: this.shared.actualUser.uid,
+        text: messageText,
+        timeStamp: serverTimestamp()
+      });
+    } else if (this.sharedMessages.userSelected) {
+      const answerRef = collection(this.firestore, 'directMessages', channelId, 'messages', messageId, 'answers'); 
+      await addDoc(answerRef, {
+        user: this.shared.actualUser.uid,
+        text: messageText,
+        timeStamp: serverTimestamp()
+      });
+    }  
     this.messageForm.reset();      
   }
 
