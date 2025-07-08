@@ -34,9 +34,12 @@ export class UserMessageComponent {
     }
   }
 
-  answerMessage() {
+ async answerMessage() {
     this.sharedUser.threadsVisible$.next(true);
-    this.sharedMessages.getAnswerMessage(this.message);
+    await this.sharedMessages.getAnswerMessage(this.message);
+    this.sharedMessages.getChannelAnswerMessages ();
+    console.log(this.sharedUser.actualUserID);
+    
   }
 
 }

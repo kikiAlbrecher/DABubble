@@ -1,6 +1,6 @@
 <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="write-message-section">
     <textarea
-        [placeholder]="selectedChannel ? 'Nachricht an ' + selectedChannel.channelName : 'Nachricht an ' + selectedUser?.name"
+        [placeholder]="placeHolderText"
         formControlName="message" (input)="textError = false" placeholder="Nachricht an" class=""
         type="text">
     </textarea>

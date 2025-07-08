@@ -33,6 +33,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   @Input() user!: User;
   @Input() selectedUser: User | null = null;
   @Input() selectedChannel: Channel | null = null;
+  @Input() mode: 'default' | 'thread' = 'default';
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
   private unsubscribeChannels?: () => void;
@@ -46,6 +47,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   selectedUserId: string | null = null;
   showChannels: boolean = false;
   showUsers: boolean = false;
+  placeHolderText:string = "";
 
   private firestore = inject(Firestore);
 
@@ -56,6 +58,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.loadChannels();
     this.loadUsers();
+    
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -64,12 +67,12 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     } else if (changes['selectedChannel'] && this.selectedChannel) {
       this.checkChannelMessagesExist();
     }
+  this.putPlaceHolderText();  
   }
 
   async loadChannels() {
     const channelsRef = collection(this.firestore, 'channels');
     const snapshot = await getDocs(channelsRef);
-
     this.channels = snapshot.docs.map(doc => {
       const data = doc.data();
       return new Channel({ ...data, channelId: doc.id });
@@ -106,11 +109,15 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   async onSubmit() {
     const message = this.messageForm.value.message?.trim();
     if (!message) return;
-    if (this.selectedUser) {
-      await this.pushDirectChatMessages();
-    } else if (this.selectedChannel) {
-      await this.pushChannelMessages();
-    }
+    if (this.mode === 'thread') {
+      this.pushAnswerMessageChannel();      
+    } else {
+      if (this.selectedUser) {
+        await this.pushDirectChatMessages();
+      } else if (this.selectedChannel) {
+        await this.pushChannelMessages();
+      }
+    }  
   }
 
   async pushDirectChatMessages() {
@@ -122,28 +129,26 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     if (!this.chatExists) {
       await setDoc(chatDocRef, { chatId });
     }
-
     const messagesRef = collection(this.firestore, 'directMessages', chatId, 'messages');
     await addDoc(messagesRef, {
       user: this.shared.actualUser.uid,
       text: messageText,
-      timeStamp: serverTimestamp()
+      timeStamp: serverTimestamp(),
+      channelId: chatId
     });
-
     this.messageForm.reset();
   }
 
   async pushChannelMessages() {
     const messageText = this.messageForm.value.message ?? '';
     const selectedId = this.selectedChannel?.channelId ?? '';
-
     const messagesRef = collection(this.firestore, 'channels', selectedId, 'messages');
     await addDoc(messagesRef, {
       user: this.shared.actualUser.uid,
       text: messageText,
-      timeStamp: serverTimestamp()
+      timeStamp: serverTimestamp(),
+      channelId: selectedId
     });
-
     this.messageForm.reset();
   }
 
@@ -205,4 +210,26 @@ export class WriteMessageComponent implements OnInit, OnChanges {
       this.showChannels = false;
     }
   }
+
+  putPlaceHolderText() {
+    if (this.mode === 'thread') {
+      this.placeHolderText = 'Antworten...';
+    } else {
+      this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName : 'Nachricht an ' + this.selectedUser?.name
+    }  
+  }
+
+  async pushAnswerMessageChannel() {
+    const messageText = this.messageForm.value.message ?? '';
+    const messageId = this.sharedMessages.selectedMessage?.id ?? '';
+    const channelId = this.sharedMessages.selectedMessage?.channelId ?? "";
+    const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers'); 
+    await addDoc(answerRef, {
+      user: this.shared.actualUser.uid,
+      text: messageText,
+      timeStamp: serverTimestamp()
+    });
+    this.messageForm.reset();      
+  }
+
 }

@@ -41,9 +41,9 @@
 }
 
 .threads-main-chat {
-    padding: 20px;
     flex: 1;
     width: 100%;
+    overflow: auto;
 }
 
 .write-message-container {

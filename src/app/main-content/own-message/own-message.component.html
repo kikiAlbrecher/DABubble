@@ -38,12 +38,12 @@
 
     </div>
     
-    <div class="edit-overlay" [class.visible]="editOverlay">
-        <img class="edit-overlay-image" im src="assets/img/emoji-hook.png" alt="">
-        <img class="edit-overlay-image" src="assets/img/emoji-clapp.png" alt="">
+    <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay" [class.visible]="editOverlay">
+        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image thread-image" im src="assets/img/emoji-hook.png" alt="">
+        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image thread-image" src="assets/img/emoji-clapp.png" alt="">
         <div class="edit-overlay-icons smiley"></div>
-        <div class="edit-overlay-icons message" (click)="answerMessage()"></div>
-        <div class="edit-overlay-icons points" (click)="showEditMessageOverlay()"></div>
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons points" (click)="showEditMessageOverlay()"></div>
     </div>
     @if (editMessageOverlay) {
     <div class="edit-message" [class.visible]="editOverlay">

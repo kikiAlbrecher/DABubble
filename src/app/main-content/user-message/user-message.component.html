@@ -18,11 +18,11 @@
             </div>
         </div>
     </div>
-    <div class="edit-overlay" [class.visible]="editOverlay">
-        <img class="edit-overlay-image" im src="assets/img/emoji-hook.png" alt="">
-        <img class="edit-overlay-image" src="assets/img/emoji-clapp.png" alt="">
+    <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay" [class.visible]="editOverlay">
+        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image" im src="assets/img/emoji-hook.png" alt="">
+        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image" src="assets/img/emoji-clapp.png" alt="">
         <div class="edit-overlay-icons smiley"></div>
-        <div class="edit-overlay-icons message" (click)="answerMessage()"></div>
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
         
     </div>
 

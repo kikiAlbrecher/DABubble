@@ -12,13 +12,17 @@
         }
     }
     &.thread-mode {
-        padding: 0;
+        padding: 0 15px;
     }
 }
 
 .user-message-content {
     @include dFlex(row, flex-start, flex-start, 30px);
     width: 80%;
+    &.thread-mode {
+        width: 100%;
+        @include dFlex(row, flex-start, flex-start, 15px);
+    }
 }
 
 .user-message-content-right {
@@ -72,8 +76,9 @@
     @include dFlex(row, center, flex-start, 5px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
-    
+    transition: opacity 0.2s ease;   
+    overflow-y: visible; 
+    z-index: 500;
     .edit-overlay-image {
         width: 30px;
         height: 30px;
@@ -83,10 +88,19 @@
         &:hover{
             background-color: #ECEEFE;
         }
+        &.thread-mode {
+            display: none;
+        }
     }
     &.visible {
         opacity: 1;
         pointer-events: auto;
+    }
+    &.thread-mode {
+        right: 10px;
+        top: 0px;
+        width: 50px;
+        padding: 3px 5px;
     }
 }
 
@@ -116,5 +130,8 @@
     background-position: center;
     &:hover {
         background-image: url('./../../../assets/img/comment-hover.png');
+    }
+    &.thread-mode {
+        display: none;
     }
 }

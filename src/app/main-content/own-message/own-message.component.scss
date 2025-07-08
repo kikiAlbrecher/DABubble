@@ -9,13 +9,16 @@
         background-color: #ECEEFE;
     }
     &.thread-mode {
-        padding: 0;
+        padding: 0 15px;
     }
 }
 
 .own-message-content {
     @include dFlex(row, end, flex-start, 30px);
-    width: 90%;
+    width: 100%;
+        &.thread-mode {
+        padding: 0 15px;
+    }
 }
 
 .own-message-content-left {
@@ -84,10 +87,19 @@
         &:hover{
             background-color: #ECEEFE;
         }
+        &.thread-mode {
+            display: none;
+        }
     }
     &.visible {
         opacity: 1;
         pointer-events: auto;
+    }
+    &.thread-mode {
+        left: 10px;
+        top:0px;
+        padding: 3px 5px;
+        width: 40px;
     }
 }
 
@@ -103,11 +115,11 @@
 }
 
 .smiley {
-    background-image: url('./../../../assets/img/add_reaction.png');
+    background-image: url('./../../../assets/icons/add-reaction.png');
     background-repeat: no-repeat;
     background-position: center;
     &:hover {
-        background-image: url('./../../../assets/img/add_reaction-hover.png');
+        background-image: url('./../../../assets/icons/add-reaction-hover.png');
     }
 }
 
@@ -118,8 +130,16 @@
     &:hover {
         background-image: url('./../../../assets/img/comment-hover.png');
     }
+    &.thread-mode {
+        display: none;
+    }
 }
 
+.thread-image {
+    &.thread-mode {
+        display: none;
+    }
+}
 
 .points{
     background-image: url('./../../../assets/img/thre-points-vertical.png');
@@ -127,6 +147,9 @@
     background-position: center;
     &:hover {
         background-image: url('./../../../assets/img/thee-points-vertical-hover.png');
+    }
+    &.thread-mode {
+        display: none;
     }
 }
 
@@ -156,6 +179,9 @@
     &.visible {
         opacity: 1;
         pointer-events: auto;
+    }
+    &.thread-mode {
+        display: none;
     }
 }
 
@@ -192,20 +218,6 @@
         &:hover {
             background-color: #ECEEFE;
         }
-}
-
-.smiley {
-    width: 24px;
-    height: 24px;
-    background-image: url('./../../../assets/icons/smiley-button.svg');
-    background-size: contain;
-    background-position: center;
-
-    &:hover {
-        background-image: url('./../../../assets/icons/smiley-hover.svg');
-        background-size: contain;
-
-    }
 }
 
 .login-button-container {

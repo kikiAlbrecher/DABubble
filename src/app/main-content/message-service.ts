@@ -16,6 +16,7 @@ export class MessageSharedService {
 
     private firestore = inject(Firestore);
     private channelMessagesUnsubscribe: (() => void) | null = null;
+    private answerMessagesUnsubscribe: (() => void) | null = null;
     selectedUser: User | null = null;
     selectedChannel: Channel | null = null;
     userSelected: boolean = false;
@@ -26,6 +27,7 @@ export class MessageSharedService {
     writeMessageComponentOverlay:boolean = false;
     showChannels: boolean = false;    
     selectedMessage: ChatMessage | undefined;
+    answerMessages: ChatMessage[] = []
     
     constructor(
         public shared: UserSharedService) {}
@@ -155,14 +157,41 @@ export class MessageSharedService {
     }
 
     async getAnswerMessage(message:any) {
+        this.answerMessages = [];
         this.selectedMessage = message;
-        this.shared.threadsVisible$.next(true);
-        console.log(this.selectedMessage?.id);
-        console.log(this.shared.actualUserID);
-        
-        
-
+        this.shared.threadsVisible$.next(true);    
     }
+
+    async getChannelAnswerMessages() {
+        if (this.answerMessagesUnsubscribe) {
+            this.answerMessagesUnsubscribe(); 
+        }
+        this.answerMessages = [];
+        const messageId = this.selectedMessage?.id ?? '';
+        const channelId = this.selectedMessage?.channelId ?? "";
+        const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');
+        const q = query(answerRef, orderBy('timeStamp'));
+        if(answerRef) {
+        this.answerMessagesUnsubscribe = onSnapshot(q, snapshot => {
+            this.answerMessages = snapshot.docs.map(doc => {
+            const data = doc.data() as ChatMessage;
+                       
+            return {
+                ...data,
+                id: doc.id,
+                timeStamp: data.timeStamp instanceof Timestamp 
+                ? data.timeStamp.toDate() 
+                : data.timeStamp
+            };            
+            })
+            console.log(this.answerMessages);
+            });           
+        }  
+         
+        
+          
+    }
+
 
 }
 

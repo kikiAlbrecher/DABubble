@@ -77,8 +77,9 @@ export class OwnMessageComponent {
     this.showEditContainer = false;   
   }
 
-  answerMessage() {
+  async answerMessage() {
     this.sharedUser.threadsVisible$.next(true);
-    this.sharedMessages.getAnswerMessage(this.message);
+    await this.sharedMessages.getAnswerMessage(this.message);
+    this.sharedMessages.getChannelAnswerMessages ();
   }
 }
