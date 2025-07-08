@@ -28,7 +28,6 @@
 
         <div class="save-action">
             <app-submit-button [form]="addMemberAfterwardsForm" label="Hinzufügen"
-                [disabled]="selectedUsers.length === 0"
                 [ngClass]="selectedUsers.length > 0 ? 'button-abled' : 'button-disabled'">
             </app-submit-button>
         </div>
