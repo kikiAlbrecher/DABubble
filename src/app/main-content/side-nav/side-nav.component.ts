@@ -33,11 +33,12 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   private firestore = inject(Firestore);
   public userService = inject(UserSharedService);
+  private messageSharedService = inject(MessageSharedService);
   private unsubscribeChannels?: () => void;
   private unsubscribeUsers?: () => void;
   private userSub?: Subscription;
 
-  constructor(private messageSharedService: MessageSharedService) { }
+  // constructor(private messageSharedService: MessageSharedService) { }
 
   ngOnInit() {
     this.listenToChannels();

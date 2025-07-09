@@ -2,7 +2,7 @@
 
 .input-wrapper {
     position: relative;
-    width: 335px;
+    width: 434px;
 
     >.input-wrapper-content {
         background: $white;
@@ -62,7 +62,7 @@
     padding: 20px 21px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    width: 300px;
+    width: 335px;
     z-index: 99;
     background: $white;
     max-height: 250px;

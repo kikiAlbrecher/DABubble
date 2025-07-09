@@ -1,6 +1,6 @@
 <div class="outside-overlay" (click)="handleDialogCloseAddMember()">
     <form (click)="$event.stopPropagation()" #addMemberAfterwardsForm="ngForm" (ngSubmit)="saveMember()"
-        class="dialog-add-channel dialog-add-members">
+        class="dialog-add-channel dialog-add-members" [style.top.px]="position.top" [style.left.px]="position.left">
         <div class="header">
             <div class="add-headline">
                 <h2>Personen hinzufügen</h2>
@@ -27,9 +27,7 @@
         <app-search-for-user [(selectedUsers)]="selectedUsers"></app-search-for-user>
 
         <div class="save-action">
-            <app-submit-button [form]="addMemberAfterwardsForm" label="Hinzufügen"
-                [ngClass]="selectedUsers.length > 0 ? 'button-abled' : 'button-disabled'">
-            </app-submit-button>
+            <app-submit-button [form]="addMemberAfterwardsForm" label="Hinzufügen"></app-submit-button>
         </div>
     </form>
 </div>

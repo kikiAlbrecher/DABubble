@@ -48,21 +48,22 @@
 
         app-side-nav {
             width: 0;
-            overflow: hidden;
+            overflow-x: hidden;
         }
     }
 
     .threads-open {
         app-main-chat {
             flex-grow: 0;
-            width: calc(100% - 364px - 300px);
+            width: calc(100% - 364px - 400px);
         }
     }
 }
 
 .main-components.workspace-closed.threads-open {
     app-main-chat {
-        width: calc(100% - 300px);
+        width: calc(100% - 400px);
+        margin-right: 16px;
     }
 }
 

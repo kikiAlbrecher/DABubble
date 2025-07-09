@@ -2,7 +2,7 @@ import { Injectable, Input } from '@angular/core';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from "./user.interface";
-import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapshot, deleteField } from '@angular/fire/firestore';
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut, signInAnonymously } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
@@ -28,6 +28,8 @@ export class UserSharedService {
     threadsVisible$ = new BehaviorSubject<boolean>(true);
     private _workspaceOpen = new BehaviorSubject<boolean>(true);
     workspaceOpen$ = this._workspaceOpen.asObservable();
+    channelChanged$ = new BehaviorSubject<void>(undefined);
+    channelMembersChanged$ = new BehaviorSubject<void>(undefined);
     isDev = true;
     playSlideOut: boolean = false;
     userEditOverlay: boolean = false;
@@ -297,5 +299,13 @@ export class UserSharedService {
 
     closeThreads() {
         this.threadsVisible$.next(false);
+    }
+
+    async removeChannelUser(userId: string, channelId: string): Promise<void> {
+        const userDocRef = doc(this.firestore, 'users', userId);
+        const updateData: any = {};
+        updateData[`channelIds.${channelId}`] = deleteField();
+
+        await updateDoc(userDocRef, updateData);
     }
 }

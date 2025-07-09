@@ -1,8 +1,7 @@
 @import './../../../styles/shared';
 
 .dialog-members {
-    top: 183px;
-    right: 127px;
+    position: fixed;
     border-top-right-radius: 0;
     width: 415px;
     height: 411px;

@@ -32,17 +32,19 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   newMessage: string = '';
   mainChatOpen = true;
   channelMembers: User[] = [];
+  membershipSubscription?: Subscription;
 
   @Input() sideNavOpen: boolean = true;
   @Input() selectedChannel: Channel | null = null;
   @Input() selectedUser: User | null = null;
   @Input() showAddMemberDialog = false;
-  @Output() addMember = new EventEmitter<void>();
   @Output() showUserProfile = new EventEmitter<void>();
-  @Output() editChannel = new EventEmitter<void>();
+  @Output() editChannel = new EventEmitter<{ top: number, left: number }>();
   @Output() showMembers = new EventEmitter<void>();
-  @Output() members = new EventEmitter<User[]>();
+  @Output() members = new EventEmitter<{ users: User[]; position: { top: number; left: number } }>();
+  @Output() addMember = new EventEmitter<{ top: number, left: number }>();
   @Output() selectedUserChange = new EventEmitter<User | null>();
+  @Output() userLeftChannel = new EventEmitter<void>();
 
   private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
@@ -50,26 +52,50 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   private messagesSubscription?: Subscription;
 
   ngOnInit() {
-    if (this.selectedChannel) {
-      // this.loadMessages(this.selectedChannel.channelId);
-    }
+    this.membershipSubscription = this.sharedUser.channelMembersChanged$.subscribe(async () => {
+      if (this.selectedChannel) {
+        this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
+      }
+    });
   }
 
   ngOnDestroy() {
+    this.membershipSubscription?.unsubscribe();
     this.messagesSubscription?.unsubscribe();
   }
 
-  openDialogEditChannel() {
-    this.editChannel.emit();
+  openDialogEditChannel(event: MouseEvent): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+
+    this.editChannel.emit({
+      top: rect.bottom,
+      left: rect.left
+    });
   }
 
-  openShowMembers() {
-    this.members.emit(this.channelMembers);
+  openShowMembers(event: MouseEvent): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    let dialogWidth = 415;
+
+    this.members.emit({
+      users: this.channelMembers,
+      position: {
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.right + window.scrollX - dialogWidth
+      }
+    });
+
     this.selectedUserChange.emit(this.selectedUser);
   }
 
-  openDialogAddMember() {
-    this.addMember.emit();
+  openDialogAddMember(event: MouseEvent): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    let dialogWidth = 514;
+
+    this.addMember.emit({
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.right + window.scrollX - dialogWidth
+    });
   }
 
   toggleMainChat() {

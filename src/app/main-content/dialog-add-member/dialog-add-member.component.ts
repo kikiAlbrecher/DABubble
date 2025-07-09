@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit, inject, ChangeDetectorRef, Input } from '@angular/core';
-import { Firestore, collectionData, collection, doc, updateDoc, query, where } from '@angular/fire/firestore';
+import { Component, EventEmitter, Output, inject, ChangeDetectorRef, Input } from '@angular/core';
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
 import { SearchForUserComponent } from '../../style-components/search-for-user/search-for-user.component';
+import { UserSharedService } from '../../userManagement/userManagement-service';
 
 @Component({
   selector: 'app-dialog-add-member',
@@ -17,6 +18,7 @@ import { SearchForUserComponent } from '../../style-components/search-for-user/s
 })
 export class DialogAddMemberComponent {
   @Input() selectedChannel: Channel | null = null;
+  @Input() position: { top: number; left: number } = { top: 0, left: 0 };
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<string>();
 
@@ -25,11 +27,26 @@ export class DialogAddMemberComponent {
 
   private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
+  public sharedUser = inject(UserSharedService);
 
   async saveMember() {
-    if (!this.userId || this.userId.length < 3) return;
-    this.save.emit(this.userId);
-    this.cdr.detectChanges();
+    if (!this.selectedChannel?.channelId || this.selectedUsers.length === 0) return;
+    const channelId = this.selectedChannel.channelId;
+
+    try {
+      for (const user of this.selectedUsers) {
+        if (!user.id) continue;
+        const userRef = doc(this.firestore, 'users', user.id);
+        await updateDoc(userRef, {
+          [`channelIds.${channelId}`]: true
+        });
+      }
+
+      this.sharedUser.channelMembersChanged$.next();
+      this.handleDialogCloseAddMember();
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen der Benutzer zum Channel:', error);
+    }
   }
 
   handleDialogCloseAddMember() {
