@@ -1,10 +1,9 @@
 @import './../../../styles/shared';
 
 .dialog-add-members {
-    top: 183px;
-    right: 77px;
+    position: fixed;
     border-top-right-radius: 0;
-    width: 415px;
+    width: 514px;
     height: 411px;
 }
 

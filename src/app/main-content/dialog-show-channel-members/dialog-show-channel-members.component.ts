@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 import { UsersComponent } from '../../style-components/users/users.component';
 import { User } from '../../userManagement/user.interface';
-import { Firestore } from 'firebase/firestore';
-import { ChannelUsersService } from '../../userManagement/channel-users.service';
 
 @Component({
   selector: 'app-dialog-show-channel-members',
@@ -16,8 +14,9 @@ import { ChannelUsersService } from '../../userManagement/channel-users.service'
 export class DialogShowChannelMembersComponent {
   @Input() users: User[] = [];
   @Input() selectedUserId: string | null = null;
+  @Input() position: { top: number; left: number } = { top: 0, left: 0 };
   @Output() close = new EventEmitter<void>();
-  @Output() openAddMembers = new EventEmitter<void>();
+  @Output() openAddMembers = new EventEmitter<{ top: number; left: number }>();
 
   selectedUser: User | null = null;
 
@@ -31,6 +30,6 @@ export class DialogShowChannelMembersComponent {
 
   transferAddMember() {
     this.closeShowMembers();
-    this.openAddMembers.emit();
+    this.openAddMembers.emit(this.position);
   }
 }

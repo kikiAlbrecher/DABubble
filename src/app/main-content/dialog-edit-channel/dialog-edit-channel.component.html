@@ -1,17 +1,42 @@
 <div class="outside-overlay" (click)="closeEditChannel()">
-    <form (click)="$event.stopPropagation()" #editChannelForm="ngForm" class="dialog-add-channel">
+    <form (click)="$event.stopPropagation()" #editChannelForm="ngForm" class="dialog-add-channel dialog-edit-channel"
+        [style.top.px]="position.top" [style.left.px]="position.left">
         <div class="add-headline">
-            <div>
-                <!-- <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
-                <span class="title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span> -->
+            <div class="headline-channel-name">
+                <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
+                <span class="channel-title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
             </div>
             <app-close-button (close)="closeEditChannel()"></app-close-button>
         </div>
 
+        <div class="edit-object">
+            <div class="edit-object-header">
+                <span class="header-text">Channel-Name</span>
+                <button class="edit-btn">Bearbeiten</button>
+            </div>
+            <div class="headline-channel-name edit-object-content">
+                <img src="assets/icons/hashtag.svg" alt="channel prefix #">
+                <span class="content-text" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
+            </div>
+        </div>
 
+        <div class="edit-object description-creator">
+            <div class="edit-object-header">
+                <span class="header-text">Beschreibung</span>
+                <button class="edit-btn">Bearbeiten</button>
+            </div>
+            <div class="edit-object-content">
+                <p class="content-text" *ngIf="selectedChannel">{{ selectedChannel.channelDescription }}</p>
+            </div>
+            <div class="separator"></div>
+            <div class="creator">
+                <span class="header-text">Erstellt von</span>
+                <span class="channel-creator-name" *ngIf="selectedChannel">{{ creatorName }}</span>
+            </div>
+        </div>
 
         <div class="save-action">
-            <app-submit-button [form]="editChannelForm" label="Verlassen"></app-submit-button>
+            <button type="submit" class="submit-button" (click)="leaveChannel()">Channel verlassen</button>
         </div>
     </form>
 </div>

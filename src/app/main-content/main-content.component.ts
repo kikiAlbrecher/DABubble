@@ -51,9 +51,12 @@ export class MainContentComponent {
   users: User[] = [];
   showAddChannelDialog = false;
   addChannelMember = false;
-  showAddMemberDialog = false;
-  showMembers = false;
   editChannel = false;
+  editChannelPosition = { top: 0, left: 0 };
+  showMembers = false;
+  showMembersPosition = { top: 0, left: 0 }
+  showAddMemberDialog = false;
+  addMemberPosition = { top: 0, left: 0 }
   threadsVisible = false;
   statusMessage = '';
   statusMessageType: 'success' | 'error' = 'success';
@@ -107,17 +110,27 @@ export class MainContentComponent {
     setTimeout(() => this.statusMessage = '', 2000);
   }
 
-  openDialogAddMember() {
-    this.showAddMemberDialog = true;
+  openDialogEditChannel(position: { top: number, left: number }): void {
+    this.editChannelPosition = position;
+    this.editChannel = true;
   }
 
-  closeDialogAddMember() {
-    this.showAddMemberDialog = false;
+  updateChannel() {
+    this.editChannel = false;
+    this.statusMessageType = 'success';
+    this.statusMessage = 'Du wurdest ausgetragen.';
+
+    setTimeout(() => this.statusMessage = '', 2000);
   }
 
-  onReceiveMembers(users: User[]) {
-    this.users = users;
+  closeDialogEditChannel() {
+    this.editChannel = false;
+  }
+
+  onReceiveMembers(data: { users: User[]; position: { top: number; left: number } }) {
+    this.users = data.users;
     this.showMembers = true;
+    this.showMembersPosition = data.position;
   }
 
   onSelectedUserChanged(user: User | null) {
@@ -128,12 +141,29 @@ export class MainContentComponent {
     this.showMembers = false;
   }
 
-  openDialogEditChannel() {
-    this.editChannel = true;
+  openDialogAddMember(event?: MouseEvent | { top: number; left: number }) {
+    let position = { top: 200, left: 0 };
+
+    if (event && 'top' in event && 'left' in event) {
+      position = event;
+    } else if (event instanceof MouseEvent) {
+      position = { top: event.clientY, left: event.clientX };
+    }
+
+    this.addMemberPosition = position;
+    this.showAddMemberDialog = true;
   }
 
-  closeDialogEditChannel() {
-    this.editChannel = false;
+  saveAddMember(userName: string) {
+    this.showAddMemberDialog = false;
+    this.statusMessageType = 'success';
+    this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
+
+    setTimeout(() => this.statusMessage = '', 2000);
+  }
+
+  closeDialogAddMember() {
+    this.showAddMemberDialog = false;
   }
 
   openProfile() {
