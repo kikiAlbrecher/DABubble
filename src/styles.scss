@@ -1,4 +1,6 @@
 @import './styles/shared';
+@import '@ctrl/ngx-emoji-mart/picker';
+@import '@angular/cdk/overlay-prebuilt.css';
 
 * {
     margin: 0;
@@ -115,7 +117,7 @@ input {
     padding-left: 25px;
     padding-bottom: 8px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
-    max-height: 22vh;
+    max-height: 30vh;
     overflow-y: auto;
     width: 100%;
 

@@ -9,6 +9,7 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
 import { ChannelsComponent } from '../../style-components/channels/channels.component';
 import { UsersComponent } from "../../style-components/users/users.component";
 import { MessageSharedService } from '../message-service';
+import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 
 @Component({
   selector: 'app-write-message',
@@ -17,7 +18,8 @@ import { MessageSharedService } from '../message-service';
     ReactiveFormsModule,
     CommonModule,
     ChannelsComponent,
-    UsersComponent
+    UsersComponent,
+    PickerComponent
 ],
   templateUrl: './write-message.component.html',
   styleUrl: './write-message.component.scss'
@@ -48,6 +50,8 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   showChannels: boolean = false;
   showUsers: boolean = false;
   placeHolderText:string = "";
+  emojiOverlay: boolean = false;
+  emojiThreadOverlay: boolean = false;
 
   private firestore = inject(Firestore);
 
@@ -164,7 +168,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     });
   }
 
-
   toggleChannelsOverlay() {
     if (!this.showChannels) {
       this.showChannels = !this.showChannels;
@@ -200,16 +203,28 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.sharedMessages.setSelectedUser(user);
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const clickedInsideOverlay = target.closest('.list-overlay');
-    const clickedAtButton = target.closest('.at');
+@HostListener('document:click', ['$event'])
+onDocumentClick(event: MouseEvent) {
+  const target = event.target as HTMLElement;
 
-    if (!clickedInsideOverlay && !clickedAtButton) {
-      this.showChannels = false;
-    }
+  const clickedInsideOverlay = target.closest('.list-overlay');
+  const clickedAtButton = target.closest('.at');
+
+  // Ergänzung für Emoji-Button und Emoji-Overlay
+  const clickedEmojiButton = target.closest('.smiley');
+  const clickedEmojiOverlay = target.closest('.emoji-picker-container');
+
+  if (
+    !clickedInsideOverlay &&
+    !clickedAtButton &&
+    !clickedEmojiButton &&
+    !clickedEmojiOverlay
+  ) {
+    this.showChannels = false;
+    this.emojiOverlay = false;
+    this.emojiThreadOverlay = false;
   }
+}
 
   putPlaceHolderText() {
     if (this.mode === 'thread') {
@@ -239,6 +254,18 @@ export class WriteMessageComponent implements OnInit, OnChanges {
       });
     }  
     this.messageForm.reset();      
+  }
+
+  toggleEmojiOverlay() {
+    if (this.mode === 'thread') {
+      this.emojiThreadOverlay = !this.emojiThreadOverlay      
+    } else {
+      this.emojiOverlay = !this.emojiOverlay
+    }
+  }
+
+  addEmoji(event:any) {
+
   }
 
 }

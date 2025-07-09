@@ -52,7 +52,6 @@
 
 .buttons-left-container {
     @include dFlex(row, center, center, 5px);
-
     .buttons-left {
         width: 30px;
         height: 30px;
@@ -109,4 +108,18 @@
     padding: 20px 21px 20px 0;
     width: 300px;
     min-height: auto;
+}
+
+.add-emoji-container {
+    position: relative;
+}
+
+.emoji-picker-container {
+    position: absolute;
+    left:2Px;
+    bottom:24px;
+    &.thread-mode {
+        right:23px;
+        bottom:24px;
+    }
 }

@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, ViewContainerRef, ViewChild } from '@angular/core';
 import { Component, Input, HostListener, ElementRef} from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
@@ -7,6 +7,9 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Firestore, Timestamp, orderBy, collection, query, onSnapshot } from '@angular/fire/firestore';
+import { PickerComponent } from '@ctrl/ngx-emoji-mart';
+import { CdkPortal, CdkPortalOutlet } from '@angular/cdk/portal';
+import { EmojiPickerComponent } from "./../../style-components/emoji-picker/emoji-picker.component"
 
 @Component({
   selector: 'app-own-message',
@@ -15,7 +18,9 @@ import { Firestore, Timestamp, orderBy, collection, query, onSnapshot } from '@a
     CommonModule,
     DatePipe,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PickerComponent,
+    EmojiPickerComponent
 
   ],
   templateUrl: './own-message.component.html',
@@ -30,23 +35,26 @@ export class OwnMessageComponent {
   showEditContainer:boolean = false;
   newMessage: string = "";
   answerDetails: ChatMessage[] = [];
+  emojiOverlay:boolean = false;
   
 
   constructor(
       public sharedUser: UserSharedService,
       public sharedMessages: MessageSharedService,
-      private elementRef: ElementRef
+      private elementRef: ElementRef,
+      private viewContainerRef: ViewContainerRef
     ) {}
 
   updateMessage = new FormGroup<{ activeMessage: FormControl<string> }>({
       activeMessage: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
   });
 
+  @ViewChild('emojiPortalTemplate') emojiPortal!: CdkPortal;
+
   ngOnInit(): void {
     if (this.message) {
       this.updateMessage.patchValue({ activeMessage: this.message.text });
-    }
-    
+    }    
   }
 
   ngOnChanges(): void {
@@ -118,5 +126,20 @@ export class OwnMessageComponent {
         })
         });           
     }  
-    }
+  }
+
+  openEmojiOverlay() {
+    this.emojiOverlay = !this.emojiOverlay
+  }
+
+
+  addEmoji(emoji:any) {
+    
+    this.emojiOverlay = !this.emojiOverlay;
+    this.sharedMessages.pushEmojiReaction(this.message, emoji);
+  }
 }
+
+
+
+

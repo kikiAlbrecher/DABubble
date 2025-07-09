@@ -1,7 +1,8 @@
 <section class="own-message-section"
          [ngClass]="{'thread-mode': mode === 'thread'}"
          (mouseover)="onMouseOver()"
-         (mouseout)="editOverlay = false">
+         (mouseout)="editOverlay = false"
+         (mouseleave)="emojiOverlay = false">
     <div class="own-message-content">
         
         @if (!showEditContainer) {
@@ -28,9 +29,6 @@
                     <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>
                 </div>
                 }
-                <div class="emoji-container">
-                    <div class="add-emoji"></div>
-                </div>
             </div>     
             }
         </div>
@@ -61,7 +59,16 @@
     <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay" [class.visible]="editOverlay">
         <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image thread-image" im src="assets/img/emoji-hook.png" alt="">
         <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image thread-image" src="assets/img/emoji-clapp.png" alt="">
-        <div class="edit-overlay-icons smiley"></div>
+        <div class="add-emoji-container">
+            <div (click)="openEmojiOverlay()" class="edit-overlay-icons smiley"></div>
+            @if(emojiOverlay) {
+                <div class="emoji-picker-scroll-container">
+                    <div class="emoji-picker-container">
+                        <app-emoji-picker (emojiSelected)="addEmoji($event)"></app-emoji-picker>
+                    </div>
+                </div>
+            }   
+        </div>    
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons points" (click)="showEditMessageOverlay()"></div>
     </div>
@@ -70,5 +77,4 @@
         <span (click)="showEditOverlay()">Nachricht bearbeiten</span>
     </div>
     }
-    
 </section>

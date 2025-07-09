@@ -1,0 +1,5 @@
+<div class="emoji-grid">
+  @for (emoji of emojis; track $index) {
+    <span (click)="selectEmoji(emoji)" title="Emoji"> {{emoji}}  </span>
+  } 
+</div>

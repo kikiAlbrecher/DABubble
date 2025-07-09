@@ -53,6 +53,7 @@
 .answer-emoji-container {
     width: 100%;
     @include dFlex(row, space-between, center, 10px);
+    position: relative;
 }
 
 .answer-emoji-container-only-emoji {
@@ -67,9 +68,33 @@
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
+    cursor: pointer;
     &:hover {
         background-image: url('./../../../assets/icons/add-reaction-hover.png');
     }
+}
+
+.add-emoji-container {
+    position: relative;
+}
+
+.emoji-picker-container {
+    
+    width: 230px;
+    height:200px;
+    overflow-y: auto;   
+}
+
+.emoji-picker-scroll-container {
+    width: 245px;
+    height:215px;
+    position: absolute;
+    left:30px;
+    bottom:-185px;
+    border-radius: 30px;
+    border: 1px solid #797EF3;
+    background-color: white;
+    z-index: 1000;
 }
 
 .answer-contaier {

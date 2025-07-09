@@ -226,6 +226,15 @@ export class MessageSharedService {
         }       
     }
 
+    async pushEmojiReaction(message:ChatMessage, emoji:any) {
+        console.log('message:', message);
+        console.log(emoji);
+        console.log('seletedMessage:',this.selectedMessage);
+        
+        
+        
+    }
+
 }
 
 

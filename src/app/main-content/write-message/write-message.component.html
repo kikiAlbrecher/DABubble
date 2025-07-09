@@ -7,7 +7,17 @@
     <div class="buttons-container">
         <div class="buttons-left-container">
             <div class="buttons-left">
-                <div class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
+                <div class="add-emoji-container">
+                    <div (click)="toggleEmojiOverlay()" class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
+                    @if(emojiOverlay || (this.mode === 'thread' && emojiThreadOverlay) ){
+                        <div class="emoji-picker-container">
+                            <emoji-mart    (emojiClick)="addEmoji($event)"
+                            [showPreview]="false"
+                            [enableSearch]="false"
+                            ></emoji-mart>
+                        </div>
+                    }
+                </div>
             </div>
             <div class="buttons-left">
                 <div (click)="toggleChannelsOverlay()" *ngIf="selectedChannel" class="at"></div>

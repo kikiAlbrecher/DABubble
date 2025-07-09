@@ -1,0 +1,19 @@
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 220px;
+  padding: 8px;
+  user-select: none;
+}
+.emoji-grid span {
+  font-size: 26px;
+  cursor: pointer;
+  transition: transform 0.12s;
+  padding: 4px;
+  border-radius: 6px;
+}
+.emoji-grid span:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.3);
+}
