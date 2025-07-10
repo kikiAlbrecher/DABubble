@@ -1,48 +1,26 @@
 <div class="outside-overlay" (click)="closeAddChannel()">
-  <form (click)="$event.stopPropagation()" #addChannel="ngForm" (ngSubmit)="saveChannel()" class="dialog-add-channel">
+  <div (click)="$event.stopPropagation()" class="dialog-add-channel">
     <div class="add-headline">
       <h2>Channel erstellen</h2>
       <app-close-button (close)="closeAddChannel()"></app-close-button>
     </div>
     <p class="add-channel-subheadline">Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
-      themenbezogen
-      sein, #marketing zum Beispiel.</p>
-    <div class="input-with-headline">
-      <p class="headline">Channel-Name</p>
-      <div class="input-container channel-input-container">
-        <div class="input-field-container channel-input-wrapper">
-          <img class="input-field-image channel-prefix" src="assets/icons/hashtag.svg" alt="# for channel name">
-          <input type="text" [(ngModel)]="channel.channelName" (input)="channelExistsError = false" name="channelName"
-            #channelName="ngModel" class="input-field input-field-channel" minlength="3"
-            placeholder="z. B. Kooperationsprojekte" [required]="true">
-        </div>
-        <div *ngIf="channelName.invalid && channelName.touched && !channelName.disabled">
-          <span class="validation-fail" *ngIf="channelName.errors?.['required']">
-            Bitte ausfüllen.
-          </span>
-          <span class="validation-fail" *ngIf="channelName.errors?.['minlength']">
-            Mindestens 3 Zeichen erforderlich.
-          </span>
-        </div>
-        <div *ngIf="channelExistsError">
-          <span class="validation-fail">
-            Ein gleichnamiger Channel existiert bereits.
-          </span>
-        </div>
-      </div>
-    </div>
-    <div class="input-with-headline">
-      <p class="headline">Beschreibung <span class="sub-headline">(optional)</span></p>
-      <div class="input-container channel-input-container chanel-input-description">
-        <div class="input-field-container channel-input-wrapper">
-          <input type="text" [(ngModel)]="channel.channelDescription" name="channelDescription"
-            #channelDescription="ngModel" class="input-field input-field-channel input-field-description"
-            placeholder="Dein Text hier">
-        </div>
-      </div>
-    </div>
+      themenbezogen sein, #marketing zum Beispiel.
+    </p>
+
+    <app-channel-name [control]="channelNameControl" [channelExistsError]="channelExistsError" [allowEditName]="false"
+      class="components-width">
+    </app-channel-name>
+
+    <app-channel-description [control]="channelDescriptionControl" [allowEditDescription]="false"
+      class="components-width">
+    </app-channel-description>
+
     <div class="save-action">
-      <app-submit-button [form]="addChannel" label="Erstellen"></app-submit-button>
+      <button type="button" (click)="saveChannel()" [disabled]="channelNameControl.invalid" class="submit-button"
+        [class.button-disabled]="channelNameControl.invalid" [class.button-abled]="channelNameControl.valid">
+        Erstellen
+      </button>
     </div>
-  </form>
+  </div>
 </div>

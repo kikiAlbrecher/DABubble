@@ -74,3 +74,9 @@
     height: 0;
     border: 1px solid $light-purple;
 }
+
+.leave-btn {
+    background: $purple;
+    color: $white;
+    @include fontNunito($size: 18px, $weight: 700);
+}

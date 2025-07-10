@@ -9,6 +9,7 @@ import { Channel } from '../../../models/channel.class';
 import { UsersComponent } from '../../style-components/users/users.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 import { SearchForUserComponent } from '../../style-components/search-for-user/search-for-user.component';
+import { UserSharedService } from '../../userManagement/userManagement-service';
 
 @Component({
   selector: 'app-dialog-add-channel-member',
@@ -34,6 +35,7 @@ export class DialogAddChannelMemberComponent implements OnInit {
 
   private cdr = inject(ChangeDetectorRef);
   private firestore = inject(Firestore);
+  public sharedUser = inject(UserSharedService);
 
   ngOnInit(): void {
     this.loadAllChannels().then(() => {
@@ -88,6 +90,7 @@ export class DialogAddChannelMemberComponent implements OnInit {
       else if (this.mode === 'selectedColleagues') await this.addSelectedColleagues(batch);
 
       await batch.commit();
+      this.sharedUser.channelMembersChanged$.next();
       this.closeAddMember();
     } catch (e) {
       console.error('Fehler beim Speichern der Mitglieder:', e);

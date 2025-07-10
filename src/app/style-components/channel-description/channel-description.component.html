@@ -1,0 +1,14 @@
+<div class="input-with-headline">
+    <div class="header">
+        <p class="headline">Beschreibung <span class="sub-headline">(optional)</span></p>
+        @if(allowEditDescription) {
+        <button class="headline-btn" type="button" (click)="save.emit()">Speichern</button>
+        }
+    </div>
+    <div class="input-container channel-input-container chanel-input-description">
+        <div class="input-field-container channel-input-wrapper">
+            <input type="text" [formControl]="control" class="input-field input-field-channel input-field-description"
+                placeholder="Dein Text hier">
+        </div>
+    </div>
+</div>

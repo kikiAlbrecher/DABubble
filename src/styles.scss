@@ -221,3 +221,40 @@ input {
         color: $purple;
     }
 }
+
+.save-action {
+    @include dFlex($jc: flex-end, $g: 10px);
+    width: 100%;
+}
+
+.submit-button {
+    @include fontNunito($size: 18px, $weight: 700);
+    color: $white;
+    border-radius: 25px;
+    background: $purple;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.button-abled,
+.button-disabled {
+    border-radius: 25px;
+}
+
+.button-abled {
+    background: $purple;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.button-disabled {
+    background: $grey;
+
+    &:hover {
+        cursor: default;
+    }
+}
