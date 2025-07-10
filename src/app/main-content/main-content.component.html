@@ -30,7 +30,8 @@
             (close)="closeAddChannelMember()" (save)="saveAddChannelMember($event)">
         </app-dialog-add-channel-member>
         <app-dialog-edit-channel *ngIf="editChannel" [selectedChannel]="selectedChannel"
-            (close)="closeDialogEditChannel()" (userLeftChannel)="updateChannel()"
+            (close)="closeDialogEditChannel()" (saveName)="saveEditChannel($event)"
+            (saveDescription)="saveEditChannel($event)" (userLeftChannel)="updateChannelMember($event)"
             [position]="editChannelPosition" [style.top.px]="editChannelPosition.top"
             [style.left.px]="editChannelPosition.left" style="position: fixed; z-index: 999;">
         </app-dialog-edit-channel>

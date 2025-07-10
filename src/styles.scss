@@ -97,8 +97,18 @@ input {
     background-color: $green;
 }
 
+.active {
+    @include fontNunito(20px, 400);
+    color: $green;
+}
+
 .offline {
-    background-color: $red;
+    background-color: $grey;
+}
+
+.inactive {
+    @include fontNunito(20px, 400);
+    color: $grey;
 }
 
 .main-blocks {

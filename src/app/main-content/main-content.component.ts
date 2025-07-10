@@ -115,10 +115,17 @@ export class MainContentComponent {
     this.editChannel = true;
   }
 
-  updateChannel() {
+  saveEditChannel(event: { success: boolean; message: string }) {
+    this.statusMessageType = event.success ? 'success' : 'error';
+    this.statusMessage = event.message;
+
+    setTimeout(() => this.statusMessage = '', 2000);
+  }
+
+  updateChannelMember(event: { success: boolean; message: string }) {
     this.editChannel = false;
-    this.statusMessageType = 'success';
-    this.statusMessage = 'Du wurdest ausgetragen.';
+    this.statusMessageType = event.success ? 'success' : 'error';
+    this.statusMessage = event.message;
 
     setTimeout(() => this.statusMessage = '', 2000);
   }
@@ -158,6 +165,8 @@ export class MainContentComponent {
     this.showAddMemberDialog = false;
     this.statusMessageType = 'success';
     this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
+    this.statusMessageType = 'error';
+    this.statusMessage = 'Da ist etwas schiefgelaufen. Bitte versuche es noch einmal.';
 
     setTimeout(() => this.statusMessage = '', 2000);
   }
