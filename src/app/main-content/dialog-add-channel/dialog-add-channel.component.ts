@@ -5,19 +5,31 @@ import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/f
 import { inject } from '@angular/core';
 import { Channel } from '../../../models/channel.class';
 import { CollectionReference, doc, DocumentData, getDoc, updateDoc } from 'firebase/firestore';
-import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 import { UserSharedService } from '../../userManagement/userManagement-service';
+import { ChannelNameComponent } from '../../style-components/channel-name/channel-name.component';
+import { ChannelDescriptionComponent } from '../../style-components/channel-description/channel-description.component';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog-add-channel',
   standalone: true,
-  imports: [CommonModule, FormsModule, SubmitButtonComponent, CloseButtonComponent],
+  imports: [CommonModule, FormsModule, CloseButtonComponent, ChannelNameComponent,
+    ChannelDescriptionComponent],
   templateUrl: './dialog-add-channel.component.html',
   styleUrl: './dialog-add-channel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogAddChannelComponent {
+  channelNameControl = new FormControl<string>('', {
+    nonNullable: true,
+    validators: [Validators.required, Validators.minLength(3)]
+  });
+
+  channelDescriptionControl = new FormControl<string>('', {
+    nonNullable: true,
+  });
+
   channel: Channel = new Channel();
   channelExistsError = false;
 
@@ -29,8 +41,18 @@ export class DialogAddChannelComponent {
   @Output() save = new EventEmitter<Channel>();
 
   async saveChannel() {
+    this.channelNameControl.markAsTouched();
+    this.channelExistsError = false;
+
+    if (this.channelNameControl.invalid) {
+      this.cdr.detectChanges();
+      return;
+    }
+
     try {
       this.cdr.detectChanges();
+      this.channel.channelName = this.channelNameControl.value.trim();
+      this.channel.channelDescription = this.channelDescriptionControl.value.trim();
       const channelsCollection = collection(this.firestore, 'channels');
       this.channelNameConvention();
 

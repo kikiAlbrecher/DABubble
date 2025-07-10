@@ -1,0 +1,70 @@
+@import './../../../styles/shared';
+
+.input-with-headline {
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+    width: 100%;
+
+    >.header {
+        @include dFlex($jc: space-between);
+        width: 100%;
+
+        >.headline {
+            @include fontNunito($size: 18px, $weight: 700);
+
+            >.sub-headline {
+                color: $grey;
+            }
+        }
+
+        >.headline-btn {
+            @include fontNunito($size: 18px, $weight: 600);
+            color: $purple-hover;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    >.channel-input-container {
+        width: 100%;
+        padding: 18px 20px;
+        border-radius: 40px;
+        border: 1px solid $light-purple;
+        position: relative;
+        overflow-x: hidden;
+        gap: 0;
+
+        >.channel-input-wrapper {
+            @include dFlex($jc: flex-start, $g: 15px);
+
+            >.channel-prefix {
+                left: 12px;
+                height: 23px;
+                aspect-ratio: 1 / 1;
+            }
+
+            >.input-field-channel {
+                @include fontNunito(18px, 400);
+                background: none;
+            }
+
+            >.input-field-description {
+                padding-left: 15px;
+            }
+        }
+    }
+
+    >.chanel-input-description {
+        padding: 20px;
+        border-radius: 30px;
+    }
+}
+
+.validation-fail {
+    color: $red;
+    @include fontNunito($size: 16px, $weight: 400);
+    position: absolute;
+    left: 36px;
+    bottom: 0;
+}

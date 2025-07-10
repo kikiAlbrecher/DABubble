@@ -1,0 +1,30 @@
+<div class="input-with-headline">
+    <div class="header">
+        <p class="headline">Channel-Name</p>
+        @if(allowEditName) {
+        <button class="headline-btn" type="button" (click)="saveName.emit()">Speichern</button>
+        }
+    </div>
+    <div class="input-container channel-input-container">
+        <div class="input-field-container channel-input-wrapper">
+            <img class="input-field-image channel-prefix" src="assets/icons/hashtag.svg" alt="#">
+            <input [formControl]="control" class="input-field input-field-channel"
+                placeholder="z. B. Kooperationsprojekte">
+        </div>
+
+        <div *ngIf="control.invalid && control.touched">
+            <span class="validation-fail" *ngIf="control.hasError('required')">
+                Bitte ausfüllen.
+            </span>
+            <span class="validation-fail" *ngIf="control.hasError('minlength')">
+                Mindestens 3 Zeichen erforderlich.
+            </span>
+        </div>
+
+        <div *ngIf="channelExistsError">
+            <span class="validation-fail">
+                Ein gleichnamiger Channel existiert bereits.
+            </span>
+        </div>
+    </div>
+</div>
