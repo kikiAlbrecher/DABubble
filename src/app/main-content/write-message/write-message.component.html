@@ -1,7 +1,7 @@
 <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="write-message-section">
     <textarea
         [placeholder]="placeHolderText"
-        formControlName="message" (input)="textError = false" placeholder="Nachricht an" class=""
+        formControlName="message" #input (input)="textError = false" placeholder="Nachricht an" class=""
         type="text">
     </textarea>
     <div class="buttons-container">
@@ -11,9 +11,11 @@
                     <div (click)="toggleEmojiOverlay()" class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
                     @if(emojiOverlay || (this.mode === 'thread' && emojiThreadOverlay) ){
                         <div class="emoji-picker-container">
-                            <emoji-mart    (emojiClick)="addEmoji($event)"
+                            <emoji-mart    
+                            (emojiSelect)="addEmoji($event)"
                             [showPreview]="false"
                             [enableSearch]="false"
+                            [isNative]="true"
                             ></emoji-mart>
                         </div>
                     }

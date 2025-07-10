@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ViewChild, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Firestore, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
@@ -38,6 +38,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   @Input() mode: 'default' | 'thread' = 'default';
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
+  @ViewChild('input', { static: false }) input!: ElementRef<HTMLTextAreaElement>;
   private unsubscribeChannels?: () => void;
 
   textError: boolean = false;
@@ -52,6 +53,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   placeHolderText:string = "";
   emojiOverlay: boolean = false;
   emojiThreadOverlay: boolean = false;
+  messageText:any = ""
 
   private firestore = inject(Firestore);
 
@@ -188,7 +190,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.sharedMessages.setSelectedChannel(channel);
   }
 
-    @HostListener('document:click', ['$event'])
+  @HostListener('document:click', ['$event'])
     handleClickOutside(event: MouseEvent) {
     if (this.showChannels && !this.eRef.nativeElement.contains(event.target)) {
       this.showChannels = false;
@@ -203,28 +205,24 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.sharedMessages.setSelectedUser(user);
   }
 
-@HostListener('document:click', ['$event'])
-onDocumentClick(event: MouseEvent) {
-  const target = event.target as HTMLElement;
-
-  const clickedInsideOverlay = target.closest('.list-overlay');
-  const clickedAtButton = target.closest('.at');
-
-  // Ergänzung für Emoji-Button und Emoji-Overlay
-  const clickedEmojiButton = target.closest('.smiley');
-  const clickedEmojiOverlay = target.closest('.emoji-picker-container');
-
-  if (
-    !clickedInsideOverlay &&
-    !clickedAtButton &&
-    !clickedEmojiButton &&
-    !clickedEmojiOverlay
-  ) {
-    this.showChannels = false;
-    this.emojiOverlay = false;
-    this.emojiThreadOverlay = false;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const clickedInsideOverlay = target.closest('.list-overlay');
+    const clickedAtButton = target.closest('.at');
+    const clickedEmojiButton = target.closest('.smiley');
+    const clickedEmojiOverlay = target.closest('.emoji-picker-container');
+    if (
+      !clickedInsideOverlay &&
+      !clickedAtButton &&
+      !clickedEmojiButton &&
+      !clickedEmojiOverlay
+    ) {
+      this.showChannels = false;
+      this.emojiOverlay = false;
+      this.emojiThreadOverlay = false;
+    }
   }
-}
 
   putPlaceHolderText() {
     if (this.mode === 'thread') {
@@ -264,8 +262,15 @@ onDocumentClick(event: MouseEvent) {
     }
   }
 
-  addEmoji(event:any) {
-
+ addEmoji(selected: any) {
+    const emoji: string = selected.emoji.native;
+    const input = this.input.nativeElement;
+    input.focus();
+    const [start, end] = [input.selectionStart, input.selectionEnd];
+    input.setRangeText(emoji, start, end, 'end');
+    this.messageForm.controls['message'].setValue(input.value);
+    this.emojiOverlay = false;
+    this.emojiThreadOverlay = false
   }
 
 }
