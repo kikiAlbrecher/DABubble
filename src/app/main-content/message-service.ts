@@ -4,9 +4,10 @@ import { Channel } from '../../models/channel.class';
 import { UserSharedService } from '../userManagement/userManagement-service';
 import { User } from "../userManagement/user.interface";
 import { BehaviorSubject } from 'rxjs';
-import { Firestore, Timestamp, orderBy, serverTimestamp, updateDoc, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, deleteDoc, Timestamp, orderBy, serverTimestamp, updateDoc, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
 import { doc } from 'firebase/firestore';
 import { ChatMessage } from './message.model';
+import { Reaction } from "./../../models/reaction.model"
 
 @Injectable({
     providedIn: 'root'
@@ -29,6 +30,7 @@ export class MessageSharedService {
     selectedMessage: ChatMessage | undefined;
     answerMessages: ChatMessage[] = [];
     threadChannelOrUserName:string = "";
+    alreadyExisitingReactionId:string = "";
     
     constructor(
         public shared: UserSharedService) {}
@@ -227,15 +229,44 @@ export class MessageSharedService {
     }
 
     async pushEmojiReaction(message:ChatMessage, emoji:any) {
-        console.log('message:', message);
-        console.log(emoji);
-        console.log('seletedMessage:',this.selectedMessage);
-        
-        
-        
+        const alreadyReacted = await this.checkReactionDone(message, emoji);
+
+        if (alreadyReacted) {
+        console.log('User already reacted!');
+        this.deleteReaction(message)
+        } else {
+        const channelId = message.channelId ?? '';
+        const messageId = message.id ?? '';
+        const collectionType = this.channelSelected ? 'channels' : 'directMessages';
+        const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions');
+        await addDoc (reactionsRef, {
+            user: message.user,
+            emoji: emoji,
+            timeStamp: serverTimestamp()
+        });     
+        }
     }
 
+    async checkReactionDone(message:ChatMessage, emoji:any) {
+        const channelId = message.channelId ?? '';
+        const messageId = message.id ?? '';
+        const collectionType = this.channelSelected ? 'channels' : 'directMessages';
+        const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions');
+        const q = query(reactionsRef, where("emoji", "==", emoji), where("user", "==", this.shared.actualUser.uid));
+        const snapshot = await getDocs(q); 
+        snapshot.forEach((doc) => {
+        this.alreadyExisitingReactionId = doc.id;
+        });
+        return !snapshot.empty;
+    }
+
+    async deleteReaction (message:ChatMessage) {
+        const channelId = message.channelId ?? '';
+        const messageId = message.id ?? '';
+        const collectionType = this.channelSelected ? 'channels' : 'directMessages';
+        await deleteDoc(doc(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions', this.alreadyExisitingReactionId));
+
+    }
+
+
 }
-
-
-

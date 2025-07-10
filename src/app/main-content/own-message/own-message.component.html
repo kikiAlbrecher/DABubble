@@ -29,6 +29,27 @@
                     <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>
                 </div>
                 }
+                <div class="reactions-container">
+                    @for (emoji of groupedReactionsEmoji; track $index) {
+                    <div (click)="sharedMessages.pushEmojiReaction(message, emoji)" class="reaction"
+                           (mouseover)="hoveredEmoji = emoji"
+                            (mouseout)="hoveredEmoji = null">
+                        <span class="reaction-count">{{groupedReactions[emoji].length}}</span>
+                        <div class="reaction-emoji">{{emoji}}</div>
+                        @if (hoveredEmoji === emoji) {
+                            <div class="reaction-info">
+                                <div class="reaction-emoji">{{emoji}}</div>
+                                @for (item of groupedReactions[emoji]; track $index) {
+                                    <div class="reaction-info-name-container">
+                                        <span class="reaction-info-name">{{test}}</span>
+                                    </div>
+                                }   
+                                <span class="reaction-info-text">hat reagiert</span>
+                            </div>
+                        }    
+                    </div>
+                    }
+                </div>
             </div>     
             }
         </div>
@@ -57,8 +78,8 @@
     </div>
     
     <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay" [class.visible]="editOverlay">
-        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image thread-image" im src="assets/img/emoji-hook.png" alt="">
-        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image thread-image" src="assets/img/emoji-clapp.png" alt="">
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" (click)="this.sharedMessages.pushEmojiReaction(message, '👍')" class="edit-overlay-image thread-image">👍</div>
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" (click)="this.sharedMessages.pushEmojiReaction(message, '❤️')" class="edit-overlay-image thread-image">❤️</div>
         <div class="add-emoji-container">
             <div (click)="openEmojiOverlay()" class="edit-overlay-icons smiley"></div>
             @if(emojiOverlay) {

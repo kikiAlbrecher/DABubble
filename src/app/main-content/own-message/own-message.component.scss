@@ -52,7 +52,7 @@
 
 .answer-emoji-container {
     width: 100%;
-    @include dFlex(row, space-between, center, 10px);
+    @include dFlex(row, end, center, 10px);
     position: relative;
 }
 
@@ -99,6 +99,8 @@
 
 .answer-contaier {
     @include dFlex(row, center, center, 20px);
+      white-space: nowrap; /* verhinder Umbruch des Inhalts */
+  flex-shrink: 0; /* verhindert, dass es zu schmal wird */
     .answer-count {
         @include fontNunito(18px, 400);
         cursor: pointer;
@@ -219,7 +221,7 @@
 .edit-message {
     position: absolute;
     top:30px;
-    right: 80px;
+    left: 250px;
     background-color: white;
     padding: 10px 15px;
     border: 1px solid #797EF3;
@@ -311,6 +313,66 @@
             color: white;
         }
     }
+}
+
+.reactions-container {
+  display: flex;
+  justify-content: end;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%; 
+  position: relative;
+}
+
+.reaction {
+    @include dFlex(row, center, center, 5px);
+    background-color: white;
+    border: 1px solid #ADB0D9;
+    border-radius: 20px;
+    padding: 3px 8px;
+    position: relative;
+    cursor: pointer;
+    .reaction-count{
+        @include fontNunito(16px, 700);
+        color: black;
+        @include dFlex(row, center, center, 0px);
+          line-height: 1;
+    }
+    .reaction-emoji {
+        @include dFlex(row, center, center, 0px);
+          line-height: 1;
+    }
+
+}
+
+.reaction-info {
+    @include dFlex(column, center, center, 5px);
+    padding: 15px 10px;
+    background-color: #444DF2;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    flex-wrap: nowrap; 
+    white-space: nowrap; 
+    z-index: 100;
+}
+
+.reaction-info-name-container {
+    @include dFlex(column, center, center, 3px);
+    .reaction-info-name {
+        @include fontNunito(18px, 700);
+        flex-wrap: nowrap;
+        color: white
+    }
+}
+
+.reaction-info-text {
+    @include fontNunito(16px, 400);
+    flex-wrap: nowrap;
+    color: white
 }
 
 .d-none {

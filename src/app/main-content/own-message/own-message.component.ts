@@ -6,10 +6,11 @@ import { ChatMessage } from '../message.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Firestore, Timestamp, orderBy, collection, query, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, Timestamp, orderBy, collection, query, onSnapshot, doc } from '@angular/fire/firestore';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { CdkPortal, CdkPortalOutlet } from '@angular/cdk/portal';
 import { EmojiPickerComponent } from "./../../style-components/emoji-picker/emoji-picker.component"
+import { Reaction } from "./../../../models/reaction.model";
 
 @Component({
   selector: 'app-own-message',
@@ -20,7 +21,7 @@ import { EmojiPickerComponent } from "./../../style-components/emoji-picker/emoj
     FormsModule,
     ReactiveFormsModule,
     PickerComponent,
-    EmojiPickerComponent
+    EmojiPickerComponent,
 
   ],
   templateUrl: './own-message.component.html',
@@ -36,7 +37,12 @@ export class OwnMessageComponent {
   newMessage: string = "";
   answerDetails: ChatMessage[] = [];
   emojiOverlay:boolean = false;
-  
+  reactionDetails:Reaction[] = [];
+  groupedReactions:any = {};
+  groupedReactionsEmoji: any;
+  hoveredEmoji: string | null = null;
+  reactionUserName:any;
+  test:any= ""
 
   constructor(
       public sharedUser: UserSharedService,
@@ -59,7 +65,8 @@ export class OwnMessageComponent {
 
   ngOnChanges(): void {
     if (this.message?.id && this.message?.channelId) {
-      this.getAnswerDetails();    
+      this.getAnswerDetails();  
+      this.getChannelReactions()  ;
     }
   }
 
@@ -132,11 +139,51 @@ export class OwnMessageComponent {
     this.emojiOverlay = !this.emojiOverlay
   }
 
-
-  addEmoji(emoji:any) {
-    
+  addEmoji(emoji:any) {    
     this.emojiOverlay = !this.emojiOverlay;
     this.sharedMessages.pushEmojiReaction(this.message, emoji);
+  }
+
+  getChannelReactions() {
+    const channelId = this.message.channelId ?? '';
+    const messageId = this.message.id ?? '';    
+    const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
+    const reactionRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions');  
+    const q = query(reactionRef, orderBy('emoji'));
+    if(reactionRef) {
+      onSnapshot(q, snapshot => {
+        this.reactionDetails = snapshot.docs.map(doc => {
+        const data = doc.data() as Reaction;                    
+        return {
+            ...data,
+        };            
+        });        
+        const groups = this.reactionDetails.reduce((groups:any, reaction: Reaction) => {
+        const emoji =  reaction.emoji;
+        if (!groups[emoji]) {
+                groups[emoji] = [];
+            }
+        groups[emoji].push(reaction);               
+        return groups;
+        }, {});
+        this.groupedReactions = groups;                    
+        this.groupedReactionsEmoji = Object.keys(groups);  
+     
+        const emojis = this.groupedReactionsEmoji;
+        for (let i = 0; i < emojis.length; i++) {
+          const emoji = emojis[i];
+          const reactionsForEmoji = this.groupedReactions[emoji];
+
+          for (let j = 0; j < reactionsForEmoji.length; j++) {
+            const reaction = reactionsForEmoji[j];
+            const userId = reaction.user;
+            onSnapshot(doc(this.firestore, "users", userId), (doc) => {
+            this.test = doc.data()!['displayName']             
+            });
+          }          
+        }   
+      });         
+    }     
   }
 }
 
