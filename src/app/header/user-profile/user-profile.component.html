@@ -1,22 +1,32 @@
 <div class="dopdown">
     <div class="dropdown-container">
+        @if (!allowEdit) {
         <span class="header">Profil</span>
+        }
+        @if (!sharedHeader.editName && allowEdit) {
+        <span class="header">Profil</span>
+        }
+        @if (sharedHeader.editName && allowEdit) {
+        <span class="header">Dein Profil bearbeiten</span>
+        }
         <img (click)="sharedHeader.changeDropdown()" src="assets/icons/close.svg" alt="">
     </div>
     <img class="profile-image" src="{{ user.picture }}" alt="">
 
     @if (!sharedHeader.editName) {
     <div class="change-container-info">
-        <div class="dropdown-container">
-            <span class="name">{{ user.name }}</span>
-            @if (allowEdit) {
-            <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
-            }
-        </div>
-        <div class="baseline-container">
-            <div class="check-status" [class.online]="user.status" [class.offline]="!user.status">
+        <div class="name-status">
+            <div class="dropdown-container">
+                <span class="name">{{ user.name }}</span>
+                @if (allowEdit) {
+                <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
+                }
             </div>
-            <span class="active">{{ user.status ? 'Aktiv' : 'Abwesend' }}</span>
+            <div class="baseline-container">
+                <div class="check-status" [class.online]="user.status" [class.offline]="!user.status"></div>
+                <span [class.active]="user.status" [class.inactive]="!user.status">{{ user.status ? 'Aktiv' : 'Abwesend'
+                    }}</span>
+            </div>
         </div>
         <div class="baseline-container-mail">
             <img class="mail-icon" src="assets/icons/mail.svg" alt="">
@@ -26,6 +36,14 @@
             </div>
         </div>
     </div>
+    @if (!allowEdit) {
+    <div class="message-container">
+        <button class="message-btn">
+            <img src="assets/icons/message.svg" alt="message icon">
+            <span>Nachricht</span>
+        </button>
+    </div>
+    }
     }
 
     @if (sharedHeader.editName && allowEdit) {

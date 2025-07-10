@@ -38,8 +38,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private unsubscribeUsers?: () => void;
   private userSub?: Subscription;
 
-  // constructor(private messageSharedService: MessageSharedService) { }
-
   ngOnInit() {
     this.listenToChannels();
     this.userSub = this.userService.actualUser$.subscribe(currentUserId => {

@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit, inject, ChangeDetectorRef, Input } from '@angular/core';
-import { Firestore, collectionData, collection, doc, updateDoc } from '@angular/fire/firestore';
+import { Component, EventEmitter, Output, OnInit, inject, Input } from '@angular/core';
+import { Firestore, collection, doc, updateDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
-import { SubmitButtonComponent } from '../../style-components/submit-button/submit-button.component';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
 import { ChannelUsersService } from '../../userManagement/channel-users.service';
@@ -39,7 +38,9 @@ export class DialogEditChannelComponent implements OnInit {
   @Input() selectedChannel: Channel | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
   @Output() close = new EventEmitter<void>();
-  @Output() userLeftChannel = new EventEmitter<void>();
+  @Output() userLeftChannel = new EventEmitter<{ success: boolean; message: string }>();
+  @Output() saveName = new EventEmitter<{ success: boolean; message: string }>();
+  @Output() saveDescription = new EventEmitter<{ success: boolean; message: string }>();
 
   private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
@@ -50,6 +51,10 @@ export class DialogEditChannelComponent implements OnInit {
 
     this.channelNameControl.setValue(this.selectedChannel.channelName.replace(/^#/, ''));
     this.channelDescriptionControl.setValue(this.selectedChannel.channelDescription || '');
+
+    this.channelNameControl.valueChanges.subscribe(() => {
+      this.channelExistsError = false;
+    });
 
     this.loadCreatorName();
   }
@@ -68,36 +73,79 @@ export class DialogEditChannelComponent implements OnInit {
   async saveEditName() {
     if (!this.selectedChannel) return;
 
-    const updatedName = `#${this.channelNameControl.value.trim()}`;
-    const docRef = doc(this.firestore, 'channels', this.selectedChannel.channelId);
+    this.channelNameControl.markAsTouched();
 
+    if (this.channelNameControl.invalid) {
+      this.saveName.emit({ success: false, message: 'Der Channel-Name ist ungültig.' });
+      return;
+    }
+
+    const updatedName = this.formatChannelName(this.channelNameControl.value);
+    const isDuplicate = await this.checkForNameDuplicates(updatedName);
+
+    if (isDuplicate) {
+      this.channelExistsError = true;
+      return;
+    }
+
+    await this.updateChannelName(updatedName);
+  }
+
+  private async checkForNameDuplicates(updatedName: string): Promise<boolean> {
+    if (updatedName === this.selectedChannel?.channelName) return false;
+
+    return await this.queryNameDuplicates(updatedName);
+  }
+
+  private async queryNameDuplicates(updatedName: string): Promise<boolean> {
+    const channelsCollection = collection(this.firestore, 'channels');
+    const q = query(channelsCollection, where('channelName', '==', updatedName));
+    const result = await getDocs(q);
+    return !result.empty;
+  }
+
+  private async updateChannelName(name: string): Promise<void> {
     try {
-      await updateDoc(docRef, {
-        channelName: updatedName,
-      });
+      const docRef = doc(this.firestore, 'channels', this.selectedChannel!.channelId);
+      await updateDoc(docRef, { channelName: name });
 
-      this.selectedChannel.channelName = updatedName;
+      this.selectedChannel!.channelName = name;
+      this.channelExistsError = false;
+      this.saveName.emit({ success: true, message: 'Der Channel-Name wurde erfolgreich geändert.' });
       this.isEditingName = false;
     } catch (error) {
-      console.error('Fehler beim Speichern des Channels:', error);
+      this.saveName.emit({ success: false, message: 'Der Channel-Name konnte nicht geändert werden.' });
     }
+  }
+
+  private formatChannelName(name: string): string {
+    name = name.trim();
+
+    return name.startsWith('#') ? name : `#${name}`;
   }
 
   async saveEditDescription() {
     if (!this.selectedChannel) return;
 
-    const updatedDescription = this.channelDescriptionControl.value.trim();
-    const docRef = doc(this.firestore, 'channels', this.selectedChannel.channelId);
+    const updatedDescription = this.getTrimmedDescription();
 
+    await this.updateChannelDescription(updatedDescription);
+  }
+
+  private getTrimmedDescription(): string {
+    return this.channelDescriptionControl.value.trim();
+  }
+
+  private async updateChannelDescription(description: string): Promise<void> {
     try {
-      await updateDoc(docRef, {
-        channelDescription: updatedDescription
-      });
+      const docRef = doc(this.firestore, 'channels', this.selectedChannel!.channelId);
+      await updateDoc(docRef, { channelDescription: description });
 
-      this.selectedChannel.channelDescription = updatedDescription;
+      this.selectedChannel!.channelDescription = description;
+      this.saveDescription.emit({ success: true, message: 'Die Channel-Beschreibung wurde geändert.' });
       this.isEditingDescription = false;
     } catch (error) {
-      console.error('Fehler beim Speichern des Channels:', error);
+      this.saveDescription.emit({ success: false, message: 'Ups, da ist etwas schiefgelaufen. Bitte versuche es noch einmal.' });
     }
   }
 
@@ -111,11 +159,11 @@ export class DialogEditChannelComponent implements OnInit {
       .then(() => {
         this.sharedUser.channelMembersChanged$.next();
         this.sharedUser.channelChanged$.next();
-        this.userLeftChannel.emit();
+        this.userLeftChannel.emit({ success: true, message: 'Du wurdest ausgetragen.' });
         this.closeEditChannel();
       })
       .catch(error => {
-        console.error("Fehler beim Verlassen des Channels:", error);
+        this.userLeftChannel.emit({ success: false, message: 'Du konntest nicht ausgetragen werden, weil ' + error });
       });
   }
 
