@@ -1,4 +1,4 @@
-<section class="svg-title-style user-header-section" (click)="shared.showUserEdit()">
+<section *ngIf="shared.actualUser" class="svg-title-style user-header-section" (click)="shared.showUserEdit()">
     <span>{{shared.actualUser.name}}</span>
 
     <div class="user-image-container">

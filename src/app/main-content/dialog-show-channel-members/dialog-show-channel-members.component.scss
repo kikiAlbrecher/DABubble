@@ -4,7 +4,8 @@
     position: fixed;
     border-top-right-radius: 0;
     width: 415px;
-    height: 411px;
+    max-height: 600px;
+    overflow-y: scroll;
 }
 
 .show-members-content {

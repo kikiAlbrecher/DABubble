@@ -15,6 +15,11 @@
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
     z-index: 999;
 
+    @media (max-width: 664px) {
+        padding: 40px 16px 20px 16px;
+        gap: 25px;
+    }
+
     >.add-channel-subheadline {
         @include fontNunito($size: 18px, $weight: 400);
     }
@@ -26,6 +31,10 @@
 
     >h2 {
         @include fontNunito($size: 24px, $weight: 700);
+
+        @media(max-width: 664px) {
+            @include fontNunito($size: 20px, $weight: 700);
+        }
     }
 }
 

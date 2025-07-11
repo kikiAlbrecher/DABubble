@@ -27,7 +27,6 @@ a {
 button {
     border: unset;
     border-radius: 25px;
-    padding: 12px 25px;
     background: none;
     transition: all 0.3s ease-out;
 
@@ -115,16 +114,22 @@ input {
     background: $white;
     height: calc(100vh - 86px - 16px);
     border-radius: 30px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 25px);
     position: relative;
     z-index: 10;
     overflow-x: hidden;
 
+    @media(max-width: 1368px) {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    @media(max-width: 1000px) {
+        box-shadow: unset;
+    }
+
     @media(max-width: 664px) {
         height: calc(100vh - 80px);
         border-radius: 0;
-        box-shadow: unset;
     }
 }
 
@@ -248,6 +253,7 @@ input {
     @include fontNunito($size: 18px, $weight: 700);
     color: $white;
     border-radius: 25px;
+    padding: 12px 25px;
     background: $purple;
 
     &:hover {

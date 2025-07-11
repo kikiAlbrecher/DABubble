@@ -64,11 +64,18 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
 
   openDialogEditChannel(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const windowWidth = window.innerWidth;
 
-    this.editChannel.emit({
-      top: rect.bottom,
-      left: rect.left
-    });
+    if (windowWidth >= 664) {
+      let left = rect.left;
+
+      this.editChannel.emit({
+        top: rect.bottom,
+        left: left
+      });
+    } else {
+      this.editChannel.emit({ top: 0, left: 0 });
+    }
   }
 
   openShowMembers(event: MouseEvent): void {
