@@ -165,8 +165,8 @@ export class MainContentComponent {
     this.showAddMemberDialog = false;
     this.statusMessageType = 'success';
     this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
-    this.statusMessageType = 'error';
-    this.statusMessage = 'Da ist etwas schiefgelaufen. Bitte versuche es noch einmal.';
+    // this.statusMessageType = 'error';
+    // this.statusMessage = 'Da ist etwas schiefgelaufen. Bitte versuche es noch einmal.';
 
     setTimeout(() => this.statusMessage = '', 2000);
   }

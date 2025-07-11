@@ -113,12 +113,19 @@ input {
 
 .main-blocks {
     background: $white;
-    height: calc(100vh - 115px - 16px);
+    height: calc(100vh - 86px - 16px);
     border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 25px);
     position: relative;
     z-index: 10;
     overflow-x: hidden;
+
+    @media(max-width: 664px) {
+        height: calc(100vh - 80px);
+        border-radius: 0;
+        box-shadow: unset;
+    }
 }
 
 .list {

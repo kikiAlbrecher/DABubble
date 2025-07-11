@@ -2,18 +2,47 @@
 
 .user-header-section {
     @include dFlex(row, center, center, 20px);
-    span{
-    @include fontNunito(32px, 700);
-    color: black;
+
+    span {
+        @include fontNunito(32px, 700);
+        color: black;
+        text-align: left;
+        white-space: nowrap;
+
+        @media(max-width: 1200px) {
+            display: none;
+        }
     }
-    .user-header-img{
+
+    .user-header-img {
         width: 70px;
         height: 70px;
+
+        @media(max-width: 664px) {
+            width: 50px;
+            height: 50px;
+        }
     }
+
     .user-header-icon {
         width: 30px;
         height: 30px;
-        cursor: pointer;
+
+        @media(max-width: 1200px) {
+            display: none;
+        }
+    }
+
+    &:hover span {
+        color: #797EF3;
+    }
+
+    @media(max-width: 1200px) {
+        gap: 0;
+    }
+
+    @media(max-width: 664px) {
+        padding-right: 16px;
     }
 }
 

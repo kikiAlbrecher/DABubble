@@ -26,7 +26,7 @@ export class UserSharedService {
     actualUserID: string = "";
     actualUser: any = [];
     actualUser$ = new BehaviorSubject<string>('');
-    threadsVisible$ = new BehaviorSubject<boolean>(true);
+    threadsVisible$ = new BehaviorSubject<boolean>(false);
     private _workspaceOpen = new BehaviorSubject<boolean>(true);
     workspaceOpen$ = this._workspaceOpen.asObservable();
     channelChanged$ = new BehaviorSubject<void>(undefined);

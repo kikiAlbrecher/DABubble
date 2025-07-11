@@ -13,9 +13,8 @@
             </app-side-nav>
             <app-main-chat (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="onReceiveMembers($event)"
-                (selectedUserChange)="onSelectedUserChanged($event)" (addMember)="openDialogAddMember($event)"
-                [selectedChannel]="selectedChannel" [selectedUser]="selectedUser" [sideNavOpen]="true"
-                [showAddMemberDialog]="showAddMemberDialog">
+                (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
+                [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog">
             </app-main-chat>
             <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
             <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">

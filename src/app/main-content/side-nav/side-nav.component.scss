@@ -9,6 +9,12 @@
         transform: translateX(-110%);
     }
 
+    @media (max-width: 1000px) {
+        &.default-closed {
+            transform: translateX(-110%);
+        }
+    }
+
     >.channels-btn {
         @include dFlex($jc: space-between);
         border-radius: 30px;
