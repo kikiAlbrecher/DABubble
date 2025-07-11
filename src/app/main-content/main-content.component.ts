@@ -87,13 +87,13 @@ export class MainContentComponent {
   }
 
   createChannel(channel: Channel) {
-    this.showAddChannelDialog = false;
     this.selectedChannel = channel;
     this.statusMessageType = 'success';
     this.statusMessage = `Channel ${channel.channelName} erfolgreich erstellt!`;
 
     setTimeout(() => {
       this.statusMessage = '';
+      this.showAddChannelDialog = false;
       this.addChannelMember = true;
     }, 2000);
   }

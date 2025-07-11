@@ -55,6 +55,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   listenToChannels() {
     const channelsRef = collection(this.firestore, 'channels');
+
     this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
       this.channels = snapshot.docs.map(doc => doc.data() as Channel);
       if (this.channels.length > 0 && !this.selectedChannelId) {
@@ -67,6 +68,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   listenToUsers(currentUserId: string) {
     const usersRef = collection(this.firestore, 'users');
+
     this.unsubscribeUsers?.();
     this.unsubscribeUsers = onSnapshot(usersRef, snapshot => {
       const usersArray = snapshot.docs.map(doc =>

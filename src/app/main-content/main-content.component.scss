@@ -33,6 +33,10 @@
     @include dFlex($jc: flex-start, $g: 16px);
     width: 100%;
 
+    @media (max-width: 1368px) {
+        position: relative;
+    }
+
     app-side-nav,
     app-main-chat,
     app-threads {
@@ -41,6 +45,19 @@
 
     app-main-chat {
         flex-grow: 1;
+    }
+
+    app-threads {
+        @media (max-width: 1368px) {
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 99;
+        }
+
+        @media (max-width: 944px) {
+            left: 0;
+        }
     }
 
     &.main-components.workspace-closed {
@@ -77,5 +94,11 @@
     app-main-chat {
         flex-grow: 1;
         width: auto;
+    }
+}
+
+.main-components.threads-open app-main-chat {
+    @media (max-width: 944px) {
+        display: none !important;
     }
 }

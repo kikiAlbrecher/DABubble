@@ -7,6 +7,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPas
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
+import { Channel } from '../../models/channel.class';
 
 @Injectable({
     providedIn: 'root'
@@ -29,6 +30,7 @@ export class UserSharedService {
     private _workspaceOpen = new BehaviorSubject<boolean>(true);
     workspaceOpen$ = this._workspaceOpen.asObservable();
     channelChanged$ = new BehaviorSubject<void>(undefined);
+    lastAddedChannel$ = new BehaviorSubject<Channel | null>(null);
     channelMembersChanged$ = new BehaviorSubject<void>(undefined);
     isDev = true;
     playSlideOut: boolean = false;
@@ -304,8 +306,8 @@ export class UserSharedService {
     async removeChannelUser(userId: string, channelId: string): Promise<void> {
         const userDocRef = doc(this.firestore, 'users', userId);
         const updateData: any = {};
-        updateData[`channelIds.${channelId}`] = deleteField();
 
+        updateData[`channelIds.${channelId}`] = deleteField();
         await updateDoc(userDocRef, updateData);
     }
 }

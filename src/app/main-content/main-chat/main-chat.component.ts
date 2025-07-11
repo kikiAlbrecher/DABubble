@@ -1,6 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Firestore } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { User } from '../../userManagement/user.interface';
@@ -46,7 +45,6 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Output() selectedUserChange = new EventEmitter<User | null>();
   @Output() userLeftChannel = new EventEmitter<void>();
 
-  private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
   private sharedUser = inject(UserSharedService);
   private messagesSubscription?: Subscription;
