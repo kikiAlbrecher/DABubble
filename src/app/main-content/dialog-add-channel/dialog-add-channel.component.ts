@@ -64,6 +64,9 @@ export class DialogAddChannelComponent {
       }
       this.channel = await this.channelIdUpdate(this.channel);
       this.save.emit(this.channel);
+      // this.userShared.channelChanged$.next();
+      // this.userShared.lastAddedChannel$.next(this.channel);
+      // this.cdr.detectChanges();
     } catch (error) {
       console.error('Fehler beim Speichern des Channels:', error);
     } finally {

@@ -4,17 +4,24 @@
     background: $background-purple;
     width: 100%;
     height: 100vh;
-    padding: 16px 32px;
+    padding: 0 32px 16px 32px;
+
+    @media(max-width: 664px) {
+        padding: 0;
+    }
 }
 
 .header {
     height: 86px;
     @include dFlex($jc: space-between, $g: 20px);
-    padding-bottom: 16px;
     width: 100%;
 
     .header-searchbar {
         width: 50%;
+    }
+
+    @media(max-width: 664px) {
+        height: 80px;
     }
 }
 
@@ -33,6 +40,14 @@
     @include dFlex($jc: flex-start, $g: 16px);
     width: 100%;
 
+    @media (max-width: 1368px) {
+        position: relative;
+    }
+
+    @media(max-width: 664px) {
+        gap: 0;
+    }
+
     app-side-nav,
     app-main-chat,
     app-threads {
@@ -41,6 +56,29 @@
 
     app-main-chat {
         flex-grow: 1;
+
+        @media (max-width: 1000px) {
+            width: 100%;
+        }
+    }
+
+    app-side-nav {
+        @media (max-width: 1000px) {
+            display: none;
+        }
+    }
+
+    app-threads {
+        @media (max-width: 1368px) {
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 99;
+        }
+
+        @media (max-width: 1000px) {
+            left: 0;
+        }
     }
 
     &.main-components.workspace-closed {
@@ -77,5 +115,11 @@
     app-main-chat {
         flex-grow: 1;
         width: auto;
+    }
+}
+
+.main-components.threads-open app-main-chat {
+    @media (max-width: 1000px) {
+        display: none !important;
     }
 }

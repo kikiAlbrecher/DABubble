@@ -2,14 +2,27 @@
 
 .logo-container {
     @include dFlex($g: 16px);
+
+    @media(max-width: 664px) {
+        padding-left: 16px;
+    }
 }
 
 .logo-image {
     width: 70px;
     height: 70px;
+
+    @media(max-width: 664px) {
+        width: 45px;
+        height: 45px;
+    }
 }
 
 .logo-name {
     height: 24px;
     width: auto;
+
+    @media(max-width: 664px) {
+        height: 16.22px;
+    }
 }

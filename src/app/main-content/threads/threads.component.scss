@@ -3,6 +3,10 @@
 .threads {
     width: 400px;
     display: flex;
+
+    @media (max-width: 1000px) {
+        width: 100%;
+    }
 }
 
 .threads-content {
@@ -21,6 +25,7 @@
     @include dFlex(row, space-between, center, 0px);
     width: 100%;
     padding: 0 30px;
+
     img {
         width: 30px;
         height: 30px;
@@ -30,10 +35,12 @@
 
 .threads-header-left {
     @include dFlex(row, center, center, 5px);
+
     .threads-header-headline {
         @include fontNunito(24px, 700);
         color: black
     }
+
     .threads-header-channel {
         @include fontNunito(14px, 400);
         color: #797EF3;

@@ -87,13 +87,13 @@ export class MainContentComponent {
   }
 
   createChannel(channel: Channel) {
-    this.showAddChannelDialog = false;
     this.selectedChannel = channel;
     this.statusMessageType = 'success';
     this.statusMessage = `Channel ${channel.channelName} erfolgreich erstellt!`;
 
     setTimeout(() => {
       this.statusMessage = '';
+      this.showAddChannelDialog = false;
       this.addChannelMember = true;
     }, 2000);
   }
@@ -165,8 +165,8 @@ export class MainContentComponent {
     this.showAddMemberDialog = false;
     this.statusMessageType = 'success';
     this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
-    this.statusMessageType = 'error';
-    this.statusMessage = 'Da ist etwas schiefgelaufen. Bitte versuche es noch einmal.';
+    // this.statusMessageType = 'error';
+    // this.statusMessage = 'Da ist etwas schiefgelaufen. Bitte versuche es noch einmal.';
 
     setTimeout(() => this.statusMessage = '', 2000);
   }

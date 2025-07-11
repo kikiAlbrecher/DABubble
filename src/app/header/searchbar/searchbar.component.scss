@@ -2,6 +2,10 @@
 
 .searchbar-section {
     width: 100%;
+
+    @media(max-width: 1000px) {
+        display: none;
+    }
 }
 
 .input-field-container {
@@ -21,6 +25,7 @@
     @include dFlex(column, center, center, 30px);
     width: 100%;
     padding: 30px 20px;
+
     .input-field {
         width: 100%;
         height: 40px;
