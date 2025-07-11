@@ -6,55 +6,81 @@
     <div class="own-message-content">
         
         @if (!showEditContainer) {
-        <div class="own-message-content-left">
-            <div class="own-message-content-left-top-row">
-                <span class="timestamp">{{message.timeStamp | date: 'HH:mm'}}</span>
-                <span class="user-name">{{sharedUser.actualUser?.name}}</span>
-            </div>
-            <div class="message-text-container">
-                <span class="message-text">{{message.text}}</span>
-            </div>    
-
-            @if (mode !== 'thread') {
-            <div 
-                [ngClass]="answerDetails.length > 0 ? 'answer-emoji-container' : 'answer-emoji-container-only-emoji'">
-                @if (answerDetails.length > 0) {
-                <div class="answer-contaier">
-                    @if (answerDetails.length == 1) {
-                        <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antwort</Span>
-                    }@else {
-                        <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antworten</Span>
-                    }
-                    
-                    <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>
+            <div class="own-message-content-left">
+                <div class="own-message-content-left-top-row">
+                    <span class="timestamp">{{message.timeStamp | date: 'HH:mm'}}</span>
+                    <span class="user-name">{{sharedUser.actualUser?.name}}</span>
                 </div>
+                <div class="message-text-container">
+                    <span class="message-text">{{message.text}}</span>
+                </div>    
+            
+                @if (mode !== 'thread') {
+                 <div 
+                    [ngClass]="answerDetails.length > 0 ? 'answer-emoji-container' : 'answer-emoji-container-only-emoji'">
+                    @if (answerDetails.length > 0) {
+                        <div class="answer-contaier">
+                            @if (answerDetails.length == 1) {
+                                <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antwort</Span>
+                            }@else {
+                                <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antworten</Span>
+                            }
+                            
+                            <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>
+                        </div>
+                    }
+                    <div class="reactions-container">
+                        @for (emoji of groupedReactionsEmoji; track $index) {
+                            <div (click)="sharedMessages.pushEmojiReaction(message, emoji)" class="reaction"
+                                (mouseover)="hoveredEmoji = emoji"
+                                    (mouseout)="hoveredEmoji = null">
+                                <span class="reaction-count">{{groupedReactions[emoji].length}}</span>
+                                <div class="reaction-emoji">{{emoji}}</div>
+                                @if (hoveredEmoji === emoji) {
+                                    <div class="reaction-info">
+                                        <div class="reaction-emoji">{{emoji}}</div>
+                                        @for (item of groupedReactions[emoji]; track $index) {
+                                            <div class="reaction-info-name-container">
+                                                <span class="reaction-info-name">{{reactionUser}}</span>
+                                            </div>
+                                        }   
+                                        <span class="reaction-info-text">hat reagiert</span>
+                                    </div>
+                                }    
+                            </div>
+                        }
+                    </div>
+                </div>     
                 }
+                
+                @if (mode === 'thread') {
                 <div class="reactions-container">
-                    @for (emoji of groupedReactionsEmoji; track $index) {
-                    <div (click)="sharedMessages.pushEmojiReaction(message, emoji)" class="reaction"
-                           (mouseover)="hoveredEmoji = emoji"
+                <span>hallo</span>
+                    @for (emoji of answerGroupedReactionsEmoji; track $index) {
+                        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
+                            (mouseover)="hoveredEmoji = emoji"
                             (mouseout)="hoveredEmoji = null">
-                        <span class="reaction-count">{{groupedReactions[emoji].length}}</span>
+                        <span class="reaction-count">1</span>
                         <div class="reaction-emoji">{{emoji}}</div>
                         @if (hoveredEmoji === emoji) {
                             <div class="reaction-info">
                                 <div class="reaction-emoji">{{emoji}}</div>
-                                @for (item of groupedReactions[emoji]; track $index) {
+                                @for (item of answerGroupedReactions[emoji]; track $index) {
                                     <div class="reaction-info-name-container">
-                                        <span class="reaction-info-name">{{test}}</span>
+                                        <span class="reaction-info-name"></span>
                                     </div>
                                 }   
                                 <span class="reaction-info-text">hat reagiert</span>
                             </div>
                         }    
+                            
                     </div>
                     }
                 </div>
-            </div>     
-            }
-        </div>
+                }
+                
+            </div>
         }
-
         @if (showEditContainer) {
         <form [formGroup]="updateMessage" (ngSubmit)="onSubmit()" class="edit-message-form-container">
             <textarea type="text" class="edit-message-input" formControlName="activeMessage" ></textarea>

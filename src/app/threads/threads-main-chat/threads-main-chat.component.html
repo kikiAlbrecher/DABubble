@@ -25,7 +25,9 @@
             <div class="messages-container">
             <app-own-message 
                 [message]="item" 
-                [mode]="'thread'">
+                [mode]="'thread'"
+                [answerId]="item.id">
+                
             </app-own-message>
         </div>
         } @else {

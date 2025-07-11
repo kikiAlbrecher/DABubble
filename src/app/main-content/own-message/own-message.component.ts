@@ -1,4 +1,4 @@
-import { inject, ViewContainerRef, ViewChild } from '@angular/core';
+import { inject, NgZone, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
 import { Component, Input, HostListener, ElementRef} from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
@@ -30,6 +30,7 @@ import { Reaction } from "./../../../models/reaction.model";
 export class OwnMessageComponent {
   @Input() message!: ChatMessage;
   @Input() mode: 'default' | 'thread' = 'default';
+  @Input() answerId?: string;
   private firestore = inject(Firestore);
   editOverlay: boolean = false;
   editMessageOverlay: boolean = false;
@@ -40,15 +41,23 @@ export class OwnMessageComponent {
   reactionDetails:Reaction[] = [];
   groupedReactions:any = {};
   groupedReactionsEmoji: any;
+  answerGroupedReactions:any = {};
+  answerGroupedReactionsEmoji: any;
   hoveredEmoji: string | null = null;
   reactionUserName:any;
-  test:any= ""
+  reactionUser:string= "";
+  answerReactionUser:string= "";
+  answerMessages: ChatMessage[] = [];
+  answerIds:string = "";
+  reactionsLoaded = false;
+
 
   constructor(
       public sharedUser: UserSharedService,
       public sharedMessages: MessageSharedService,
       private elementRef: ElementRef,
-      private viewContainerRef: ViewContainerRef
+      private viewContainerRef: ViewContainerRef,
+      private cdr: ChangeDetectorRef
     ) {}
 
   updateMessage = new FormGroup<{ activeMessage: FormControl<string> }>({
@@ -107,6 +116,7 @@ export class OwnMessageComponent {
     this.sharedUser.threadsVisible$.next(true);
     await this.sharedMessages.getAnswerMessage(this.message);
     this.sharedMessages.getChannelOrUserName();
+    this.getAnswerIds();
     if (this.sharedMessages.channelSelected) {
       this.sharedMessages.getChannelAnswerMessages ();      
     } else if (this.sharedMessages.userSelected) {
@@ -141,7 +151,12 @@ export class OwnMessageComponent {
 
   addEmoji(emoji:any) {    
     this.emojiOverlay = !this.emojiOverlay;
-    this.sharedMessages.pushEmojiReaction(this.message, emoji);
+    if (this.mode !== 'thread') {
+      this.sharedMessages.pushEmojiReaction(this.message, emoji);
+    }else {
+      this.sharedMessages.pushAnswerEmojiReaction(this.message, emoji)
+    }
+    
   }
 
   getChannelReactions() {
@@ -178,13 +193,69 @@ export class OwnMessageComponent {
             const reaction = reactionsForEmoji[j];
             const userId = reaction.user;
             onSnapshot(doc(this.firestore, "users", userId), (doc) => {
-            this.test = doc.data()!['displayName']             
+            this.reactionUser = doc.data()!['displayName']             
             });
           }          
         }   
       });         
     }     
   }
+
+  getAnswerIds() {
+    this.sharedMessages.answerMessages$.subscribe(messages => {
+      messages.forEach(answer => {
+        this.getAnswerReactions(answer.id);      
+      });
+    });    
+  }
+
+  getAnswerReactions(answerId:any) {
+      
+    const channelId = this.sharedMessages.selectedChannel?.channelId ?? '';                   
+        const messageId = this.sharedMessages.selectedMessage?.id ?? '';             
+        const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
+        const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers', answerId, 'reactions');
+        const q = query(reactionsRef, orderBy('emoji'));
+        if(reactionsRef) {
+        onSnapshot(q, snapshot => {
+        this.reactionDetails = snapshot.docs.map(doc => {
+        const data = doc.data() as Reaction;                    
+        return {
+            ...data,
+        };            
+        });        
+        const groups = this.reactionDetails.reduce((groups:any, reaction: Reaction) => {
+        const emoji =  reaction.emoji;
+        if (!groups[emoji]) {
+                groups[emoji] = [];
+            }
+        groups[emoji].push(reaction);               
+        return groups;
+        }, {});
+        this.answerGroupedReactions = groups;                    
+        this.answerGroupedReactionsEmoji = Object.keys(groups);  
+        console.log(this.answerGroupedReactions);
+        console.log(this.answerGroupedReactionsEmoji);
+        this.cdr.detectChanges();
+     
+        const answerEmojis = this.answerGroupedReactionsEmoji;
+        for (let i = 0; i < answerEmojis.length; i++) {
+          const emoji = answerEmojis[i];
+          const reactionsForEmoji = this.answerGroupedReactions[emoji];
+
+          for (let j = 0; j < reactionsForEmoji.length; j++) {
+            const reaction = reactionsForEmoji[j];
+            const userId = reaction.user;
+            onSnapshot(doc(this.firestore, "users", userId), (doc) => {
+            this.answerReactionUser = doc.data()!['displayName']             
+            });
+          }          
+        }   
+      });         
+    }     
+  }
+
+
 }
 
 

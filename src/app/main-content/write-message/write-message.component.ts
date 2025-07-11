@@ -273,4 +273,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.emojiThreadOverlay = false
   }
 
+  
+
 }
