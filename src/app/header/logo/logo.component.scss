@@ -6,23 +6,54 @@
     @media(max-width: 664px) {
         padding-left: 16px;
     }
-}
 
-.logo-image {
-    width: 70px;
-    height: 70px;
+    .logo-image {
+        width: 70px;
+        aspect-ratio: 1 / 1;
 
-    @media(max-width: 664px) {
-        width: 45px;
-        height: 45px;
+        @media(max-width: 664px) {
+            width: 45px;
+        }
+    }
+
+    .logo-name {
+        height: 24px;
+        width: auto;
+
+        @media(max-width: 664px) {
+            height: 16.22px;
+        }
     }
 }
 
-.logo-name {
-    height: 24px;
-    width: auto;
+.logo-container-devspace {
+    display: none;
 
     @media(max-width: 664px) {
-        height: 16.22px;
+        display: flex;
+        gap: 2px;
+        transition: all 0.1s ease-in;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:hover svg g path {
+        fill: $purple-hover;
+    }
+}
+
+.logo-dev-mobile {
+    @include dFlex($g: 10px);
+
+    .logo-image-dev {
+        width: 50px;
+        aspect-ratio: 1 /1;
+    }
+
+    .logo-name-dev {
+        height: 18.22px;
+        width: auto;
     }
 }

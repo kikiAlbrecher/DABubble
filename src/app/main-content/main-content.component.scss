@@ -62,12 +62,6 @@
         }
     }
 
-    app-side-nav {
-        @media (max-width: 1000px) {
-            display: none;
-        }
-    }
-
     app-threads {
         @media (max-width: 1368px) {
             position: absolute;

@@ -1,17 +1,21 @@
 <div class="main-content">
     <div class="section-content">
         <div class="header">
-            <app-logo></app-logo>
+            <app-logo [isMobile]="isMobile" [showMainChatMobile]="showMainChatMobile"
+                (backToSideNavClick)="onBackToSideNav()">
+            </app-logo>
             <app-searchbar class="header-searchbar"></app-searchbar>
             <app-user-header></app-user-header>
         </div>
 
         <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"
             [class.threads-open]="(shared.threadsVisible$ | async)">
-            <app-side-nav (addChannel)="openDialogAddChannel()" (selectChannel)="onChannelSelected($event)"
-                (selectUser)="onUserSelected($event)" [showAddChannelDialog]="showAddChannelDialog">
+            <app-side-nav *ngIf="!isMobile || (isMobile && !showMainChatMobile)" [isMobile]="isMobile"
+                (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
+                (addChannel)="openDialogAddChannel()" [showAddChannelDialog]="showAddChannelDialog">
             </app-side-nav>
-            <app-main-chat (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
+            <app-main-chat *ngIf="!isMobile || (isMobile && showMainChatMobile)"
+                (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="onReceiveMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog">

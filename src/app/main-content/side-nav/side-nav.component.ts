@@ -19,6 +19,7 @@ import { UsersComponent } from '../../style-components/users/users.component';
 })
 export class SideNavComponent implements OnInit, OnDestroy {
   @Input() showAddChannelDialog = false;
+  @Input() isMobile: boolean = false;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
@@ -58,7 +59,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
     this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
       this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-      if (this.channels.length > 0 && !this.selectedChannelId) {
+
+      if (this.channels.length > 0 && !this.selectedChannelId && !this.isMobile) {
         const defaultChannel = this.channels[0];
         this.selectedChannelId = defaultChannel.channelId;
         this.selectChannel.emit(defaultChannel);

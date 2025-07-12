@@ -8,18 +8,12 @@ import { Auth } from '@angular/fire/auth';
 
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
-
 export class HeaderSharedService {
-
-    
-    editName:boolean = false;
-    newName:string = "";
-    dropdownProfile:boolean = false;
-  
-
-
+    editName: boolean = false;
+    newName: string = "";
+    dropdownProfile: boolean = false;
 
     editNameMask() {
         this.editName = !this.editName;
