@@ -63,12 +63,12 @@ export class MainContentComponent implements OnInit {
   selectedChannel: Channel | null = null;
   selectedUser: User | null = null;
   showProfile = false;
-  isMobile = window.innerWidth <= 664;
+  isMobile = window.innerWidth <= 1000;
   showMainChatMobile = false;
   isInitializing = true;
 
   ngOnInit() {
-    this.isMobile = window.innerWidth <= 664;
+    this.isMobile = window.innerWidth <= 1000;
 
     if (this.isMobile) this.showMainChatMobile = false;
 

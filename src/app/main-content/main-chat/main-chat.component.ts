@@ -70,7 +70,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const windowWidth = window.innerWidth;
 
-    if (windowWidth >= 664) {
+    if (windowWidth >= 1000) {
       let left = rect.left;
 
       this.editChannel.emit({

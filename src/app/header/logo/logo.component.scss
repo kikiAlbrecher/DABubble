@@ -3,7 +3,7 @@
 .logo-container {
     @include dFlex($g: 16px);
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
         padding-left: 16px;
     }
 
@@ -11,7 +11,7 @@
         width: 70px;
         aspect-ratio: 1 / 1;
 
-        @media(max-width: 664px) {
+        @media(max-width: 1000px) {
             width: 45px;
         }
     }
@@ -20,7 +20,7 @@
         height: 24px;
         width: auto;
 
-        @media(max-width: 664px) {
+        @media(max-width: 1000px) {
             height: 16.22px;
         }
     }
@@ -29,7 +29,7 @@
 .logo-container-devspace {
     display: none;
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
         display: flex;
         gap: 2px;
         transition: all 0.1s ease-in;

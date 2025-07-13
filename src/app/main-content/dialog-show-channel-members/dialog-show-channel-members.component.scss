@@ -34,6 +34,12 @@
     }
 }
 
+h2 {
+    @media (max-width: 1000px) {
+        @include fontNunito($size: 20px, $weight: 700);
+    }
+}
+
 .h2-responsive {
     @include fontNunito($size: 24px, $weight: 700);
 }

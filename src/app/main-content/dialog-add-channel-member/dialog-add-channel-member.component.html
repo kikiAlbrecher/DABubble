@@ -2,6 +2,9 @@
     <div class="overlay-content">
         <form (click)="$event.stopPropagation()" #addMemberForm="ngForm" (ngSubmit)="saveMember()"
             class="dialog-add-channel dialog-add-member">
+            <div class="closing-sign">
+                <span class="rectangle"></span>
+            </div>
             <div class="add-headline">
                 <h2>Personen hinzufügen</h2>
                 <app-close-button (close)="closeAddMember()"></app-close-button>

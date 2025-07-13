@@ -16,11 +16,11 @@
             </svg>
         </div>
         <div class="members-add">
-            <div [ngStyle]="{ width: (52 + (channelMembers.slice(-3).length) * 30) + 'px' }" class="members"
-                (click)="openShowMembers($event)">
+            <div [ngStyle]="{ width: ((channelMembers.length > 3 ? 60 : 30) + (channelMembers.slice(-3).length) * 30) + 'px' }"
+                class="members" (click)="openShowMembers($event)">
                 <img *ngFor="let member of channelMembers.slice(-3); let i = index"
-                    [ngStyle]="{ right: (32 + i * 30) + 'px', zIndex: 100 - 10 * i }" class="member-avatar"
-                    [src]="member.picture" alt="user.name">
+                    [ngStyle]="{ right: ((channelMembers.length > 3 ? 40 : 10) + (i * 30 )) + 'px', zIndex: 100 - 10 * i }"
+                    class="member-avatar" [src]="member.picture" alt="user.name">
                 <span *ngIf="channelMembers.length > 3" class="more-than-three">{{ channelMembers.length - 3 }}</span>
             </div>
             <svg class="svg-style add-members" [class.active]="showAddMemberDialog"
