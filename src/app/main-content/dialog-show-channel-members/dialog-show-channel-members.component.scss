@@ -4,12 +4,14 @@
     position: fixed;
     border-top-right-radius: 0;
     width: 415px;
-    max-height: 600px;
-    overflow-y: scroll;
 }
 
 .show-members-content {
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
+
+    app-users {
+        padding-top: 20px;
+    }
 
     .add-member-transfer {
         padding: 12px 29px;
@@ -30,4 +32,8 @@
             background: $background-purple;
         }
     }
+}
+
+.h2-responsive {
+    @include fontNunito($size: 24px, $weight: 700);
 }

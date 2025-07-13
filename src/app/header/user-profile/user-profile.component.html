@@ -1,30 +1,27 @@
 <div class="dopdown">
     <div class="dropdown-container">
-        @if (!allowEdit) {
-        <span class="header">Profil</span>
-        }
-        @if (!sharedHeader.editName && allowEdit) {
-        <span class="header">Profil</span>
-        }
         @if (sharedHeader.editName && allowEdit) {
         <span class="header">Dein Profil bearbeiten</span>
+        } @else {
+        <span class="header">Profil</span>
         }
         <img (click)="sharedHeader.changeDropdown()" src="assets/icons/close.svg" alt="">
     </div>
-    <img class="profile-image" src="{{ user.picture }}" alt="">
+    <img class="profile-image" src="{{ user?.picture }}" alt="">
 
     @if (!sharedHeader.editName) {
     <div class="change-container-info">
         <div class="name-status">
             <div class="dropdown-container">
-                <span class="name">{{ user.name }}</span>
-                @if (allowEdit) {
+                <span class="name">{{ user?.name }}</span>
+                @if (allowEdit && !sharedHeader.editName) {
                 <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
                 }
             </div>
             <div class="baseline-container">
-                <div class="check-status" [class.online]="user.status" [class.offline]="!user.status"></div>
-                <span [class.active]="user.status" [class.inactive]="!user.status">{{ user.status ? 'Aktiv' : 'Abwesend'
+                <div class="check-status" [class.online]="user?.status" [class.offline]="!user?.status"></div>
+                <span [class.active]="user?.status" [class.inactive]="!user?.status">{{ user?.status ? 'Aktiv' :
+                    'Abwesend'
                     }}</span>
             </div>
         </div>
@@ -32,13 +29,13 @@
             <img class="mail-icon" src="assets/icons/mail.svg" alt="">
             <div class="mail-container">
                 <span class="mailtext">E-Mail Adresse</span>
-                <span class="mail-adress">{{ user.email }}</span>
+                <span class="mail-adress">{{ user?.email }}</span>
             </div>
         </div>
     </div>
     @if (!allowEdit) {
     <div class="message-container">
-        <button class="message-btn">
+        <button class="submit-button message-btn">
             <img src="assets/icons/message.svg" alt="message icon">
             <span>Nachricht</span>
         </button>

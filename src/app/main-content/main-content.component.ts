@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement/userManagement-service';
@@ -197,4 +197,9 @@ export class MainContentComponent implements OnInit {
   onBackToSideNav() {
     this.showMainChatMobile = false;
   }
+
+  // @HostListener('window:resize', ['$event'])
+  // onResize() {
+  // }
+
 }

@@ -9,11 +9,12 @@ import { UserImageStatusComponent } from '../../style-components/user-image-stat
 import { MessageSharedService } from '../message-service';
 import { ChannelsComponent } from '../../style-components/channels/channels.component';
 import { UsersComponent } from '../../style-components/users/users.component';
+import { SearchbarComponent } from '../../header/searchbar/searchbar.component';
 
 @Component({
   selector: 'app-side-nav',
   standalone: true,
-  imports: [CommonModule, UserImageStatusComponent, ChannelsComponent, UsersComponent],
+  imports: [CommonModule, UserImageStatusComponent, ChannelsComponent, UsersComponent, SearchbarComponent],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.scss'
 })

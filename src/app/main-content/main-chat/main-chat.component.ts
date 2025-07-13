@@ -1,16 +1,18 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Subscription } from 'rxjs';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
-import { UserSharedService } from '../../userManagement/userManagement-service';
 import { ChannelUsersService } from '../../userManagement/channel-users.service';
 import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { DialogEditChannelComponent } from '../dialog-edit-channel/dialog-edit-channel.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
 import { WriteMessageComponent } from '../write-message/write-message.component';
 import { MessageBoardComponent } from "../message-board/message-board.component";
+import { HeaderSharedService } from '../../header/user-header/header-service';
+import { UserProfileComponent } from '../../header/user-profile/user-profile.component';
 
 @Component({
   selector: 'app-main-chat',
@@ -21,7 +23,8 @@ import { MessageBoardComponent } from "../message-board/message-board.component"
     DialogEditChannelComponent,
     WriteMessageComponent,
     MessageBoardComponent,
-    UserImageStatusComponent
+    UserImageStatusComponent,
+    UserProfileComponent
   ],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
@@ -46,8 +49,9 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Output() userLeftChannel = new EventEmitter<void>();
 
   private channelUsersService = inject(ChannelUsersService);
-  private sharedUser = inject(UserSharedService);
+  public sharedUser = inject(UserSharedService);
   private messagesSubscription?: Subscription;
+  public sharedHeader = inject(HeaderSharedService);
 
   ngOnInit() {
     this.membershipSubscription = this.sharedUser.channelMembersChanged$.subscribe(async () => {
@@ -111,9 +115,5 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     if (changes['selectedChannel'] && this.selectedChannel) {
       this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
     }
-  }
-
-  openProfile() {
-    this.showUserProfile.emit();
   }
 }

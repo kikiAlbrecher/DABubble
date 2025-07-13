@@ -30,7 +30,7 @@
 
 <div *ngIf="!asOverlay">
     <div class="add-headline">
-        <h2>Mitglieder</h2>
+        <h2 class="h2-responsive">Mitglieder</h2>
     </div>
     <div class="show-members-content">
         <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null" (userSelected)="onSelectUser($event)">

@@ -4,14 +4,20 @@
     box-sizing: border-box;
 }
 
+.overlay-content {
+    max-width: 1920px;
+    width: 100%;
+    @include dFlex();
+    z-index: 999;
+}
+
 .dialog-add-channel {
     background: $white;
     padding: 40px;
     border-radius: 30px;
     width: clamp(300px, 80%, 700px);
+    max-width: 100%;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-    position: absolute;
-    height: 80vh;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
     z-index: 999;
 

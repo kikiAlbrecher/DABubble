@@ -6,6 +6,10 @@
     height: 100vh;
     padding: 0 32px 16px 32px;
 
+    @media(max-width: 1000px) {
+        padding: 0 16px 16px 16px;
+    }
+
     @media(max-width: 664px) {
         padding: 0;
     }
@@ -18,6 +22,10 @@
 
     .header-searchbar {
         width: 50%;
+
+        @media(max-width: 664px) {
+            display: none;
+        }
     }
 
     @media(max-width: 664px) {
@@ -52,6 +60,12 @@
     app-main-chat,
     app-threads {
         transition: width 0.25s ease;
+    }
+
+    app-side-nav {
+        @media(max-width: 664px) {
+            width: 100%;
+        }
     }
 
     app-main-chat {
