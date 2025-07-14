@@ -281,13 +281,9 @@ export class MessageSharedService {
         // } else {
        await this.getAnswerIds();
         
-        const channelId = this.selectedChannel?.channelId ?? '';
-        console.log('channelID:',channelId);        
-        const messageId = this.selectedMessage?.id ?? '';
-        console.log('messageID:',messageId);        
-        const answerId = this.answerId ?? '';
-        console.log('answerID:',answerId);
-        
+        const channelId = this.selectedChannel?.channelId ?? '';     
+        const messageId = this.selectedMessage?.id ?? '';        
+        const answerId = this.answerId ?? '';        
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
         const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers', answerId, 'reactions');
         await addDoc (reactionsRef, {
@@ -297,8 +293,7 @@ export class MessageSharedService {
         });     
         }
 
-    getAnswerIds() {
-    
+    getAnswerIds() {    
       this.answerMessages.forEach(element => {
         this.answerId = element.id        
       });

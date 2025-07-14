@@ -41,8 +41,8 @@ export class OwnMessageComponent {
   reactionDetails:Reaction[] = [];
   groupedReactions:any = {};
   groupedReactionsEmoji: any;
-  answerGroupedReactions:any = {};
-  answerGroupedReactionsEmoji: any;
+answerGroupedReactions: { [answerId: string]: { [emoji: string]: Reaction[] } } = {};
+answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
   hoveredEmoji: string | null = null;
   reactionUserName:any;
   reactionUser:string= "";
@@ -69,7 +69,8 @@ export class OwnMessageComponent {
   ngOnInit(): void {
     if (this.message) {
       this.updateMessage.patchValue({ activeMessage: this.message.text });
-    }    
+    } 
+    this.getAnswerIds();   
   }
 
   ngOnChanges(): void {
@@ -116,7 +117,7 @@ export class OwnMessageComponent {
     this.sharedUser.threadsVisible$.next(true);
     await this.sharedMessages.getAnswerMessage(this.message);
     this.sharedMessages.getChannelOrUserName();
-    this.getAnswerIds();
+    //this.getAnswerIds();
     if (this.sharedMessages.channelSelected) {
       this.sharedMessages.getChannelAnswerMessages ();      
     } else if (this.sharedMessages.userSelected) {
@@ -209,51 +210,41 @@ export class OwnMessageComponent {
     });    
   }
 
-  getAnswerReactions(answerId:any) {
-      
-    const channelId = this.sharedMessages.selectedChannel?.channelId ?? '';                   
-        const messageId = this.sharedMessages.selectedMessage?.id ?? '';             
-        const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
-        const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers', answerId, 'reactions');
-        const q = query(reactionsRef, orderBy('emoji'));
-        if(reactionsRef) {
-        onSnapshot(q, snapshot => {
-        this.reactionDetails = snapshot.docs.map(doc => {
-        const data = doc.data() as Reaction;                    
-        return {
-            ...data,
-        };            
-        });        
-        const groups = this.reactionDetails.reduce((groups:any, reaction: Reaction) => {
-        const emoji =  reaction.emoji;
-        if (!groups[emoji]) {
-                groups[emoji] = [];
-            }
-        groups[emoji].push(reaction);               
-        return groups;
-        }, {});
-        this.answerGroupedReactions = groups;                    
-        this.answerGroupedReactionsEmoji = Object.keys(groups);  
-        console.log(this.answerGroupedReactions);
-        console.log(this.answerGroupedReactionsEmoji);
-        this.cdr.detectChanges();
-     
-        const answerEmojis = this.answerGroupedReactionsEmoji;
-        for (let i = 0; i < answerEmojis.length; i++) {
-          const emoji = answerEmojis[i];
-          const reactionsForEmoji = this.answerGroupedReactions[emoji];
+  getAnswerReactions(answerId: string) {
+  const channelId = this.sharedMessages.selectedChannel?.channelId ?? '';
+  const messageId = this.sharedMessages.selectedMessage?.id ?? '';
+  const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
 
-          for (let j = 0; j < reactionsForEmoji.length; j++) {
-            const reaction = reactionsForEmoji[j];
-            const userId = reaction.user;
-            onSnapshot(doc(this.firestore, "users", userId), (doc) => {
-            this.answerReactionUser = doc.data()!['displayName']             
-            });
-          }          
-        }   
-      });         
-    }     
+  const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers', answerId, 'reactions');
+  const q = query(reactionsRef, orderBy('emoji'));
+  if (reactionsRef) {
+    onSnapshot(q, snapshot => {
+      const reactionDetails = snapshot.docs.map(doc => {
+        const data = doc.data() as Reaction;
+        return {
+          ...data,
+        };
+      });
+
+      const groups = reactionDetails.reduce((groups: any, reaction: Reaction) => {
+        const emoji = reaction.emoji;
+        if (!groups[emoji]) {
+          groups[emoji] = [];
+        }
+        groups[emoji].push(reaction);
+        return groups;
+      }, {});
+
+      // Speichere die gruppierten Reaktionen unter dem answerId
+      this.answerGroupedReactions[answerId] = groups;
+      this.answerGroupedReactionsEmoji[answerId] = Object.keys(groups);
+
+      this.cdr.detectChanges();
+
+      // Optional: Lade User-Namen oder weitere Details pro Reaktion, wenn nötig
+    });
   }
+}
 
 
 }

@@ -53,31 +53,32 @@
                 </div>     
                 }
                 
-                @if (mode === 'thread') {
-                <div class="reactions-container">
-                <span>hallo</span>
-                    @for (emoji of answerGroupedReactionsEmoji; track $index) {
-                        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
-                            (mouseover)="hoveredEmoji = emoji"
-                            (mouseout)="hoveredEmoji = null">
-                        <span class="reaction-count">1</span>
-                        <div class="reaction-emoji">{{emoji}}</div>
-                        @if (hoveredEmoji === emoji) {
-                            <div class="reaction-info">
-                                <div class="reaction-emoji">{{emoji}}</div>
-                                @for (item of answerGroupedReactions[emoji]; track $index) {
-                                    <div class="reaction-info-name-container">
-                                        <span class="reaction-info-name"></span>
-                                    </div>
-                                }   
-                                <span class="reaction-info-text">hat reagiert</span>
-                            </div>
-                        }    
-                            
-                    </div>
-                    }
+@if (mode === 'thread') {
+  <div class="reactions-container">
+    @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
+      @for (emoji of answerGroupedReactionsEmoji[message.id]; track $index) {
+        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
+             (mouseover)="hoveredEmoji = emoji"
+             (mouseout)="hoveredEmoji = null">
+          <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
+          <div class="reaction-emoji">{{emoji}}</div>
+
+          <!-- @if (hoveredEmoji === emoji) {
+            <div class="reaction-info">
+              <div class="reaction-emoji">{{emoji}}</div>
+              @for (item of answerGroupedReactions[message.id][emoji]; track $index) {
+                <div class="reaction-info-name-container">
+                  <span class="reaction-info-name">{{item.userName || item.user}}</span>
                 </div>
-                }
+              }
+              <span class="reaction-info-text">hat reagiert</span>
+            </div>
+          } -->
+        </div>
+      }
+    }
+  </div>
+}
                 
             </div>
         }
