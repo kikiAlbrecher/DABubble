@@ -1,7 +1,8 @@
 <section class="user-message-section"
     [ngClass]="{'thread-mode': mode === 'thread'}"
-    (mouseover)="editOverlay = true"
-    (mouseout)="editOverlay = false">
+         (mouseover)="onMouseOver()"
+         (mouseout)="editOverlay = false"
+         (mouseleave)="emojiOverlay = false">
 
     <div class="user-message-content">
         <div class="user-message-content-left">
@@ -31,19 +32,78 @@
                     <span class="last-answer">Letzte Antwort {{answerDetails[answerDetails.length-1].timeStamp | date: 'HH:mm'}}</span>
                 </div>
                 }
-                <div class="emoji-container">
-                    <div class="add-emoji"></div>
+
+                <div class="reactions-container">
+                    @for (emoji of groupedReactionsEmoji; track $index) {
+                        <div (click)="sharedMessages.pushEmojiReaction(message, emoji)" class="reaction"
+                            (mouseover)="showReactionInformation(emoji)"
+                            (mouseleave)="mouseOutReactionInformation()">
+                            <span class="reaction-count">{{groupedReactions[emoji].length}}</span>
+                            <div class="reaction-emoji">{{emoji}}</div>
+                            @if (hoveredEmoji === emoji) {
+                                <div class="reaction-info">
+                                    <div class="reaction-emoji">{{emoji}}</div>
+                                    @for (item of reactionUserNames; track $index) {
+                                        <div class="reaction-info-name-container">
+                                            <span class="reaction-info-name">{{item}}</span>
+                                        </div>
+                                    }   
+                                    <span class="reaction-info-text">hat reagiert</span>
+                                </div>
+                            }    
+                        </div>
+                    }
                 </div>
+
             </div>     
             }
+
+@if (mode === 'thread') {
+  <div class="reactions-container">
+    @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
+      @for (emoji of answerGroupedReactionsEmoji[message.id]; track $index) {
+        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
+             (mouseover)="showAnswerReactionInformation(emoji)"
+             (mouseleave)="mouseOutReactionInformation()">
+          <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
+          <div class="reaction-emoji">{{emoji}}</div>
+
+          @if (hoveredEmoji === emoji) {
+            <div class="reaction-info">
+              <div class="reaction-emoji">{{emoji}}</div>
+              @for (item of reactionUserNames; track $index) {
+                <div class="reaction-info-name-container">
+                  <span class="reaction-info-name">{{item}}</span>
+                </div>
+              }
+              <span class="reaction-info-text">hat reagiert</span>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+}
+
+
         </div>
     </div>
+    
     <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay" [class.visible]="editOverlay">
-        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image" im src="assets/img/emoji-hook.png" alt="">
-        <img [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-image" src="assets/img/emoji-clapp.png" alt="">
-        <div class="edit-overlay-icons smiley"></div>
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" (click)="this.sharedMessages.pushEmojiReaction(message, '👍')" class="edit-overlay-image thread-image">👍</div>
+        <div [ngClass]="{'thread-mode': mode === 'thread'}" (click)="this.sharedMessages.pushEmojiReaction(message, '❤️')" class="edit-overlay-image thread-image">❤️</div>
+        <div class="add-emoji-container">
+            <div (click)="openEmojiOverlay()" class="edit-overlay-icons smiley"></div>
+            @if(emojiOverlay) {
+                <div class="emoji-picker-scroll-container">
+                    <div class="emoji-picker-container">
+                        <app-emoji-picker (emojiSelected)="addEmoji($event)"></app-emoji-picker>
+                    </div>
+                </div>
+            }   
+        </div>    
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
-        
+       
     </div>
 
 </section>

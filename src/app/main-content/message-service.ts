@@ -217,6 +217,7 @@ export class MessageSharedService {
                     : data.timeStamp
                 };            
                 })
+                this.answerMessages$.next(this.answerMessages);
             });          
         }          
     }
@@ -235,28 +236,23 @@ export class MessageSharedService {
     }
 
     async pushEmojiReaction(message:ChatMessage, emoji:any) {
-        const alreadyReacted = await this.checkReactionDone(message, emoji);
-        if (alreadyReacted) {
-        console.log('User already reacted!');
-        this.deleteReaction(message)
-        } else {
         const channelId = message.channelId ?? '';
         const messageId = message.id ?? '';
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
         const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions');
+        const alreadyReacted = await this.checkReactionDone(reactionsRef, message, emoji);
+        if (alreadyReacted) {
+            this.deleteReaction(reactionsRef,message)
+        } else {
         await addDoc (reactionsRef, {
-            user: message.user,
+            user: this.shared.actualUserID,
             emoji: emoji,
             timeStamp: serverTimestamp()
         });     
         }
     }
 
-    async checkReactionDone(message:ChatMessage, emoji:any) {
-        const channelId = message.channelId ?? '';
-        const messageId = message.id ?? '';
-        const collectionType = this.channelSelected ? 'channels' : 'directMessages';
-        const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions');
+    async checkReactionDone(reactionsRef: any, message:ChatMessage, emoji:any) {        
         const q = query(reactionsRef, where("emoji", "==", emoji), where("user", "==", this.shared.actualUser.uid));
         const snapshot = await getDocs(q); 
         snapshot.forEach((doc) => {
@@ -265,33 +261,35 @@ export class MessageSharedService {
         return !snapshot.empty;
     }
 
-    async deleteReaction (message:ChatMessage) {
+    async deleteReaction (reactionsRef: any, message:ChatMessage) {
         const channelId = message.channelId ?? '';
         const messageId = message.id ?? '';
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
-        await deleteDoc(doc(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions', this.alreadyExisitingReactionId));
+        await deleteDoc(doc(reactionsRef, this.alreadyExisitingReactionId));
 
     }
 
     async pushAnswerEmojiReaction(message:ChatMessage, emoji:any) {
-        //const alreadyReacted = await this.checkReactionDone(message, emoji);
-        // if (alreadyReacted) {
-        // console.log('User already reacted!');
-        // this.deleteReaction(message)
-        // } else {
-       await this.getAnswerIds();
-        
-        const channelId = this.selectedChannel?.channelId ?? '';     
-        const messageId = this.selectedMessage?.id ?? '';        
-        const answerId = this.answerId ?? '';        
+        await this.getAnswerIds();
+        const answerId = this.answerId ?? '';      
+        const channelId = this.selectedChannel?.channelId ?? ''; 
+        const chatId = this.selectedMessage?.channelId ?? "";
+        const channelTyp = this.channelSelected ? channelId : chatId;
+        const messageId = this.selectedMessage?.id ?? '';          
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
-        const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers', answerId, 'reactions');
+        const reactionsRef = collection(this.firestore, collectionType, channelTyp, 'messages', messageId, 'answers', answerId, 'reactions');
+        const alreadyReacted = await this.checkReactionDone(reactionsRef, message, emoji);
+        if (alreadyReacted) {
+            console.log('User already reacted!');
+            this.deleteReaction(reactionsRef, message);
+        } else {
         await addDoc (reactionsRef, {
-            user: message.user,
+            user: this.shared.actualUserID,
             emoji: emoji,
             timeStamp: serverTimestamp()
         });     
         }
+    }    
 
     getAnswerIds() {    
       this.answerMessages.forEach(element => {

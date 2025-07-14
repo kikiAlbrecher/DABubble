@@ -1,5 +1,4 @@
-import { inject, NgZone, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
-import { Component, Input, HostListener, ElementRef} from '@angular/core';
+import {Component, Input, HostListener, ElementRef, inject, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
 import { ChatMessage } from '../message.model';
@@ -41,10 +40,11 @@ export class OwnMessageComponent {
   reactionDetails:Reaction[] = [];
   groupedReactions:any = {};
   groupedReactionsEmoji: any;
-answerGroupedReactions: { [answerId: string]: { [emoji: string]: Reaction[] } } = {};
-answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
+  answerGroupedReactions: { [answerId: string]: { [emoji: string]: Reaction[] } } = {};
+  answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
   hoveredEmoji: string | null = null;
-  reactionUserName:any;
+  reactionUserNames: string[] = [];
+  reactionUsersLoaded: boolean = false;
   reactionUser:string= "";
   answerReactionUser:string= "";
   answerMessages: ChatMessage[] = [];
@@ -93,10 +93,10 @@ answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
   } 
 
   onMouseOver() {
-  if (!this.showEditContainer) {
-    this.editOverlay = true;
+    if (!this.showEditContainer) {
+      this.editOverlay = true;
+    }
   }
-}
 
   showEditOverlay() {
     this.showEditContainer = !this.showEditContainer
@@ -117,7 +117,6 @@ answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
     this.sharedUser.threadsVisible$.next(true);
     await this.sharedMessages.getAnswerMessage(this.message);
     this.sharedMessages.getChannelOrUserName();
-    //this.getAnswerIds();
     if (this.sharedMessages.channelSelected) {
       this.sharedMessages.getChannelAnswerMessages ();      
     } else if (this.sharedMessages.userSelected) {
@@ -128,7 +127,8 @@ answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
   async getAnswerDetails() {
     const channelId = this.message.channelId ?? '';
     const messageId = this.message.id ?? '';
-    const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');  
+    const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
+    const answerRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers');  
     const q = query(answerRef, orderBy('timeStamp'));
     if(answerRef) {
       onSnapshot(q, snapshot => {
@@ -156,8 +156,7 @@ answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
       this.sharedMessages.pushEmojiReaction(this.message, emoji);
     }else {
       this.sharedMessages.pushAnswerEmojiReaction(this.message, emoji)
-    }
-    
+    }    
   }
 
   getChannelReactions() {
@@ -185,66 +184,105 @@ answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
         this.groupedReactions = groups;                    
         this.groupedReactionsEmoji = Object.keys(groups);  
      
-        const emojis = this.groupedReactionsEmoji;
-        for (let i = 0; i < emojis.length; i++) {
-          const emoji = emojis[i];
-          const reactionsForEmoji = this.groupedReactions[emoji];
+        // const emojis = this.groupedReactionsEmoji;
+        // for (let i = 0; i < emojis.length; i++) {
+        //   const emoji = emojis[i];
+        //   const reactionsForEmoji = this.groupedReactions[emoji];
 
-          for (let j = 0; j < reactionsForEmoji.length; j++) {
-            const reaction = reactionsForEmoji[j];
-            const userId = reaction.user;
-            onSnapshot(doc(this.firestore, "users", userId), (doc) => {
-            this.reactionUser = doc.data()!['displayName']             
-            });
-          }          
-        }   
+        //   for (let j = 0; j < reactionsForEmoji.length; j++) {
+        //     const reaction = reactionsForEmoji[j];
+        //     const userId = reaction.user;
+        //     onSnapshot(doc(this.firestore, "users", userId), (doc) => {
+        //     this.reactionUser = doc.data()!['displayName']             
+        //     });
+        //   }          
+        // }   
       });         
     }     
   }
 
-  getAnswerIds() {
+  showReactionInformation(emoji:string) {
+    this.hoveredEmoji = emoji;
+    const emojis = this.groupedReactions[emoji];    
+    if (this.reactionUsersLoaded) {
+       return 
+    } 
+    this.reactionUsersLoaded = true;   
+    for (let j = 0; j < emojis.length; j++) {
+      const reaction = emojis[j];
+      const userId = reaction.user;         
+      onSnapshot(doc(this.firestore, "users", userId), (doc) => {
+        const name = doc.data()!['displayName'];
+        this.reactionUserNames.push(name);            
+      });
+    }      
+  }
+
+  getAnswerIds() { 
+    console.log('hi');
+    
     this.sharedMessages.answerMessages$.subscribe(messages => {
       messages.forEach(answer => {
+        console.log(answer.id);
+        
         this.getAnswerReactions(answer.id);      
       });
     });    
   }
 
   getAnswerReactions(answerId: string) {
-  const channelId = this.sharedMessages.selectedChannel?.channelId ?? '';
-  const messageId = this.sharedMessages.selectedMessage?.id ?? '';
-  const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
-
-  const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'answers', answerId, 'reactions');
-  const q = query(reactionsRef, orderBy('emoji'));
-  if (reactionsRef) {
-    onSnapshot(q, snapshot => {
-      const reactionDetails = snapshot.docs.map(doc => {
-        const data = doc.data() as Reaction;
-        return {
-          ...data,
-        };
+    const channelId = this.sharedMessages.selectedChannel?.channelId ?? '';    
+    const chatId = this.sharedMessages.selectedMessage?.channelId ?? "";
+    const channelTyp = this.sharedMessages.channelSelected ? channelId : chatId;
+    const messageId = this.sharedMessages.selectedMessage?.id ?? '';
+    const collectionType = this.sharedMessages.channelSelected ? 'channels' : 'directMessages';
+    const reactionsRef = collection(this.firestore, collectionType, channelTyp, 'messages', messageId, 'answers', answerId, 'reactions');
+    const q = query(reactionsRef, orderBy('emoji'));
+    if (reactionsRef) {
+      onSnapshot(q, snapshot => {
+        const reactionDetails = snapshot.docs.map(doc => {
+          const data = doc.data() as Reaction;
+          return {
+            ...data,
+          };
+        });
+        const groups = reactionDetails.reduce((groups: any, reaction: Reaction) => {
+          const emoji = reaction.emoji;
+          if (!groups[emoji]) {
+            groups[emoji] = [];
+          }
+          groups[emoji].push(reaction);
+          return groups;
+        }, {});
+        this.answerGroupedReactions[answerId] = groups;
+        this.answerGroupedReactionsEmoji[answerId] = Object.keys(groups);  
+        this.cdr.detectChanges();          
       });
-
-      const groups = reactionDetails.reduce((groups: any, reaction: Reaction) => {
-        const emoji = reaction.emoji;
-        if (!groups[emoji]) {
-          groups[emoji] = [];
-        }
-        groups[emoji].push(reaction);
-        return groups;
-      }, {});
-
-      // Speichere die gruppierten Reaktionen unter dem answerId
-      this.answerGroupedReactions[answerId] = groups;
-      this.answerGroupedReactionsEmoji[answerId] = Object.keys(groups);
-
-      this.cdr.detectChanges();
-
-      // Optional: Lade User-Namen oder weitere Details pro Reaktion, wenn nötig
-    });
+    }
   }
-}
+
+   showAnswerReactionInformation(emoji:string) {
+     this.hoveredEmoji = emoji;
+     const emojis = this.answerGroupedReactions[this.message.id][emoji];
+     if (this.reactionUsersLoaded) {
+       return 
+    } 
+    this.reactionUsersLoaded = true;   
+    for (let j = 0; j < emojis.length; j++) {
+      const reaction = emojis[j];
+      const userId = reaction.user;         
+      onSnapshot(doc(this.firestore, "users", userId), (doc) => {
+        const name = doc.data()!['displayName'];
+        this.reactionUserNames.push(name);            
+      });
+    }      
+   }
+
+  mouseOutReactionInformation() {
+    this.hoveredEmoji = null;
+    this.reactionUsersLoaded = false;
+    this.reactionUserNames = [];
+  }
 
 
 }

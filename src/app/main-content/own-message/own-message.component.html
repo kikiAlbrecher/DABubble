@@ -32,16 +32,16 @@
                     <div class="reactions-container">
                         @for (emoji of groupedReactionsEmoji; track $index) {
                             <div (click)="sharedMessages.pushEmojiReaction(message, emoji)" class="reaction"
-                                (mouseover)="hoveredEmoji = emoji"
-                                    (mouseout)="hoveredEmoji = null">
+                                (mouseover)="showReactionInformation(emoji)"
+                                (mouseleave)="mouseOutReactionInformation()">
                                 <span class="reaction-count">{{groupedReactions[emoji].length}}</span>
                                 <div class="reaction-emoji">{{emoji}}</div>
                                 @if (hoveredEmoji === emoji) {
                                     <div class="reaction-info">
                                         <div class="reaction-emoji">{{emoji}}</div>
-                                        @for (item of groupedReactions[emoji]; track $index) {
+                                        @for (item of reactionUserNames; track $index) {
                                             <div class="reaction-info-name-container">
-                                                <span class="reaction-info-name">{{reactionUser}}</span>
+                                                <span class="reaction-info-name">{{item}}</span>
                                             </div>
                                         }   
                                         <span class="reaction-info-text">hat reagiert</span>
@@ -53,32 +53,32 @@
                 </div>     
                 }
                 
-@if (mode === 'thread') {
-  <div class="reactions-container">
-    @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
-      @for (emoji of answerGroupedReactionsEmoji[message.id]; track $index) {
-        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
-             (mouseover)="hoveredEmoji = emoji"
-             (mouseout)="hoveredEmoji = null">
-          <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
-          <div class="reaction-emoji">{{emoji}}</div>
+            @if (mode === 'thread') {
+            <div class="reactions-container">
+                @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
+                @for (emoji of answerGroupedReactionsEmoji[message.id]; track $index) {
+                    <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
+                        (mouseover)="showAnswerReactionInformation(emoji)"
+                        (mouseleave)="mouseOutReactionInformation()">
+                    <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
+                    <div class="reaction-emoji">{{emoji}}</div>
 
-          <!-- @if (hoveredEmoji === emoji) {
-            <div class="reaction-info">
-              <div class="reaction-emoji">{{emoji}}</div>
-              @for (item of answerGroupedReactions[message.id][emoji]; track $index) {
-                <div class="reaction-info-name-container">
-                  <span class="reaction-info-name">{{item.userName || item.user}}</span>
-                </div>
-              }
-              <span class="reaction-info-text">hat reagiert</span>
+                    @if (hoveredEmoji === emoji) {
+                        <div class="reaction-info">
+                        <div class="reaction-emoji">{{emoji}}</div>
+                        @for (item of reactionUserNames; track $index) {
+                            <div class="reaction-info-name-container">
+                            <span class="reaction-info-name">{{item}}</span>
+                            </div>
+                        }
+                        <span class="reaction-info-text">hat reagiert</span>
+                        </div>
+                    }
+                    </div>
+                }
+                }
             </div>
-          } -->
-        </div>
-      }
-    }
-  </div>
-}
+            }
                 
             </div>
         }
@@ -120,9 +120,10 @@
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons points" (click)="showEditMessageOverlay()"></div>
     </div>
+    
     @if (editMessageOverlay) {
-    <div class="edit-message" [class.visible]="editOverlay">
-        <span (click)="showEditOverlay()">Nachricht bearbeiten</span>
-    </div>
+        <div class="edit-message" [class.visible]="editOverlay">
+            <span (click)="showEditOverlay()">Nachricht bearbeiten</span>
+        </div>
     }
 </section>
