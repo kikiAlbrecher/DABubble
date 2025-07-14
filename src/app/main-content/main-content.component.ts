@@ -72,6 +72,12 @@ export class MainContentComponent implements OnInit {
 
     if (this.isMobile) this.showMainChatMobile = false;
 
+    this.shared.subscribeValidUsers();
+
+    this.shared.allValidUsers$.subscribe(users => {
+      this.users = users;
+    });
+
     setTimeout(() => this.isInitializing = false);
   }
 

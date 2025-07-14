@@ -17,8 +17,10 @@ export class ChannelUsersService {
       const user = docSnap.data() as User;
       const id = docSnap.id;
       const userChannelIds = user.channelIds as { [key: string]: true };
+      const isChannelMember = userChannelIds && userChannelIds[channelId];
+      const isActiveGuest = user.name === 'Gast' ? user.status === true : true;
 
-      if (user.channelIds && user.channelIds[channelId]) channelMembers.push({ ...user, id });
+      if (isChannelMember && isActiveGuest) channelMembers.push({ ...user, id });
     });
 
     return channelMembers;

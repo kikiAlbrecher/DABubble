@@ -12,6 +12,7 @@
         border-radius: 30px;
         @include dFlex($jc: flex-start, $g: 8px);
         flex-wrap: wrap;
+        width: 100%;
 
         &:focus-within {
             border-color: $purple;

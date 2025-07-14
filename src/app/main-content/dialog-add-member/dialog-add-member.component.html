@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <app-search-for-user [(selectedUsers)]="selectedUsers"></app-search-for-user>
+        <app-search-for-user [allUsers]="allUsers" [(selectedUsers)]="selectedUsers"></app-search-for-user>
 
         <div class="save-action">
             <app-submit-button [form]="addMemberAfterwardsForm" label="Hinzufügen"></app-submit-button>

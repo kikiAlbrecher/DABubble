@@ -1,9 +1,13 @@
-import { Injectable, Input } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from "./user.interface";
-import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc, onSnapshot, deleteField } from '@angular/fire/firestore';
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut, signInAnonymously } from "firebase/auth";
+import { Firestore, doc, updateDoc, setDoc, getDoc, onSnapshot, collection } from '@angular/fire/firestore';
+import {
+    getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset,
+    signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut,
+    signInAnonymously
+} from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
@@ -26,6 +30,7 @@ export class UserSharedService {
     actualUserID: string = "";
     actualUser: any = [];
     actualUser$ = new BehaviorSubject<string>('');
+    allValidUsers$ = new BehaviorSubject<User[]>([]);
     threadsVisible$ = new BehaviorSubject<boolean>(false);
     private _workspaceOpen = new BehaviorSubject<boolean>(true);
     workspaceOpen$ = this._workspaceOpen.asObservable();
@@ -37,11 +42,14 @@ export class UserSharedService {
     userEditOverlay: boolean = false;
     detailOverlay: boolean = false;
     firebaseFailure: boolean = false;
+    isRegistering: boolean = false;
 
     constructor(private router: Router, private ngZone: NgZone) { }
 
     initAuth() {
         onAuthStateChanged(this.auth, (user) => {
+            if (this.isRegistering) return;
+
             if (user) {
                 this.currentUser = user;
                 this.actualUserID = user.uid;
@@ -78,6 +86,7 @@ export class UserSharedService {
 
     async submitUser() {
         try {
+            this.isRegistering = true;
             const auth = this.auth;
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
@@ -105,6 +114,8 @@ export class UserSharedService {
             setTimeout(() => {
                 this.firebaseFailure = false;
             }, 3000);
+        } finally {
+            this.isRegistering = false;
         }
     }
 
@@ -160,7 +171,7 @@ export class UserSharedService {
                     this.isAuthenticated = true;
                 } else {
                     await setDoc(userDocRef, {
-                        channelIds: {},
+                        channelIds: { 'ClExENSKqKRsmjb17kGy': true },
                         uid: user.uid,
                         email: user.email,
                         name: user.displayName,
@@ -169,6 +180,7 @@ export class UserSharedService {
                         displayName: user.displayName,
                         displayNameLowercase: (user.displayName ?? '').toLowerCase()
                     });
+                    this.channelMembersChanged$.next();
                     this.router.navigate(['/main-content']);
                 }
                 this.ngZone.run(() => {
@@ -191,7 +203,7 @@ export class UserSharedService {
                 const userDocRef = doc(this.firestore, 'users', user.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 await setDoc(userDocRef, {
-                    channelIds: {},
+                    channelIds: { 'ClExENSKqKRsmjb17kGy': true },
                     uid: user.uid,
                     email: "",
                     name: 'Gast',
@@ -201,7 +213,8 @@ export class UserSharedService {
                     displayName: 'Gast',
                     displayNameLowercase: 'gast'
                 });
-
+                this.channelMembersChanged$.next();
+                this.router.navigate(['/main-content']);
             })
             .catch((error) => {
                 this.firebaseFailure = true;
@@ -209,7 +222,6 @@ export class UserSharedService {
                     this.firebaseFailure = false;
                 }, 3000);
             });
-        this.router.navigate(['/main-content']);
     }
 
     changePasswordMail(email: string) {
@@ -303,6 +315,8 @@ export class UserSharedService {
         this.threadsVisible$.next(false);
     }
 
+
+
     // async removeChannelUser(userId: string, channelId: string): Promise<void> {
     //     const userDocRef = doc(this.firestore, 'users', userId);
     //     const updateData: any = {};
@@ -311,7 +325,28 @@ export class UserSharedService {
     //     await updateDoc(userDocRef, updateData);
     // }
 
+    subscribeValidUsers(): void {
+        const usersCollection = collection(this.firestore, 'users');
+
+        onSnapshot(usersCollection, (snapshot) => {
+            const users: User[] = [];
+
+            snapshot.forEach((docSnap) => {
+                const user = docSnap.data() as User;
+                const id = docSnap.id;
+
+                if (user.name !== 'Gast' || (user.name === 'Gast' && user.status === true)) {
+                    users.push({ ...user, id });
+                }
+            });
+
+            this.allValidUsers$.next(users);
+        });
+    }
+
     async removeChannelUser(userId: string, channelId: string): Promise<void> {
+        if (channelId === 'ClExENSKqKRsmjb17kGy') throw new Error('Der Standard-Channel kann nicht verlassen werden.');
+
         const userDocRef = doc(this.firestore, 'users', userId);
         const userSnap = await getDoc(userDocRef);
 

@@ -1,10 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore, collection, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 import { User } from '../../userManagement/user.interface';
 import { UsersComponent } from '../../style-components/users/users.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
+import { UserSharedService } from '../../userManagement/userManagement-service';
 
 @Component({
   selector: 'app-search-for-user',
@@ -14,6 +15,7 @@ import { UserImageStatusComponent } from '../../style-components/user-image-stat
   styleUrl: './search-for-user.component.scss'
 })
 export class SearchForUserComponent {
+  @Input() allUsers: User[] = [];
   @Input() selectedUsers: User[] = [];
   @Output() selectedUsersChange = new EventEmitter<User[]>();
   @ViewChild('userInput') userInputRef!: ElementRef<HTMLInputElement>;
@@ -22,17 +24,21 @@ export class SearchForUserComponent {
   suggestedUsers: User[] = [];
 
   private firestore = inject(Firestore);
+  userManagement = inject(UserSharedService);
 
-  async onUserSearch(term: string) {
-    if (term.length < 1) return;
+  onUserSearch(term: string) {
+    if (term.length < 1) {
+      this.suggestedUsers = [];
+      return;
+    }
 
-    const usersRef = collection(this.firestore, 'users');
-    const q = query(usersRef,
-      where('displayNameLowercase', '>=', term.toLowerCase()),
-      where('displayNameLowercase', '<=', term.toLowerCase() + '\uf8ff')
-    );
-    const snap = await getDocs(q);
-    this.suggestedUsers = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }))
+    const lowerTerm = term.toLowerCase();
+
+    this.suggestedUsers = this.allUsers
+      .filter(user =>
+        user.displayName?.toLowerCase().startsWith(lowerTerm) ||
+        user.name?.toLowerCase().startsWith(lowerTerm)
+      )
       .filter(u => !this.selectedUsers.find(su => su.id === u.id));
   }
 
