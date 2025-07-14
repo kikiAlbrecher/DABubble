@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Firestore, collection, query, where, getDocs } from '@angular/fire/firestore';
@@ -16,6 +16,7 @@ import { UserImageStatusComponent } from '../../style-components/user-image-stat
 export class SearchForUserComponent {
   @Input() selectedUsers: User[] = [];
   @Output() selectedUsersChange = new EventEmitter<User[]>();
+  @ViewChild('userInput') userInputRef!: ElementRef<HTMLInputElement>;
 
   userSearchTerm = '';
   suggestedUsers: User[] = [];
@@ -42,10 +43,16 @@ export class SearchForUserComponent {
     }
     this.userSearchTerm = '';
     this.suggestedUsers = [];
+    this.focusInput();
   }
 
   removeUser(user: User) {
     this.selectedUsers = this.selectedUsers.filter(u => u.id !== user.id);
     this.selectedUsersChange.emit(this.selectedUsers);
+    this.focusInput();
+  }
+
+  focusInput() {
+    setTimeout(() => this.userInputRef?.nativeElement.focus(), 0);
   }
 }

@@ -21,7 +21,7 @@
                 <img *ngFor="let member of channelMembers.slice(-3); let i = index"
                     [ngStyle]="{ right: ((channelMembers.length > 3 ? 40 : 10) + (i * 30 )) + 'px', zIndex: 100 - 10 * i }"
                     class="member-avatar" [src]="member.picture" alt="user.name">
-                <span *ngIf="channelMembers.length > 3" class="more-than-three">{{ channelMembers.length - 3 }}</span>
+                <span *ngIf="channelMembers.length > 3" class="more-than-three">+{{ channelMembers.length - 3 }}</span>
             </div>
             <svg class="svg-style add-members" [class.active]="showAddMemberDialog"
                 (click)="openDialogAddMember($event)" width="40" height="40" viewBox="0 0 40 40" fill="none"

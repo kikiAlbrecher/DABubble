@@ -16,6 +16,7 @@
 
     @media (max-width: 1000px) {
         @include dFlex();
+        width: 100%;
 
         .rectangle {
             width: 62px;

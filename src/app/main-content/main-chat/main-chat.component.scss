@@ -87,7 +87,11 @@
         &:hover {
             cursor: pointer;
             border-radius: 30px;
-            background-color: $background-purple;
+            background: $background-purple;
+        }
+
+        &:hover .more-than-three {
+            color: $purple-hover;
         }
 
         >.member-avatar {
