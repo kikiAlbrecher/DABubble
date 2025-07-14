@@ -4,11 +4,14 @@
     position: fixed;
     border-top-right-radius: 0;
     width: 415px;
-    height: 411px;
 }
 
 .show-members-content {
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
+
+    app-users {
+        padding-top: 20px;
+    }
 
     .add-member-transfer {
         padding: 12px 29px;
@@ -29,4 +32,14 @@
             background: $background-purple;
         }
     }
+}
+
+h2 {
+    @media (max-width: 1000px) {
+        @include fontNunito($size: 20px, $weight: 700);
+    }
+}
+
+.h2-responsive {
+    @include fontNunito($size: 24px, $weight: 700);
 }

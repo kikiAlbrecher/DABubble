@@ -6,7 +6,11 @@
     height: 100vh;
     padding: 0 32px 16px 32px;
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
+        padding: 0 16px 16px 16px;
+    }
+
+    @media(max-width: 1000px) {
         padding: 0;
     }
 }
@@ -18,9 +22,13 @@
 
     .header-searchbar {
         width: 50%;
+
+        @media(max-width: 1000px) {
+            display: none;
+        }
     }
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
         height: 80px;
     }
 }
@@ -44,7 +52,7 @@
         position: relative;
     }
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
         gap: 0;
     }
 
@@ -54,17 +62,17 @@
         transition: width 0.25s ease;
     }
 
+    app-side-nav {
+        @media(max-width: 1000px) {
+            width: 100%;
+        }
+    }
+
     app-main-chat {
         flex-grow: 1;
 
         @media (max-width: 1000px) {
             width: 100%;
-        }
-    }
-
-    app-side-nav {
-        @media (max-width: 1000px) {
-            display: none;
         }
     }
 

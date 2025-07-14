@@ -9,7 +9,7 @@
     top: 0;
     left: 0;
     @include dFlex();
-    padding: 24px;
+    padding: 50px;
     transition: transform 0.3s ease-in-out, opacity 0.3 ease-in-out;
     pointer-events: none;
 
@@ -29,7 +29,9 @@
         padding: 32px 16px;
         text-align: center;
         border: unset;
-        border-radius: 25px;
+        border-top-right-radius: 30px;
+        border-bottom-left-radius: 30px;
+        border-top-left-radius: 30px;
         @include fontNunito($size: 18px, $weight: 600);
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         background: $purple;

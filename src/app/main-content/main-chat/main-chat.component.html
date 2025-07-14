@@ -16,15 +16,16 @@
             </svg>
         </div>
         <div class="members-add">
-            <div [ngStyle]="{ width: (52 + (channelMembers.slice(-3).length) * 30) + 'px' }" class="members"
-                (click)="openShowMembers($event)">
+            <div [ngStyle]="{ width: ((channelMembers.length > 3 ? 60 : 30) + (channelMembers.slice(-3).length) * 30) + 'px' }"
+                class="members" (click)="openShowMembers($event)">
                 <img *ngFor="let member of channelMembers.slice(-3); let i = index"
-                    [ngStyle]="{ right: (32 + i * 30) + 'px', zIndex: 100 - 10 * i }" class="member-avatar"
-                    [src]="member.picture" alt="user.name">
+                    [ngStyle]="{ right: ((channelMembers.length > 3 ? 40 : 10) + (i * 30 )) + 'px', zIndex: 100 - 10 * i }"
+                    class="member-avatar" [src]="member.picture" alt="user.name">
                 <span *ngIf="channelMembers.length > 3" class="more-than-three">{{ channelMembers.length - 3 }}</span>
             </div>
-            <svg class="svg-style add-members" [class.active]="showAddMemberDialog" (click)="openDialogAddMember($event)"
-                width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="svg-style add-members" [class.active]="showAddMemberDialog"
+                (click)="openDialogAddMember($event)" width="40" height="40" viewBox="0 0 40 40" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <rect width="40" height="40" rx="20" fill="#ECEEFE" />
                 <mask id="mask0_388_3044" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="8" y="8" width="24"
                     height="24">
@@ -44,10 +45,12 @@
 
 <div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selected-item selected-item-dm" (click)="openProfile()">
+        <div class="selected-item selected-item-dm">
             <app-user-image-status [user]="selectedUser"></app-user-image-status>
             <span class="title">{{ selectedUser.name }}</span>
         </div>
+        <!-- <app-user-profile [user]="selectedUser" [allowEdit]="false">
+        </app-user-profile> -->
     </div>
     <div class="time-separator"></div>
     <div class="past-messages"></div>

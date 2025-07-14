@@ -16,7 +16,7 @@ import { User } from '../../userManagement/user.interface';
   styleUrl: './user-profile.component.scss',
 })
 export class UserProfileComponent implements OnInit {
-  @Input() user!: User;
+  @Input() user: User | null = null;
   @Input() allowEdit: boolean = true;
 
   constructor(

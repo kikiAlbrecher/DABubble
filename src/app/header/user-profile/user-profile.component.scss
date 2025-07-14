@@ -167,7 +167,6 @@
     .message-btn {
         @include dFlex($g: 10px);
         border-radius: 50px;
-        background: $purple;
 
         img {
             width: 24px;

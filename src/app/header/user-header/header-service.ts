@@ -1,25 +1,20 @@
-import { Injectable, Input } from '@angular/core';
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { Firestore, doc, updateDoc, addDoc, collection, setDoc, getDoc } from '@angular/fire/firestore';
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
-import { NgZone } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-
+import { inject, Injectable } from '@angular/core';
+import { UserSharedService } from '../../userManagement/userManagement-service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
-
 export class HeaderSharedService {
+    editName: boolean = false;
+    newName: string = "";
+    dropdownProfile: boolean = false;
 
-    
-    editName:boolean = false;
-    newName:string = "";
-    dropdownProfile:boolean = false;
-  
+    public shared = inject(UserSharedService);
 
-
+    toggleHeaderOverlay(event: Event): void {
+        event.stopPropagation();
+        this.shared.showUserEdit();
+    }
 
     editNameMask() {
         this.editName = !this.editName;

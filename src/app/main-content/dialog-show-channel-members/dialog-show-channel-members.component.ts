@@ -15,6 +15,7 @@ export class DialogShowChannelMembersComponent {
   @Input() users: User[] = [];
   @Input() selectedUserId: string | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
+  @Input() asOverlay: boolean = true;
   @Output() close = new EventEmitter<void>();
   @Output() openAddMembers = new EventEmitter<{ top: number; left: number }>();
 

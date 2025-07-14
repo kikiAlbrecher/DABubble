@@ -1,44 +1,49 @@
 <div class="outside-overlay" (click)="closeAddMember()">
-    <form (click)="$event.stopPropagation()" #addMemberForm="ngForm" (ngSubmit)="saveMember()"
-        class="dialog-add-channel dialog-add-member">
-        <div class="add-headline">
-            <h2>Personen hinzufügen</h2>
-            <app-close-button (close)="closeAddMember()"></app-close-button>
-        </div>
+    <div class="overlay-content">
+        <form (click)="$event.stopPropagation()" #addMemberForm="ngForm" (ngSubmit)="saveMember()"
+            class="dialog-add-channel dialog-add-member">
+            <div class="closing-sign">
+                <span class="rectangle"></span>
+            </div>
+            <div class="add-headline">
+                <h2>Personen hinzufügen</h2>
+                <app-close-button (close)="closeAddMember()"></app-close-button>
+            </div>
 
-        <div class="add-member-options">
-            <div class="option-block option-block-channel">
-                <div class="option">
-                    <input type="radio" id="addChannelMembers" name="add-options" [(ngModel)]="mode" value="allChannels"
-                        (ngModelChange)="onModeChange($event)" required>
-                    <label for="addChannelMembers">
-                        Alle Mitglieder von
-                        <button type="button" (click)="openChannelList()" class="chosen-channel">
-                            {{ chosenChannelName || 'Produktion' }}
-                        </button>
-                        hinzufügen.
-                    </label>
+            <div class="add-member-options">
+                <div class="option-block option-block-channel">
+                    <div class="option">
+                        <input type="radio" id="addChannelMembers" name="add-options" [(ngModel)]="mode"
+                            value="allChannels" (ngModelChange)="onModeChange($event)" required>
+                        <label for="addChannelMembers">
+                            Alle Mitglieder von
+                            <button type="button" (click)="openChannelList()" class="chosen-channel">
+                                {{ chosenChannelName || 'Produktion' }}
+                            </button>
+                            hinzufügen.
+                        </label>
+                    </div>
+                    <div *ngIf="channelListVisible" class="list channel-suggestions">
+                        <div class="channel-entry" *ngFor="let channel of channelList" (click)="selectChannel(channel)">
+                            {{ channel.channelName.slice(1) }}
+                        </div>
+                    </div>
                 </div>
-                <div *ngIf="channelListVisible" class="list channel-suggestions">
-                    <div class="channel-entry" *ngFor="let channel of channelList" (click)="selectChannel(channel)">
-                        {{ channel.channelName.slice(1) }}
+                <div class="option-block">
+                    <div class="option">
+                        <input type="radio" id="addSelectedColleagues" name="add-options" [(ngModel)]="mode"
+                            value="selectedColleagues" (ngModelChange)="onModeChange($event)" required>
+                        <label for="addSelectedColleagues">Bestimmte Personen hinzufügen.</label>
+                    </div>
+                    <div *ngIf="mode==='selectedColleagues'" class="input-colleagues-name">
+                        <app-search-for-user [(selectedUsers)]="selectedUsers"></app-search-for-user>
                     </div>
                 </div>
             </div>
-            <div class="option-block">
-                <div class="option">
-                    <input type="radio" id="addSelectedColleagues" name="add-options" [(ngModel)]="mode"
-                        value="selectedColleagues" (ngModelChange)="onModeChange($event)" required>
-                    <label for="addSelectedColleagues">Bestimmte Personen hinzufügen.</label>
-                </div>
-                <div *ngIf="mode==='selectedColleagues'" class="input-colleagues-name">
-                    <app-search-for-user [(selectedUsers)]="selectedUsers"></app-search-for-user>
-                </div>
-            </div>
-        </div>
 
-        <div class="save-action">
-            <app-submit-button [form]="addMemberForm" label="Erstellen"></app-submit-button>
-        </div>
-    </form>
+            <div class="save-action">
+                <app-submit-button [form]="addMemberForm" label="Erstellen"></app-submit-button>
+            </div>
+        </form>
+    </div>
 </div>

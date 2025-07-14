@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement/userManagement-service';
@@ -41,7 +41,7 @@ import { DialogShowChannelMembersComponent } from './dialog-show-channel-members
   templateUrl: './main-content.component.html',
   styleUrls: ['./main-content.component.scss']
 })
-export class MainContentComponent {
+export class MainContentComponent implements OnInit {
   constructor(
     public shared: UserSharedService,
     public messageService: MessageSharedService,
@@ -63,12 +63,25 @@ export class MainContentComponent {
   selectedChannel: Channel | null = null;
   selectedUser: User | null = null;
   showProfile = false;
+  isMobile = window.innerWidth <= 1000;
+  showMainChatMobile = false;
+  isInitializing = true;
+
+  ngOnInit() {
+    this.isMobile = window.innerWidth <= 1000;
+
+    if (this.isMobile) this.showMainChatMobile = false;
+
+    setTimeout(() => this.isInitializing = false);
+  }
 
   onChannelSelected(channel: Channel) {
     this.selectedChannel = channel;
     this.selectedUser = null;
     this.messageService.setSelectedChannel(channel);
     this.messageService.setSelectedUser(null);
+
+    if (this.isMobile && !this.isInitializing) this.showMainChatMobile = true;
   }
 
   onUserSelected(user: User) {
@@ -76,6 +89,8 @@ export class MainContentComponent {
     this.selectedChannel = null;
     this.messageService.setSelectedUser(user);
     this.messageService.setSelectedChannel(null);
+
+    if (this.isMobile && !this.isInitializing) this.showMainChatMobile = true;
   }
 
   openDialogAddChannel() {
@@ -178,4 +193,13 @@ export class MainContentComponent {
   openProfile() {
     this.showProfile = true;
   }
+
+  onBackToSideNav() {
+    this.showMainChatMobile = false;
+  }
+
+  // @HostListener('window:resize', ['$event'])
+  // onResize() {
+  // }
+
 }

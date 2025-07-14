@@ -9,16 +9,18 @@ import { UserImageStatusComponent } from '../../style-components/user-image-stat
 import { MessageSharedService } from '../message-service';
 import { ChannelsComponent } from '../../style-components/channels/channels.component';
 import { UsersComponent } from '../../style-components/users/users.component';
+import { SearchbarComponent } from '../../header/searchbar/searchbar.component';
 
 @Component({
   selector: 'app-side-nav',
   standalone: true,
-  imports: [CommonModule, UserImageStatusComponent, ChannelsComponent, UsersComponent],
+  imports: [CommonModule, UserImageStatusComponent, ChannelsComponent, UsersComponent, SearchbarComponent],
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.scss'
 })
 export class SideNavComponent implements OnInit, OnDestroy {
   @Input() showAddChannelDialog = false;
+  @Input() isMobile: boolean = false;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
@@ -58,7 +60,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
     this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
       this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-      if (this.channels.length > 0 && !this.selectedChannelId) {
+
+      if (this.channels.length > 0 && !this.selectedChannelId && !this.isMobile) {
         const defaultChannel = this.channels[0];
         this.selectedChannelId = defaultChannel.channelId;
         this.selectChannel.emit(defaultChannel);

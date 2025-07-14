@@ -2,23 +2,30 @@
 
 .side-nav {
     transform: translateX(0);
-    transition: transform 0.25s ease-in-out;
     padding: 32px 30px;
+    width: 364px;
+    overflow-x: hidden;
 
-    &.closed {
-        transform: translateX(-110%);
+    @media (max-width: 1000px) {
+        padding: 12px 16px 20px 16px;
     }
 
     @media (max-width: 1000px) {
-        &.default-closed {
-            transform: translateX(-110%);
-        }
+        width: 100%;
+    }
+
+    &.closed {
+        transform: translateX(-110%);
     }
 
     >.channels-btn {
         @include dFlex($jc: space-between);
         border-radius: 30px;
         width: 100%;
+
+        @media(max-width: 1000px) {
+            display: none;
+        }
 
         >.workspace {
             @include dFlex($jc: flex-start, $g: 15px);
@@ -39,15 +46,46 @@
         }
     }
 
+    >.searchbar {
+        display: none;
+
+        @media (max-width: 1000px) {
+            display: flex;
+            width: 100%;
+            padding: 8px 4px 8px 24px;
+            border-radius: 42px;
+            border: 1px solid $light-purple;
+        }
+    }
+
     >.menu {
         @include dFlex($fd: column, $ai: flex-start, $g: 25px);
+
+        @media(max-width: 1000px) {
+            width: 100%;
+        }
+
+        >.menu-part {
+            @media(max-width: 1000px) {
+                width: 100%;
+            }
+        }
     }
 }
 
 .menu-category {
     @include dFlex($jc: space-between, $g: 15px);
     padding: 3px 0;
-    min-width: 304px;
+    width: 100%;
+
+    @media(max-width: 1000px) {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    @media(max-width: 424px) {
+        padding: 0;
+    }
 
     >.category-headline {
         @include dFlex($jc: flex-start, $g: 15px);
@@ -71,11 +109,26 @@
 
     >.channel-menu-subtitle {
         @include fontNunito($size: 18px, $weight: 400);
+        white-space: normal;
+        text-align: left;
+
+        @media (max-width: 1000px) {
+            @include fontNunito($size: 17px, $weight: 400);
+        }
     }
 }
 
 .menu-item-add {
     padding-left: 45px;
+
+    @media (max-width: 1000px) {
+        padding-left: 65px;
+        padding-top: 8px;
+    }
+
+    @media (max-width: 424px) {
+        padding-left: 45px;
+    }
 
     &:hover {
         >svg g path {
@@ -94,9 +147,43 @@
     }
 }
 
+app-channels,
+app-users {
+    @media (max-width: 1000px) {
+        @include dFlex();
+        transform: translateX(20px);
+    }
+
+    @media (max-width: 424px) {
+        transform: translateX(0);
+    }
+}
+
 .general-menu-icons {
     width: 30px;
     aspect-ratio: 1 / 1;
+}
+
+.workspace-message {
+    display: none;
+
+    @media (max-width: 1000px) {
+        display: flex;
+        width: 60px;
+        height: 60px;
+        border-radius: 100px;
+        background: $purple;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        padding: 7px 10px 13px 10px;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+    }
 }
 
 .toggle-workspace {
@@ -113,6 +200,10 @@
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
     background: $white;
+
+    @media (max-width: 1000px) {
+        display: none;
+    }
 
     >span {
         @include fontNunito($size: 20px, $weight: 500);

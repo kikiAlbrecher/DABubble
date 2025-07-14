@@ -303,11 +303,31 @@ export class UserSharedService {
         this.threadsVisible$.next(false);
     }
 
+    // async removeChannelUser(userId: string, channelId: string): Promise<void> {
+    //     const userDocRef = doc(this.firestore, 'users', userId);
+    //     const updateData: any = {};
+
+    //     updateData[`channelIds.${channelId}`] = deleteField();
+    //     await updateDoc(userDocRef, updateData);
+    // }
+
     async removeChannelUser(userId: string, channelId: string): Promise<void> {
         const userDocRef = doc(this.firestore, 'users', userId);
-        const updateData: any = {};
+        const userSnap = await getDoc(userDocRef);
 
-        updateData[`channelIds.${channelId}`] = deleteField();
-        await updateDoc(userDocRef, updateData);
+        if (!userSnap.exists()) {
+            throw new Error('Benutzer existiert nicht.');
+        }
+
+        const userData = userSnap.data();
+        const channelIds: { [channelId: string]: true } = userData['channelIds'] || {};
+
+        if (channelIds.hasOwnProperty(channelId)) {
+            delete channelIds[channelId];
+        }
+
+        await updateDoc(userDocRef, {
+            channelIds: channelIds
+        });
     }
 }

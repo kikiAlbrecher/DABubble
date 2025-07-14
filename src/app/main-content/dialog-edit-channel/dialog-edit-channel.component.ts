@@ -10,12 +10,13 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
 import { ChannelNameComponent } from '../../style-components/channel-name/channel-name.component';
 import { ChannelDescriptionComponent } from '../../style-components/channel-description/channel-description.component';
 import { FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { DialogShowChannelMembersComponent } from '../dialog-show-channel-members/dialog-show-channel-members.component';
 
 @Component({
   selector: 'app-dialog-edit-channel',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, CloseButtonComponent, ChannelNameComponent,
-    ChannelDescriptionComponent],
+    ChannelDescriptionComponent, DialogShowChannelMembersComponent],
   templateUrl: './dialog-edit-channel.component.html',
   styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-edit-channel.component.scss']
 })
@@ -34,6 +35,7 @@ export class DialogEditChannelComponent implements OnInit {
   isEditingName: boolean = false;
   isEditingDescription: boolean = false;
   channelExistsError: boolean = false;
+  selectedUserId: string | null = null;
 
   @Input() selectedChannel: Channel | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
@@ -57,6 +59,7 @@ export class DialogEditChannelComponent implements OnInit {
     });
 
     this.loadCreatorName();
+    this.loadChannelMembers();
   }
 
   private async loadCreatorName() {
@@ -149,6 +152,13 @@ export class DialogEditChannelComponent implements OnInit {
     }
   }
 
+  private async loadChannelMembers(): Promise<void> {
+    if (!this.selectedChannel) return;
+
+    const users = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
+    this.channelMembers = users;
+  }
+
   leaveChannel() {
     if (!this.selectedChannel) return;
 
@@ -158,9 +168,8 @@ export class DialogEditChannelComponent implements OnInit {
     this.sharedUser.removeChannelUser(userId, channelId)
       .then(() => {
         this.sharedUser.channelMembersChanged$.next();
-        this.sharedUser.channelChanged$.next();
+        // this.sharedUser.channelChanged$.next();
         this.userLeftChannel.emit({ success: true, message: 'Du wurdest ausgetragen.' });
-        this.closeEditChannel();
       })
       .catch(error => {
         this.userLeftChannel.emit({ success: false, message: 'Du konntest nicht ausgetragen werden, weil ' + error });

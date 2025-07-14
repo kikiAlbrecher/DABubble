@@ -1,8 +1,9 @@
-<section class="svg-title-style user-header-section" (click)="shared.showUserEdit()">
+@if (shared.actualUser) {
+<section class="svg-title-style user-header-section" (click)="sharedHeader.toggleHeaderOverlay($event)">
     <span>{{shared.actualUser.name}}</span>
 
     <div class="user-image-container">
-        <img class="user-header-img" src="{{shared.actualUser.picture}}" alt="">
+        <img class="user-header-img" src="{{ shared.actualUser.picture }}" alt="user avatar image">
         <div class="online-status" [ngClass]="shared.actualUser.status ? 'online' : 'offline'"></div>
     </div>
 
@@ -20,7 +21,7 @@
             </g>
         </svg>
         @if (shared.userEditOverlay) {
-        <div class="edit-user-overlay">
+        <div class="edit-user-overlay" (click)="$event.stopPropagation()">
             @if (!sharedHeader.dropdownProfile) {<app-dropdown></app-dropdown>}
             @if (sharedHeader.dropdownProfile) {
             <app-user-profile [user]="shared.actualUser" [allowEdit]="true">
@@ -29,3 +30,4 @@
         }
     </div>
 </section>
+}

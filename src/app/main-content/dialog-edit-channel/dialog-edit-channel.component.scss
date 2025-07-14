@@ -3,8 +3,42 @@
 .dialog-edit-channel {
     position: fixed;
     border-top-left-radius: 0;
-    width: 872px;
+    width: clamp(300px, 60%, 1000px);
     height: auto;
+    margin-right: 32px;
+    padding: 0;
+    gap: 0;
+
+    @media(max-width: 1386px) {
+        width: auto;
+    }
+
+    @media(max-width: 1000px) {
+        width: 100%;
+        min-height: 100vh;
+        margin-right: 0;
+        border-radius: 0;
+    }
+
+    >.edit-add-headline {
+        padding: 40px 40px 24px 40px;
+
+        @media(max-width: 1000px) {
+            padding: 40px 16px 10px 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+    }
+
+    >.edit-content {
+        @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+        width: 100%;
+        padding: 0 40px 40px 40px;
+
+        @media(max-width: 1000px) {
+            padding: 20px 16px;
+            gap: 25px;
+        }
+    }
 }
 
 .headline-channel-name {
@@ -12,13 +46,25 @@
     border-radius: 30px;
     padding: 2px 1px;
 
+    @media(max-width: 1000px) {
+        gap: 5px;
+    }
+
     >.hashtag {
         width: 30px;
         aspect-ratio: 1 / 1;
+
+        @media(max-width: 1000px) {
+            width: 25px;
+        }
     }
 
     >.channel-title {
         @include fontNunito($size: 24px, $weight: 700);
+
+        @media(max-width: 1000px) {
+            @include fontNunito($size: 20px, $weight: 700);
+        }
     }
 }
 
@@ -28,22 +74,36 @@
     padding: 20px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
     width: 100%;
+}
 
-    >.edit-object-header {
-        @include dFlex($jc: space-between);
-        width: 100%;
+.edit-object-mobile {
+    display: none;
+
+    @media(max-width: 1000px) {
+        display: flex;
+        padding: 20px 16px;
+    }
+}
+
+.edit-object-content {
+    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+    width: 100%;
+}
+
+.edit-object-header {
+    @include dFlex($jc: space-between);
+    width: 100%;
+}
+
+.edit-object-description {
+    gap: 10px;
+
+    >img {
+        width: 24px;
     }
 
-    >.edit-object-content {
-        gap: 10px;
-
-        >img {
-            width: 24px;
-        }
-
-        >.content-text {
-            @include fontNunito($size: 18px, $weight: 400);
-        }
+    >.content-text {
+        @include fontNunito($size: 18px, $weight: 400);
     }
 }
 
@@ -54,6 +114,22 @@
 .edit-btn {
     @include fontNunito($size: 18px, $weight: 600);
     color: $purple-hover;
+
+    @media(max-width: 1000px) {
+        display: none;
+    }
+}
+
+.edit-btn-mobile {
+    display: none;
+
+    @media(max-width: 1000px) {
+        display: block;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
 }
 
 .description-creator {
@@ -66,6 +142,10 @@
     >.channel-creator-name {
         @include fontNunito($size: 24px, $weight: 400);
         color: $purple-hover;
+
+        @media(max-width: 1000px) {
+            @include fontNunito($size: 20px, $weight: 400);
+        }
     }
 }
 

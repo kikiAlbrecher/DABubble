@@ -27,7 +27,6 @@ a {
 button {
     border: unset;
     border-radius: 25px;
-    padding: 12px 25px;
     background: none;
     transition: all 0.3s ease-out;
 
@@ -44,7 +43,25 @@ button {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 550;
-    @include dFlex($fd: column);
+    @include dFlex($fd: column, $ai: flex-start);
+}
+
+html::-webkit-scrollbar {
+    width: 8px;
+}
+
+html::-webkit-scrollbar-track {
+    background: $background-purple;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: $purple;
+    cursor: pointer;
+    border-radius: 16px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: $purple-hover;
 }
 
 input {
@@ -115,16 +132,22 @@ input {
     background: $white;
     height: calc(100vh - 86px - 16px);
     border-radius: 30px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 25px);
     position: relative;
     z-index: 10;
     overflow-x: hidden;
 
-    @media(max-width: 664px) {
+    @media(max-width: 1368px) {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    @media(max-width: 1000px) {
+        box-shadow: unset;
+    }
+
+    @media(max-width: 1000px) {
         height: calc(100vh - 80px);
         border-radius: 0;
-        box-shadow: unset;
     }
 }
 
@@ -132,12 +155,21 @@ input {
     padding-left: 25px;
     padding-bottom: 8px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
-    max-height: 30vh;
+    max-height: calc((100vh - 86px - 16px - 60px - 48px - 48px - 64px) / 2);
     overflow-y: auto;
     width: 100%;
 
+    @media (max-width: 1000px) {
+        max-height: calc((100vh - 80px - 60px - 48px - 48px) / 2);
+    }
+
+    @media (max-width: 1000px) {
+        max-height: unset;
+    }
+
     &::-webkit-scrollbar {
         width: 8px;
+        margin-right: 8px;
     }
 
     &::-webkit-scrollbar-track {
@@ -157,9 +189,24 @@ input {
     .list-entry {
         padding: 4px 20px;
         @include dFlex($jc: flex-start, $ai: center, $g: 10px);
+        margin-right: 8px;
+
+        @media (max-width: 1000px) {
+            gap: 13px;
+        }
 
         >.list-name {
             @include fontNunito($size: 18px, $weight: 400);
+            white-space: nowrap;
+            text-align: left;
+
+            @media (max-width: 1000px) {
+                @include fontNunito($size: 17px, $weight: 400);
+            }
+
+            @media (max-width: 424px) {
+                white-space: normal;
+            }
         }
 
         &:hover {
@@ -248,6 +295,7 @@ input {
     @include fontNunito($size: 18px, $weight: 700);
     color: $white;
     border-radius: 25px;
+    padding: 12px 25px;
     background: $purple;
 
     &:hover {

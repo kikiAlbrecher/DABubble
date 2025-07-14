@@ -2,6 +2,7 @@
 
 button {
     @include fontNunito($size: 18px, $weight: 700);
+    padding: 12px 25px;
     color: $white;
 }
 

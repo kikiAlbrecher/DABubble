@@ -12,7 +12,7 @@
     padding: 32px 45px 20px 45px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
         padding: 10px 16px;
     }
 
@@ -23,7 +23,7 @@
         // oder 0?: auf Figma (play) unterschiedliche Darstellung
         position: relative;
 
-        @media(max-width: 664px) {
+        @media(max-width: 1000px) {
             padding: 2px 0;
             gap: 5px;
         }
@@ -32,7 +32,7 @@
             width: 32px;
             height: 33px;
 
-            @media(max-width: 664px) {
+            @media(max-width: 1000px) {
                 height: 27px;
             }
         }
@@ -61,7 +61,7 @@
         padding: 4px 8px;
         border-radius: 30px;
 
-        @media(max-width: 664px) {
+        @media(max-width: 1000px) {
             border-radius: 35px;
         }
     }
@@ -70,7 +70,7 @@
 .title {
     @include fontNunito($size: 24px, $weight: 700);
 
-    @media(max-width: 664px) {
+    @media(max-width: 1000px) {
         @include fontNunito($size: 20px, $weight: 700);
     }
 }
@@ -103,7 +103,7 @@
             @include fontNunito($size: 20px, $weight: 600);
         }
 
-        @media (max-width: 664px) {
+        @media (max-width: 1000px) {
             display: none;
         }
     }
@@ -112,7 +112,7 @@
         width: 40px;
         height: 40px;
 
-        @media(max-width: 664px) {
+        @media(max-width: 1000px) {
             width: 34px;
             height: 34px;
         }
@@ -126,8 +126,6 @@
 .write-message-container {
     width: 100%;
     padding: 45px 45px 30px 45px;
-
-
 }
 
 .main-content {
