@@ -140,5 +140,35 @@
     }
 }
 
+@media (max-width: 1000px) {
+    .login-section {
+        height: 550px;
+    }
+
+    .login-button-container {
+        margin: 20px 0;
+    }
+
+    .or-container {
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 500px) {
+    .login-section {
+        width: 350px;
+    }
+
+    .login-header {
+        margin: 20px 0;
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-section {
+        width: 310px;
+    }
+}
 
 

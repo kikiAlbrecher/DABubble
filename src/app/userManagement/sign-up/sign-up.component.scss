@@ -133,3 +133,25 @@
         background-color: #686868;
     }
 }
+
+@media (max-width: 500px) {
+    .sign-up-section {
+        width: 350px;
+    }
+
+    .login-header {
+        margin: 10px 0;
+        font-size: 32px;
+    }
+
+    .backarrow {
+        left: 10px;
+        top: 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .sign-up-section {
+        width: 310px;
+    }
+}

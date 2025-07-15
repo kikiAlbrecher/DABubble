@@ -5,7 +5,8 @@ import { ChatMessage } from '../message.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Firestore, Timestamp, orderBy, collection, query, onSnapshot, doc } from '@angular/fire/firestore';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
-import { CdkPortal, CdkPortalOutlet } from '@angular/cdk/portal';
+import { CdkPortal, CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
+import { Overlay, OverlayPositionBuilder } from '@angular/cdk/overlay';
 import { EmojiPickerComponent } from "./../../style-components/emoji-picker/emoji-picker.component"
 import { Reaction } from "./../../../models/reaction.model";
 
@@ -18,6 +19,7 @@ import { Reaction } from "./../../../models/reaction.model";
     DatePipe,
     PickerComponent,
     EmojiPickerComponent,
+    PortalModule
   ],
   templateUrl: './user-message.component.html',
   styleUrl: './user-message.component.scss'
@@ -25,6 +27,8 @@ import { Reaction } from "./../../../models/reaction.model";
 export class UserMessageComponent {
   @Input() message!: ChatMessage;
   @Input() mode: 'default' | 'thread' = 'default';
+  @ViewChild(CdkPortal) portal!: CdkPortal;
+  @ViewChild('smileyButton', { read: ElementRef }) smileyButtonRef!: ElementRef;
   private firestore = inject(Firestore);
   userName: string = '';
   userPicture: string = '';
@@ -56,7 +60,9 @@ export class UserMessageComponent {
     public sharedMessages: MessageSharedService,
     private elementRef: ElementRef,
     private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private overlay: Overlay,
+    private overlayPositionBuilder: OverlayPositionBuilder,
   ) {}   
  
 
@@ -266,6 +272,28 @@ export class UserMessageComponent {
       this.maxThreadsItems = 4;
     }  
     this.maxItemsReached = false;
+  }
+
+  openModal() {
+    const positionStrategy = this.overlayPositionBuilder
+      .flexibleConnectedTo(this.smileyButtonRef)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 8,
+        }
+      ]);
+    const overlayRef = this.overlay.create({
+      positionStrategy,
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+      scrollStrategy: this.overlay.scrollStrategies.close()
+    });
+    overlayRef.backdropClick().subscribe(() => overlayRef.dispose());
+    overlayRef.attach(this.portal);
   }
   
 

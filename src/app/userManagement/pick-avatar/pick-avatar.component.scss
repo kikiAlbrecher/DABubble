@@ -91,3 +91,41 @@
     @include fontNunito(15px, 400);
     color: red;
 }
+
+@media (max-width: 600px) {
+    .avatar-section {
+        width: 450px;
+    }
+
+    .avatar-header {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .avatar-section {
+        width: 310px;
+    }
+
+    .avatar-header {
+        max-width: 90%;
+        text-align: center;
+    }
+
+    .avatar-images-container {
+        padding: 10px;
+        img{
+        width: 48px;
+        height: 48px;
+        }
+    }
+
+    .backarrow {
+        top: 40px;
+        left: 18px;
+    }
+
+    .next-container {
+        margin-top: 15px;
+    }
+}

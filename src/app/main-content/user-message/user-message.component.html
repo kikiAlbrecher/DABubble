@@ -40,17 +40,11 @@
                             (mouseleave)="mouseOutReactionInformation()">
                             <span class="reaction-count">{{groupedReactions[emoji].length}}</span>
                             <div class="reaction-emoji">{{emoji}}</div>
-                            @if (hoveredEmoji === emoji) {
-                                <div class="reaction-info">
-                                    <div class="reaction-emoji">{{emoji}}</div>
-                                    @for (item of reactionUserNames; track $index) {
-                                        <div class="reaction-info-name-container">
-                                            <span class="reaction-info-name">{{item}}</span>
-                                        </div>
-                                    }   
-                                    <span class="reaction-info-text">hat reagiert</span>
-                                </div>
-                            }    
+                                @if (hoveredEmoji === emoji) {
+                                <ng-container 
+                                    *ngTemplateOutlet="reactionTooltip; context: { emoji: emoji, users: reactionUserNames }">
+                                </ng-container>
+                                }  
                         </div>
                     }
                     @if (reactionDetails.length > maxItems) {
@@ -71,24 +65,18 @@
             @if (mode === 'thread') {
             <div class="reactions-container">
                 @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
-                    @for (emoji of answerGroupedReactionsEmoji[message.id]?.slice(0, maxThreadsItems); track $index) {
+                    @for (emoji of answerGroupedReactionsEmoji[message.id].slice(0, maxThreadsItems); track $index) {
                         <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
                             (mouseover)="showAnswerReactionInformation(emoji)"
                             (mouseleave)="mouseOutReactionInformation()">
-                        <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
+                        <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji].length || 0 }}</span>
                         <div class="reaction-emoji">{{emoji}}</div>
 
-                        @if (hoveredEmoji === emoji) {
-                            <div class="reaction-info">
-                            <div class="reaction-emoji">{{emoji}}</div>
-                            @for (item of reactionUserNames; track $index) {
-                                <div class="reaction-info-name-container">
-                                <span class="reaction-info-name">{{item}}</span>
-                                </div>
+                            @if (hoveredEmoji === emoji) {
+                            <ng-container 
+                                *ngTemplateOutlet="reactionTooltip; context: { emoji: emoji, users: reactionUserNames }">
+                            </ng-container>
                             }
-                            <span class="reaction-info-text">hat reagiert</span>
-                            </div>
-                        }
                         </div>
                     }
                     @if (answerGroupedReactionsEmoji[message.id].length > maxThreadsItems) {
@@ -123,7 +111,25 @@
             }   
         </div>    
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
-       
     </div>
+    <ng-template cdkPortal>
+        <div class="emoji-picker-scroll-container">
+            <div class="emoji-picker-container">
+                <app-emoji-picker (emojiSelected)="addEmoji($event)"></app-emoji-picker>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #reactionTooltip let-emoji="emoji" let-users="users">
+        <div class="reaction-info">
+            <div class="reaction-emoji">{{emoji}}</div>
+            @for (user of users; track $index) {
+            <div class="reaction-info-name-container">
+                <span class="reaction-info-name">{{user}}</span>
+            </div>
+            }
+            <span class="reaction-info-text">hat reagiert</span>
+        </div>
+    </ng-template>
 
 </section>
