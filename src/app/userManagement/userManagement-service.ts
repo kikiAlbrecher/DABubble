@@ -154,7 +154,6 @@ export class UserSharedService {
                 const userDocSnap = await getDoc(userDocRef);
                 if (userDocSnap.exists()) {
                     this.actualUserID = user.uid;
-                    console.log(this.actualUserID);
                     this.router.navigate(['/main-content']);
                     this.inputData = false;
                     this.isAuthenticated = true;

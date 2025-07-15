@@ -34,7 +34,7 @@
                 }
 
                 <div class="reactions-container">
-                    @for (emoji of groupedReactionsEmoji; track $index) {
+                    @for (emoji of groupedReactionsEmoji?.slice(0, maxItems); track $index) {
                         <div (click)="sharedMessages.pushEmojiReaction(message, emoji)" class="reaction"
                             (mouseover)="showReactionInformation(emoji)"
                             (mouseleave)="mouseOutReactionInformation()">
@@ -53,37 +53,57 @@
                             }    
                         </div>
                     }
+                    @if (reactionDetails.length > maxItems) {
+                        <div (click)="showMoreEmojis()" class="reaction">
+                            <span class="more-emojis">Weitere</span>
+                        </div>                            
+                    } 
+                    @if (maxItemsReached && reactionDetails.length == maxItems) {
+                        <div (click)="showLessEmojis()" class="reaction">
+                            <span class="more-emojis">Weniger</span>
+                        </div>   
+                    }
                 </div>
 
             </div>     
             }
 
-@if (mode === 'thread') {
-  <div class="reactions-container">
-    @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
-      @for (emoji of answerGroupedReactionsEmoji[message.id]; track $index) {
-        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
-             (mouseover)="showAnswerReactionInformation(emoji)"
-             (mouseleave)="mouseOutReactionInformation()">
-          <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
-          <div class="reaction-emoji">{{emoji}}</div>
+            @if (mode === 'thread') {
+            <div class="reactions-container">
+                @if (answerGroupedReactionsEmoji && answerGroupedReactionsEmoji[message.id] && answerGroupedReactionsEmoji[message.id].length > 0) {
+                    @for (emoji of answerGroupedReactionsEmoji[message.id]?.slice(0, maxThreadsItems); track $index) {
+                        <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
+                            (mouseover)="showAnswerReactionInformation(emoji)"
+                            (mouseleave)="mouseOutReactionInformation()">
+                        <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
+                        <div class="reaction-emoji">{{emoji}}</div>
 
-          @if (hoveredEmoji === emoji) {
-            <div class="reaction-info">
-              <div class="reaction-emoji">{{emoji}}</div>
-              @for (item of reactionUserNames; track $index) {
-                <div class="reaction-info-name-container">
-                  <span class="reaction-info-name">{{item}}</span>
-                </div>
-              }
-              <span class="reaction-info-text">hat reagiert</span>
+                        @if (hoveredEmoji === emoji) {
+                            <div class="reaction-info">
+                            <div class="reaction-emoji">{{emoji}}</div>
+                            @for (item of reactionUserNames; track $index) {
+                                <div class="reaction-info-name-container">
+                                <span class="reaction-info-name">{{item}}</span>
+                                </div>
+                            }
+                            <span class="reaction-info-text">hat reagiert</span>
+                            </div>
+                        }
+                        </div>
+                    }
+                    @if (answerGroupedReactionsEmoji[message.id].length > maxThreadsItems) {
+                        <div (click)="showMoreEmojis()" class="reaction">
+                            <span class="more-emojis">Weitere</span>
+                        </div>                            
+                    } 
+                    @if (maxItemsReached && answerGroupedReactionsEmoji[message.id].length == maxThreadsItems) {
+                        <div (click)="showLessEmojis()" class="reaction">
+                            <span class="more-emojis">Weniger</span>
+                        </div>   
+                    }
+                }
             </div>
-          }
-        </div>
-      }
-    }
-  </div>
-}
+            }
 
 
         </div>

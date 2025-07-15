@@ -50,6 +50,10 @@ export class OwnMessageComponent {
   answerMessages: ChatMessage[] = [];
   answerIds:string = "";
   reactionsLoaded = false;
+  maxItems:number = 8;
+  maxThreadsItems:number = 4; 
+  maxItemsReached: boolean = false;
+  reactionLength:number = 0;
 
 
   constructor(
@@ -183,20 +187,7 @@ export class OwnMessageComponent {
         }, {});
         this.groupedReactions = groups;                    
         this.groupedReactionsEmoji = Object.keys(groups);  
-     
-        // const emojis = this.groupedReactionsEmoji;
-        // for (let i = 0; i < emojis.length; i++) {
-        //   const emoji = emojis[i];
-        //   const reactionsForEmoji = this.groupedReactions[emoji];
-
-        //   for (let j = 0; j < reactionsForEmoji.length; j++) {
-        //     const reaction = reactionsForEmoji[j];
-        //     const userId = reaction.user;
-        //     onSnapshot(doc(this.firestore, "users", userId), (doc) => {
-        //     this.reactionUser = doc.data()!['displayName']             
-        //     });
-        //   }          
-        // }   
+        
       });         
     }     
   }
@@ -219,12 +210,8 @@ export class OwnMessageComponent {
   }
 
   getAnswerIds() { 
-    console.log('hi');
-    
     this.sharedMessages.answerMessages$.subscribe(messages => {
       messages.forEach(answer => {
-        console.log(answer.id);
-        
         this.getAnswerReactions(answer.id);      
       });
     });    
@@ -256,7 +243,9 @@ export class OwnMessageComponent {
         }, {});
         this.answerGroupedReactions[answerId] = groups;
         this.answerGroupedReactionsEmoji[answerId] = Object.keys(groups);  
-        this.cdr.detectChanges();          
+        this.reactionLength = this.answerGroupedReactionsEmoji[answerId].length;
+        this.cdr.detectChanges();    
+        console.log(this.reactionLength);      
       });
     }
   }
@@ -282,6 +271,24 @@ export class OwnMessageComponent {
     this.hoveredEmoji = null;
     this.reactionUsersLoaded = false;
     this.reactionUserNames = [];
+  }
+
+  showMoreEmojis() {
+    if (this.mode !== 'thread') {
+    this.maxItems = this.reactionDetails.length;
+    }else {
+      this.maxThreadsItems = this.reactionLength; 
+    }
+    this.maxItemsReached = true;
+  }
+
+  showLessEmojis() {
+    if (this.mode !== 'thread') {
+      this.maxItems = 8;
+    } else {
+      this.maxThreadsItems = 4;
+    }  
+    this.maxItemsReached = false;
   }
 
 

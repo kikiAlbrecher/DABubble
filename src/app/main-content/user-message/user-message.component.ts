@@ -46,6 +46,10 @@ export class UserMessageComponent {
   answerMessages: ChatMessage[] = [];
   answerIds:string = "";
   reactionsLoaded = false;
+  maxItems:number = 8;
+  maxThreadsItems:number = 4; 
+  maxItemsReached: boolean = false;
+  reactionLength:number = 0;
   
   constructor(
     public sharedUser: UserSharedService,
@@ -110,7 +114,6 @@ export class UserMessageComponent {
     }
   }
 
-
  openEmojiOverlay() {
     this.emojiOverlay = !this.emojiOverlay
   }
@@ -121,8 +124,7 @@ export class UserMessageComponent {
       this.sharedMessages.pushEmojiReaction(this.message, emoji);
     }else {
       this.sharedMessages.pushAnswerEmojiReaction(this.message, emoji)
-    }
-    
+    }    
   }
  
    getChannelReactions() {
@@ -225,6 +227,7 @@ export class UserMessageComponent {
          }, {});
          this.answerGroupedReactions[answerId] = groups;
          this.answerGroupedReactionsEmoji[answerId] = Object.keys(groups);  
+         this.reactionLength = this.answerGroupedReactionsEmoji[answerId].length;
          this.cdr.detectChanges();          
        });
      }
@@ -246,6 +249,24 @@ export class UserMessageComponent {
       });
     }      
    }
+
+  showMoreEmojis() {
+    if (this.mode !== 'thread') {
+    this.maxItems = this.reactionDetails.length;
+    }else {
+      this.maxThreadsItems = this.reactionLength; 
+    }
+    this.maxItemsReached = true;
+  }
+
+  showLessEmojis() {
+    if (this.mode !== 'thread') {
+      this.maxItems = 8;
+    } else {
+      this.maxThreadsItems = 4;
+    }  
+    this.maxItemsReached = false;
+  }
   
 
 

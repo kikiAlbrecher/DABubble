@@ -375,6 +375,10 @@
     color: white
 }
 
+.more-emojis {
+    @include fontNunito(16px, 400);
+}
+
 .d-none {
     display: none;
 }
