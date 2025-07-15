@@ -18,7 +18,8 @@
                 (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="onReceiveMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
-                [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog">
+                [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog"
+                [isShowMembersOverlayVisible]="showMembers">
             </app-main-chat>
             <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
             <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">
@@ -29,8 +30,9 @@
         <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="closeDialogAddChannel()"
             (save)="createChannel($event)">
         </app-dialog-add-channel>
-        <app-dialog-add-channel-member *ngIf="addChannelMember" [currentChannelId]="selectedChannel?.channelId"
-            (close)="closeAddChannelMember()" (save)="saveAddChannelMember($event)">
+        <app-dialog-add-channel-member *ngIf="addChannelMember" [validUsers]="users"
+            [currentChannelId]="selectedChannel?.channelId" (close)="closeAddChannelMember()"
+            (save)="saveAddChannelMember($event)">
         </app-dialog-add-channel-member>
         <app-dialog-edit-channel *ngIf="editChannel" [selectedChannel]="selectedChannel"
             (close)="closeDialogEditChannel()" (saveName)="saveEditChannel($event)"
@@ -43,7 +45,7 @@
             [position]="showMembersPosition" [style.top.px]="showMembersPosition.top"
             [style.left.px]="showMembersPosition.left" style="position: fixed; z-index: 999;">
         </app-dialog-show-channel-members>
-        <app-dialog-add-member *ngIf="showAddMemberDialog" [selectedChannel]="selectedChannel"
+        <app-dialog-add-member *ngIf="showAddMemberDialog" [validUsers]="users" [selectedChannel]="selectedChannel"
             (close)="closeDialogAddMember()" (save)="saveAddMember($event)" [position]="addMemberPosition"
             [style.top.px]="addMemberPosition.top" [style.left.px]="addMemberPosition.left"
             style="position: fixed; z-index: 999;">

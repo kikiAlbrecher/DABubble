@@ -42,10 +42,12 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.listenToChannels();
-    this.userSub = this.userService.actualUser$.subscribe(currentUserId => {
-      if (currentUserId) {
-        this.listenToUsers(currentUserId);
-      }
+    this.userService.subscribeValidUsers();
+
+    this.userSub = this.userService.allValidUsers$.subscribe(users => {
+      const currentUserId = this.userService.actualUserID;
+      const sortedUsers = this.sortUsers(users, currentUserId);
+      this.users = sortedUsers;
     });
   }
 
@@ -62,24 +64,34 @@ export class SideNavComponent implements OnInit, OnDestroy {
       this.channels = snapshot.docs.map(doc => doc.data() as Channel);
 
       if (this.channels.length > 0 && !this.selectedChannelId && !this.isMobile) {
-        const defaultChannel = this.channels[0];
-        this.selectedChannelId = defaultChannel.channelId;
-        this.selectChannel.emit(defaultChannel);
+        this.defaultChannel();
       }
     });
   }
 
-  listenToUsers(currentUserId: string) {
-    const usersRef = collection(this.firestore, 'users');
+  defaultChannel() {
+    const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy');
 
-    this.unsubscribeUsers?.();
-    this.unsubscribeUsers = onSnapshot(usersRef, snapshot => {
-      const usersArray = snapshot.docs.map(doc =>
-        this.markUserName(doc.data() as User, doc.id, currentUserId)
-      );
-      this.users = this.sortUsers(usersArray, currentUserId);
-    });
+    if (defaultChannel) {
+      this.selectedChannelId = defaultChannel.channelId;
+      this.selectChannel.emit(defaultChannel);
+    } else {
+      this.selectedChannelId = this.channels[0].channelId;
+      this.selectChannel.emit(this.channels[0]);
+    }
   }
+
+  // listenToUsers(currentUserId: string) {
+  //   const usersRef = collection(this.firestore, 'users');
+
+  //   this.unsubscribeUsers?.();
+  //   this.unsubscribeUsers = onSnapshot(usersRef, snapshot => {
+  //     const usersArray = snapshot.docs.map(doc =>
+  //       this.markUserName(doc.data() as User, doc.id, currentUserId)
+  //     );
+  //     this.users = this.sortUsers(usersArray, currentUserId);
+  //   });
+  // }
 
   private markUserName(data: User, id: string, currentUserId: string): User {
     const displayName = id === currentUserId ? `${data.name} (Du)` : data.name;

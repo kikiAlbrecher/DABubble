@@ -11,18 +11,5 @@
     .online-status {
         width: 14px;
         height: 14px;
-        position: absolute;
-        bottom: 1px;
-        right: 1px;
-        border-radius: 50%;
-        border: 2px solid $white;
     }
-}
-
-.online {
-    background-color: $green;
-}
-
-.offline {
-    background-color: $grey;
 }

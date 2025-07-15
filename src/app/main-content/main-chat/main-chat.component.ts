@@ -35,11 +35,13 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   mainChatOpen = true;
   channelMembers: User[] = [];
   membershipSubscription?: Subscription;
+  openMembersOverlay: boolean = false;
 
   @Input() sideNavOpen: boolean = true;
   @Input() selectedChannel: Channel | null = null;
   @Input() selectedUser: User | null = null;
   @Input() showAddMemberDialog = false;
+  @Input() isShowMembersOverlayVisible: boolean = false;
   @Output() showUserProfile = new EventEmitter<void>();
   @Output() editChannel = new EventEmitter<{ top: number, left: number }>();
   @Output() showMembers = new EventEmitter<void>();
@@ -83,6 +85,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openShowMembers(event: MouseEvent): void {
+    this.openMembersOverlay = true;
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     let dialogWidth = 415;
 
@@ -114,6 +117,10 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedChannel'] && this.selectedChannel) {
       this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
+    }
+
+    if (changes['isShowMembersOverlayVisible'] && !changes['isShowMembersOverlayVisible'].currentValue) {
+      this.openMembersOverlay = false;
     }
   }
 }

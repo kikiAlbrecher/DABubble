@@ -70,7 +70,7 @@
                     <div (click)="sharedMessages.pushAnswerEmojiReaction(message, emoji)" class="reaction"
                         (mouseover)="showAnswerReactionInformation(emoji)"
                         (mouseleave)="mouseOutReactionInformation()">
-                    <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji]?.length || 0 }}</span>
+                    <span class="reaction-count">{{ answerGroupedReactions[message.id][emoji].length || 0 }}</span>
                     <div class="reaction-emoji">{{emoji}}</div>
                     @if (hoveredEmoji === emoji) {
                         <div class="reaction-info">

@@ -16,6 +16,7 @@
 
     @media (max-width: 1000px) {
         @include dFlex();
+        width: 100%;
 
         .rectangle {
             width: 62px;
@@ -28,9 +29,11 @@
 
 .add-member-options {
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+    width: 100%;
 
     >.option-block {
         @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 20px);
+        width: 100%;
 
         >.option {
             @include dFlex($jc: flex-start, $g: 20px);

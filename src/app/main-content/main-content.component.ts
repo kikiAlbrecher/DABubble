@@ -63,7 +63,7 @@ export class MainContentComponent implements OnInit {
   selectedChannel: Channel | null = null;
   selectedUser: User | null = null;
   showProfile = false;
-  isMobile = window.innerWidth <= 1000;
+  isMobile = false;
   showMainChatMobile = false;
   isInitializing = true;
 
@@ -72,7 +72,20 @@ export class MainContentComponent implements OnInit {
 
     if (this.isMobile) this.showMainChatMobile = false;
 
+    this.shared.subscribeValidUsers();
+
+    this.shared.allValidUsers$.subscribe(users => {
+      this.users = users;
+    });
+
     setTimeout(() => this.isInitializing = false);
+  }
+
+  statusMessageAlternatives(event: { success: boolean; message: string }) {
+    this.statusMessageType = event.success ? 'success' : 'error';
+    this.statusMessage = event.message;
+
+    setTimeout(() => this.statusMessage = '', 2000);
   }
 
   onChannelSelected(channel: Channel) {
@@ -106,11 +119,23 @@ export class MainContentComponent implements OnInit {
     this.statusMessageType = 'success';
     this.statusMessage = `Channel ${channel.channelName} erfolgreich erstellt!`;
 
+    // this.statusMessageAlternatives({
+    //   success: true,
+    //   message: `Channel${channel.channelName} erfolgreich erstellt!`
+    // });
+
     setTimeout(() => {
       this.statusMessage = '';
       this.showAddChannelDialog = false;
       this.addChannelMember = true;
     }, 2000);
+
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.statusMessage = '';
+        this.addChannelMember = true;
+      }, 2000);
+    }
   }
 
   closeAddChannelMember() {
@@ -119,10 +144,16 @@ export class MainContentComponent implements OnInit {
 
   saveAddChannelMember(userName: string) {
     this.addChannelMember = false;
-    this.statusMessageType = 'success';
-    this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
 
-    setTimeout(() => this.statusMessage = '', 2000);
+    this.statusMessageAlternatives({
+      success: true,
+      message: `${userName} erfolgreich hinzugefügt.`
+    });
+
+    // this.statusMessageType = 'success';
+    // this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
+
+    // setTimeout(() => this.statusMessage = '', 2000);
   }
 
   openDialogEditChannel(position: { top: number, left: number }): void {
@@ -131,18 +162,12 @@ export class MainContentComponent implements OnInit {
   }
 
   saveEditChannel(event: { success: boolean; message: string }) {
-    this.statusMessageType = event.success ? 'success' : 'error';
-    this.statusMessage = event.message;
-
-    setTimeout(() => this.statusMessage = '', 2000);
+    this.statusMessageAlternatives(event);
   }
 
   updateChannelMember(event: { success: boolean; message: string }) {
     this.editChannel = false;
-    this.statusMessageType = event.success ? 'success' : 'error';
-    this.statusMessage = event.message;
-
-    setTimeout(() => this.statusMessage = '', 2000);
+    this.statusMessageAlternatives(event);
   }
 
   closeDialogEditChannel() {
@@ -178,12 +203,10 @@ export class MainContentComponent implements OnInit {
 
   saveAddMember(userName: string) {
     this.showAddMemberDialog = false;
-    this.statusMessageType = 'success';
-    this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
-    // this.statusMessageType = 'error';
-    // this.statusMessage = 'Da ist etwas schiefgelaufen. Bitte versuche es noch einmal.';
-
-    setTimeout(() => this.statusMessage = '', 2000);
+    this.statusMessageAlternatives({
+      success: true,
+      message: `${userName} erfolgreich hinzugefügt.`
+    });
   }
 
   closeDialogAddMember() {
@@ -198,8 +221,20 @@ export class MainContentComponent implements OnInit {
     this.showMainChatMobile = false;
   }
 
-  // @HostListener('window:resize', ['$event'])
-  // onResize() {
-  // }
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    const width = (event.target as Window).innerWidth;
+    const wasMobile = this.isMobile;
+    this.isMobile = width <= 1000;
 
+    if (wasMobile !== this.isMobile) {
+      this.handleResponsiveChange();
+    }
+  }
+
+  handleResponsiveChange() {
+    if (!this.isMobile) {
+      this.showMainChatMobile = false;
+    }
+  }
 }

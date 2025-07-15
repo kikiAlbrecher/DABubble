@@ -36,7 +36,8 @@
                         <label for="addSelectedColleagues">Bestimmte Personen hinzufügen.</label>
                     </div>
                     <div *ngIf="mode==='selectedColleagues'" class="input-colleagues-name">
-                        <app-search-for-user [(selectedUsers)]="selectedUsers"></app-search-for-user>
+                        <app-search-for-user [validUsers]="validUsers"
+                            [(selectedUsers)]="selectedUsers"></app-search-for-user>
                     </div>
                 </div>
             </div>

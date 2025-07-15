@@ -17,6 +17,7 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
   styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-add-member.component.scss']
 })
 export class DialogAddMemberComponent {
+  @Input() validUsers: User[] = [];
   @Input() selectedChannel: Channel | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
   @Output() close = new EventEmitter<void>();
