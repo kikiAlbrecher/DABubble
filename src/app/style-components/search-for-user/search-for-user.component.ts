@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore } from '@angular/fire/firestore';
 import { User } from '../../userManagement/user.interface';
 import { UsersComponent } from '../../style-components/users/users.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
@@ -15,7 +14,7 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
   styleUrl: './search-for-user.component.scss'
 })
 export class SearchForUserComponent {
-  @Input() allUsers: User[] = [];
+  @Input() validUsers: User[] = [];
   @Input() selectedUsers: User[] = [];
   @Output() selectedUsersChange = new EventEmitter<User[]>();
   @ViewChild('userInput') userInputRef!: ElementRef<HTMLInputElement>;
@@ -23,18 +22,14 @@ export class SearchForUserComponent {
   userSearchTerm = '';
   suggestedUsers: User[] = [];
 
-  private firestore = inject(Firestore);
   userManagement = inject(UserSharedService);
 
   onUserSearch(term: string) {
-    if (term.length < 1) {
-      this.suggestedUsers = [];
-      return;
-    }
+    if (term.length < 1) return;
 
     const lowerTerm = term.toLowerCase();
 
-    this.suggestedUsers = this.allUsers
+    this.suggestedUsers = this.validUsers
       .filter(user =>
         user.displayName?.toLowerCase().startsWith(lowerTerm) ||
         user.name?.toLowerCase().startsWith(lowerTerm)

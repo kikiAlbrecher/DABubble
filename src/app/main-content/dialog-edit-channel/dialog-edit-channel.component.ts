@@ -65,8 +65,8 @@ export class DialogEditChannelComponent implements OnInit {
   private async loadCreatorName() {
     if (!this.selectedChannel) return;
 
-    const allUsers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
-    const creator = allUsers.find(user => user.id === this.selectedChannel?.channelCreatorId);
+    const validUsers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
+    const creator = validUsers.find(user => user.id === this.selectedChannel?.channelCreatorId);
 
     if (creator) {
       this.creatorName = creator.name;

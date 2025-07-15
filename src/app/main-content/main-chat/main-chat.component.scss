@@ -82,15 +82,23 @@
         @include dFlex($jc: flex-end, $g: 10px);
         height: 40px;
         padding: 3px 10px;
+        border-radius: 30px;
         position: relative;
 
         &:hover {
             cursor: pointer;
-            border-radius: 30px;
             background: $background-purple;
         }
 
         &:hover .more-than-three {
+            color: $purple-hover;
+        }
+
+        &.active-overlay {
+            background: $background-purple;
+        }
+
+        &.acive-overlay .more-than-three {
             color: $purple-hover;
         }
 
