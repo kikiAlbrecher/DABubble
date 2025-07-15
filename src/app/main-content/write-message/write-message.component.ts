@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Firestore, serverTimestamp, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, serverTimestamp, collection, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
 import { doc } from 'firebase/firestore';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
@@ -10,6 +10,8 @@ import { ChannelsComponent } from '../../style-components/channels/channels.comp
 import { UsersComponent } from "../../style-components/users/users.component";
 import { MessageSharedService } from '../message-service';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
+import { Subscription } from 'rxjs';
+import { ChannelSharedService } from '../../channel-management/channel-shared.service';
 
 @Component({
   selector: 'app-write-message',
@@ -20,7 +22,7 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
     ChannelsComponent,
     UsersComponent,
     PickerComponent
-],
+  ],
   templateUrl: './write-message.component.html',
   styleUrl: './write-message.component.scss'
 })
@@ -39,7 +41,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @ViewChild('input', { static: false }) input!: ElementRef<HTMLTextAreaElement>;
-  private unsubscribeChannels?: () => void;
 
   textError: boolean = false;
   chatExists: boolean = true;
@@ -50,21 +51,45 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   selectedUserId: string | null = null;
   showChannels: boolean = false;
   showUsers: boolean = false;
-  placeHolderText:string = "";
+  placeHolderText: string = "";
   emojiOverlay: boolean = false;
   emojiThreadOverlay: boolean = false;
-  messageText:any = ""
+  messageText: any = ""
 
   private firestore = inject(Firestore);
+  private channelShared = inject(ChannelSharedService);
+  private userSub?: Subscription;
+  // private unsubscribeChannels?: () => void;
+  private channelSub?: Subscription;
 
   messageForm = new FormGroup({
     message: new FormControl('', [Validators.required]),
   });
 
   ngOnInit(): void {
-    this.loadChannels();
-    this.loadUsers();
-    
+    this.takeInChannels();
+    this.takeInUsers();
+  }
+
+  takeInChannels() {
+    this.channelShared.subscribeValidChannels();
+
+    this.channelSub = this.channelShared.allValidChannels$.subscribe(channels => {
+      this.channels = channels;
+    });
+  }
+
+  takeInUsers() {
+    this.shared.subscribeValidUsers();
+
+    this.userSub = this.shared.allValidUsers$.subscribe(users => {
+      this.users = users;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.userSub?.unsubscribe();
+    this.channelSub?.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -73,26 +98,26 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     } else if (changes['selectedChannel'] && this.selectedChannel) {
       this.checkChannelMessagesExist();
     }
-  this.putPlaceHolderText();  
+    this.putPlaceHolderText();
   }
 
-  async loadChannels() {
-    const channelsRef = collection(this.firestore, 'channels');
-    const snapshot = await getDocs(channelsRef);
-    this.channels = snapshot.docs.map(doc => {
-      const data = doc.data();
-      return new Channel({ ...data, channelId: doc.id });
-    });
-  }
+  // async loadChannels() {
+  //   const channelsRef = collection(this.firestore, 'channels');
+  //   const snapshot = await getDocs(channelsRef);
+  //   this.channels = snapshot.docs.map(doc => {
+  //     const data = doc.data();
+  //     return new Channel({ ...data, channelId: doc.id });
+  //   });
+  // }
 
-  async loadUsers() {
-    const usersRef = collection(this.firestore, 'users');
-    const snapshot = await getDocs(usersRef);
-    this.users = snapshot.docs.map(doc => {
-      const data = doc.data();
-      return { ...data, id: doc.id } as User;
-    });
-  }
+  // async loadUsers() {
+  //   const usersRef = collection(this.firestore, 'users');
+  //   const snapshot = await getDocs(usersRef);
+  //   this.users = snapshot.docs.map(doc => {
+  //     const data = doc.data();
+  //     return { ...data, id: doc.id } as User;
+  //   });
+  // }
 
   checkChatExists() {
     const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
@@ -116,14 +141,14 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     const message = this.messageForm.value.message?.trim();
     if (!message) return;
     if (this.mode === 'thread') {
-      this.pushAnswerMessageChannel();      
+      this.pushAnswerMessageChannel();
     } else {
       if (this.selectedUser) {
         await this.pushDirectChatMessages();
       } else if (this.selectedChannel) {
         await this.pushChannelMessages();
       }
-    }  
+    }
   }
 
   async pushDirectChatMessages() {
@@ -158,28 +183,27 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.messageForm.reset();
   }
 
-  listenToChannels() {
-    const channelsRef = collection(this.firestore, 'channels');
-    this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
-      this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-      if (this.channels.length > 0 && !this.selectedChannelId) {
-        const defaultChannel = this.channels[0];
-        this.selectedChannelId = defaultChannel.channelId;
-        this.selectChannel.emit(defaultChannel);
-      }
-    });
-  }
+  // listenToChannels() {
+  //   const channelsRef = collection(this.firestore, 'channels');
+  //   this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
+  //     this.channels = snapshot.docs.map(doc => doc.data() as Channel);
+  //     if (this.channels.length > 0 && !this.selectedChannelId) {
+  //       const defaultChannel = this.channels[0];
+  //       this.selectedChannelId = defaultChannel.channelId;
+  //       this.selectChannel.emit(defaultChannel);
+  //     }
+  //   });
+  // }
 
   toggleChannelsOverlay() {
     if (!this.showChannels) {
       this.showChannels = !this.showChannels;
-      this.listenToChannels();
+      // this.listenToChannels();
       this.showUsers = false;
     } else if (this.showChannels) {
       this.showChannels = false;
       this.showUsers = !this.showUsers;
     }
-
   }
 
   onSelectChannel(channel: Channel) {
@@ -191,7 +215,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   }
 
   @HostListener('document:click', ['$event'])
-    handleClickOutside(event: MouseEvent) {
+  handleClickOutside(event: MouseEvent) {
     if (this.showChannels && !this.eRef.nativeElement.contains(event.target)) {
       this.showChannels = false;
     }
@@ -229,7 +253,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
       this.placeHolderText = 'Antworten...';
     } else {
       this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName : 'Nachricht an ' + this.selectedUser?.name
-    }  
+    }
   }
 
   async pushAnswerMessageChannel() {
@@ -237,32 +261,32 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     const messageId = this.sharedMessages.selectedMessage?.id ?? '';
     const channelId = this.sharedMessages.selectedMessage?.channelId ?? "";
     if (this.sharedMessages.channelSelected) {
-      const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers'); 
+      const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');
       await addDoc(answerRef, {
         user: this.shared.actualUser.uid,
         text: messageText,
         timeStamp: serverTimestamp()
       });
     } else if (this.sharedMessages.userSelected) {
-      const answerRef = collection(this.firestore, 'directMessages', channelId, 'messages', messageId, 'answers'); 
+      const answerRef = collection(this.firestore, 'directMessages', channelId, 'messages', messageId, 'answers');
       await addDoc(answerRef, {
         user: this.shared.actualUser.uid,
         text: messageText,
         timeStamp: serverTimestamp()
       });
-    }  
-    this.messageForm.reset();      
+    }
+    this.messageForm.reset();
   }
 
   toggleEmojiOverlay() {
     if (this.mode === 'thread') {
-      this.emojiThreadOverlay = !this.emojiThreadOverlay      
+      this.emojiThreadOverlay = !this.emojiThreadOverlay
     } else {
       this.emojiOverlay = !this.emojiOverlay
     }
   }
 
- addEmoji(selected: any) {
+  addEmoji(selected: any) {
     const emoji: string = selected.emoji.native;
     const input = this.input.nativeElement;
     input.focus();
@@ -272,7 +296,4 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.emojiOverlay = false;
     this.emojiThreadOverlay = false
   }
-
-  
-
 }

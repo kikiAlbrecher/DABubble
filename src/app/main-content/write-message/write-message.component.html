@@ -1,23 +1,18 @@
 <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="write-message-section">
-    <textarea
-        [placeholder]="placeHolderText"
-        formControlName="message" #input (input)="textError = false" placeholder="Nachricht an" class=""
-        type="text">
+    <textarea [placeholder]="placeHolderText" formControlName="message" #input (input)="textError = false"
+        placeholder="Nachricht an" class="" type="text">
     </textarea>
     <div class="buttons-container">
         <div class="buttons-left-container">
             <div class="buttons-left">
                 <div class="add-emoji-container">
-                    <div (click)="toggleEmojiOverlay()" class="smiley" src="assets/icons/smiley-button.svg" alt=""></div>
+                    <div (click)="toggleEmojiOverlay()" class="smiley" src="assets/icons/smiley-button.svg" alt="">
+                    </div>
                     @if(emojiOverlay || (this.mode === 'thread' && emojiThreadOverlay) ){
-                        <div class="emoji-picker-container">
-                            <emoji-mart    
-                            (emojiSelect)="addEmoji($event)"
-                            [showPreview]="false"
-                            [enableSearch]="false"
-                            [isNative]="true"
-                            ></emoji-mart>
-                        </div>
+                    <div class="emoji-picker-container">
+                        <emoji-mart (emojiSelect)="addEmoji($event)" [showPreview]="false" [enableSearch]="false"
+                            [isNative]="true"></emoji-mart>
+                    </div>
                     }
                 </div>
             </div>

@@ -34,6 +34,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   newMessage: string = '';
   mainChatOpen = true;
   channelMembers: User[] = [];
+  users: User[] = [];
   membershipSubscription?: Subscription;
   openMembersOverlay: boolean = false;
 
@@ -54,8 +55,14 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   public sharedUser = inject(UserSharedService);
   private messagesSubscription?: Subscription;
   public sharedHeader = inject(HeaderSharedService);
+  private userSub?: Subscription;
 
   ngOnInit() {
+    this.sharedUser.subscribeValidUsers();
+
+    this.userSub = this.sharedUser.allValidUsers$.subscribe(users => {
+      this.users = users;
+    });
     this.membershipSubscription = this.sharedUser.channelMembersChanged$.subscribe(async () => {
       if (this.selectedChannel) {
         this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
@@ -66,6 +73,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.membershipSubscription?.unsubscribe();
     this.messagesSubscription?.unsubscribe();
+    this.userSub?.unsubscribe();
   }
 
   openDialogEditChannel(event: MouseEvent): void {

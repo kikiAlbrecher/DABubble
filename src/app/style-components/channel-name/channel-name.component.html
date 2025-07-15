@@ -25,12 +25,15 @@
                 placeholder="z. B. Kooperationsprojekte">
         </div>
 
-        <div *ngIf="control.invalid && control.touched">
+        <div *ngIf="(control.invalid && (validationUntouched || control.touched))">
             <span class="validation-fail" *ngIf="control.hasError('required')">
                 Bitte ausfüllen.
             </span>
             <span class="validation-fail" *ngIf="control.hasError('minlength')">
                 Mindestens 3 Zeichen erforderlich.
+            </span>
+            <span class="validation-fail" *ngIf="control.hasError('maxlength')">
+                Maximal 15 Zeichen.
             </span>
         </div>
 

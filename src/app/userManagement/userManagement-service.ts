@@ -34,7 +34,7 @@ export class UserSharedService {
     threadsVisible$ = new BehaviorSubject<boolean>(false);
     private _workspaceOpen = new BehaviorSubject<boolean>(true);
     workspaceOpen$ = this._workspaceOpen.asObservable();
-    channelChanged$ = new BehaviorSubject<void>(undefined);
+    channelListRefresh$ = new BehaviorSubject<void>(undefined);
     lastAddedChannel$ = new BehaviorSubject<Channel | null>(null);
     channelMembersChanged$ = new BehaviorSubject<void>(undefined);
     isDev = true;
@@ -314,16 +314,6 @@ export class UserSharedService {
         this.threadsVisible$.next(false);
     }
 
-
-
-    // async removeChannelUser(userId: string, channelId: string): Promise<void> {
-    //     const userDocRef = doc(this.firestore, 'users', userId);
-    //     const updateData: any = {};
-
-    //     updateData[`channelIds.${channelId}`] = deleteField();
-    //     await updateDoc(userDocRef, updateData);
-    // }
-
     subscribeValidUsers(): void {
         const usersCollection = collection(this.firestore, 'users');
 
@@ -364,4 +354,13 @@ export class UserSharedService {
             channelIds: channelIds
         });
     }
+
+
+    // async removeChannelUser(userId: string, channelId: string): Promise<void> {
+    //     const userDocRef = doc(this.firestore, 'users', userId);
+    //     const updateData: any = {};
+
+    //     updateData[`channelIds.${channelId}`] = deleteField();
+    //     await updateDoc(userDocRef, updateData);
+    // }
 }

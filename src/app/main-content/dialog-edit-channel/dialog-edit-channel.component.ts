@@ -23,7 +23,7 @@ import { DialogShowChannelMembersComponent } from '../dialog-show-channel-member
 export class DialogEditChannelComponent implements OnInit {
   channelNameControl = new FormControl<string>('', {
     nonNullable: true,
-    validators: [Validators.required, Validators.minLength(3)]
+    validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
   });
 
   channelDescriptionControl = new FormControl<string>('', {
@@ -78,20 +78,33 @@ export class DialogEditChannelComponent implements OnInit {
 
     this.channelNameControl.markAsTouched();
 
-    if (this.channelNameControl.invalid) {
-      this.saveName.emit({ success: false, message: 'Der Channel-Name ist ungültig.' });
-      return;
-    }
+    if (this.channelNameControl.invalid) return this.invalidName();
 
     const updatedName = this.formatChannelName(this.channelNameControl.value);
+
+    if (updatedName === this.selectedChannel.channelName) return this.noNameChanges();
+
     const isDuplicate = await this.checkForNameDuplicates(updatedName);
 
-    if (isDuplicate) {
-      this.channelExistsError = true;
-      return;
-    }
+    if (isDuplicate) return this.duplicateName();
 
     await this.updateChannelName(updatedName);
+  }
+
+  invalidName() {
+    this.saveName.emit({ success: false, message: 'Der Channel-Name ist ungültig.' });
+    return;
+  }
+
+  noNameChanges() {
+    this.saveName.emit({ success: true, message: 'Keine Änderungen.' });
+    this.isEditingName = false;
+    return;
+  }
+
+  duplicateName() {
+    this.channelExistsError = true;
+    return;
   }
 
   private async checkForNameDuplicates(updatedName: string): Promise<boolean> {
@@ -132,7 +145,15 @@ export class DialogEditChannelComponent implements OnInit {
 
     const updatedDescription = this.getTrimmedDescription();
 
+    if (updatedDescription === this.selectedChannel.channelDescription) return this.noDescriptionChanges();
+
     await this.updateChannelDescription(updatedDescription);
+  }
+
+  noDescriptionChanges() {
+    this.saveDescription.emit({ success: true, message: 'Keine Änderungen.' });
+    this.isEditingDescription = false;
+    return;
   }
 
   private getTrimmedDescription(): string {
@@ -168,7 +189,7 @@ export class DialogEditChannelComponent implements OnInit {
     this.sharedUser.removeChannelUser(userId, channelId)
       .then(() => {
         this.sharedUser.channelMembersChanged$.next();
-        // this.sharedUser.channelChanged$.next();
+        // this.sharedUser.channelListRefresh$.next();
         this.userLeftChannel.emit({ success: true, message: 'Du wurdest ausgetragen.' });
       })
       .catch(error => {

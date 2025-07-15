@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../userManagement/user.interface';
@@ -24,8 +24,19 @@ export class SearchForUserComponent {
 
   userManagement = inject(UserSharedService);
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['validUsers'] && this.userSearchTerm.length > 0) {
+      this.onUserSearch(this.userSearchTerm);
+    }
+  }
+
   onUserSearch(term: string) {
-    if (term.length < 1) return;
+    this.userSearchTerm = term;
+
+    if (term.length < 1) {
+      this.suggestedUsers = [];
+      return;
+    }
 
     const lowerTerm = term.toLowerCase();
 

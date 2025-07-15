@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/fire/firestore';
@@ -20,10 +20,10 @@ import { FormControl, Validators } from '@angular/forms';
   styleUrl: './dialog-add-channel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DialogAddChannelComponent {
+export class DialogAddChannelComponent implements OnInit {
   channelNameControl = new FormControl<string>('', {
     nonNullable: true,
-    validators: [Validators.required, Validators.minLength(3)]
+    validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
   });
 
   channelDescriptionControl = new FormControl<string>('', {
@@ -38,40 +38,60 @@ export class DialogAddChannelComponent {
   private userShared = inject(UserSharedService);
 
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<Channel>();
+  @Output() save = new EventEmitter<{ success: boolean; message: string; channel?: Channel }>();
+
+  ngOnInit(): void {
+    this.channelNameControl.valueChanges.subscribe(() => {
+      if (this.channelExistsError) {
+        this.channelExistsError = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   async saveChannel() {
-    this.channelNameControl.markAsTouched();
-    this.channelExistsError = false;
+    this.markControlsTouched();
 
-    if (this.channelNameControl.invalid) {
-      this.cdr.detectChanges();
-      return;
-    }
+    if (this.channelNameControl.invalid) return;
 
     try {
-      this.cdr.detectChanges();
-      this.channel.channelName = this.channelNameControl.value.trim();
-      this.channel.channelDescription = this.channelDescriptionControl.value.trim();
-      const channelsCollection = collection(this.firestore, 'channels');
-      this.channelNameConvention();
+      await this.prepareChannelData();
 
-      const exists = await this.queryChannelNames(channelsCollection);
+      const exists = await this.checkIfChannelExists();
       if (exists) {
         this.channelExistsError = true;
         this.cdr.detectChanges();
         return;
       }
-      this.channel = await this.channelIdUpdate(this.channel);
-      this.save.emit(this.channel);
-      // this.userShared.channelChanged$.next();
-      // this.userShared.lastAddedChannel$.next(this.channel);
-      // this.cdr.detectChanges();
+
+      await this.createChannel();
+      this.emitSuccess();
     } catch (error) {
-      console.error('Fehler beim Speichern des Channels:', error);
+      this.emitFailure(error);
     } finally {
       this.cdr.detectChanges();
     }
+  }
+
+  private markControlsTouched() {
+    this.channelNameControl.markAsTouched();
+    this.channelExistsError = false;
+    this.cdr.detectChanges();
+  }
+
+  private async prepareChannelData() {
+    this.channel.channelName = this.channelNameControl.value.trim();
+    this.channel.channelDescription = this.channelDescriptionControl.value.trim();
+    this.channelNameConvention();
+  }
+
+  private async checkIfChannelExists(): Promise<boolean> {
+    const channelsCollection = collection(this.firestore, 'channels');
+    return await this.queryChannelNames(channelsCollection);
+  }
+
+  private async createChannel() {
+    this.channel = await this.channelIdUpdate(this.channel);
   }
 
   channelNameConvention() {
@@ -122,6 +142,23 @@ export class DialogAddChannelComponent {
       //      this.errorMessage = 'Beim Speichern des Channels ist ein Fehler aufgetreten. Bitte versuche es später nochmal.';
       // this.cdr.detectChanges(); 
     }
+  }
+
+  private emitSuccess() {
+    this.save.emit({
+      success: true,
+      message: `Channel ${this.channel.channelName} erfolgreich erstellt!`,
+      channel: this.channel
+    });
+    this.userShared.channelListRefresh$.next();
+    this.userShared.lastAddedChannel$.next(this.channel);
+  }
+
+  private emitFailure(error: unknown) {
+    this.save.emit({
+      success: false,
+      message: `Der Channel konnte nicht erstellt werden: ${error instanceof Error ? error.message : String(error)}`
+    });
   }
 
   closeAddChannel() {

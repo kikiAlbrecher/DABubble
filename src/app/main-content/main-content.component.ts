@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement/userManagement-service';
@@ -67,6 +67,9 @@ export class MainContentComponent implements OnInit {
   showMainChatMobile = false;
   isInitializing = true;
 
+  @ViewChild(SideNavComponent)
+  sideNavComponent!: SideNavComponent;
+
   ngOnInit() {
     this.isMobile = window.innerWidth <= 1000;
 
@@ -114,27 +117,18 @@ export class MainContentComponent implements OnInit {
     this.showAddChannelDialog = false;
   }
 
-  createChannel(channel: Channel) {
-    this.selectedChannel = channel;
-    this.statusMessageType = 'success';
-    this.statusMessage = `Channel ${channel.channelName} erfolgreich erstellt!`;
+  createChannel(event: { success: boolean; message: string; channel?: Channel }) {
+    this.statusMessageAlternatives(event);
 
-    // this.statusMessageAlternatives({
-    //   success: true,
-    //   message: `Channel${channel.channelName} erfolgreich erstellt!`
-    // });
+    if (event.success && event.channel) {
+      this.selectedChannel = event.channel;
 
-    setTimeout(() => {
-      this.statusMessage = '';
-      this.showAddChannelDialog = false;
-      this.addChannelMember = true;
-    }, 2000);
-
-    if (this.isMobile) {
       setTimeout(() => {
-        this.statusMessage = '';
+        this.showAddChannelDialog = false;
         this.addChannelMember = true;
       }, 2000);
+    } else {
+      return;
     }
   }
 
@@ -149,11 +143,6 @@ export class MainContentComponent implements OnInit {
       success: true,
       message: `${userName} erfolgreich hinzugefügt.`
     });
-
-    // this.statusMessageType = 'success';
-    // this.statusMessage = `${userName} erfolgreich hinzugefügt.`;
-
-    // setTimeout(() => this.statusMessage = '', 2000);
   }
 
   openDialogEditChannel(position: { top: number, left: number }): void {
@@ -235,6 +224,10 @@ export class MainContentComponent implements OnInit {
   handleResponsiveChange() {
     if (!this.isMobile) {
       this.showMainChatMobile = false;
+
+      setTimeout(() => {
+        // this.sideNavComponent?.setDefaultChannelIfNoneSelected();
+      });
     }
   }
 }

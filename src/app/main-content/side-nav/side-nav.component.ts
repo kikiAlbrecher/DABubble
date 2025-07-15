@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Output, inject, OnDestroy, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { collection, onSnapshot, Firestore } from '@angular/fire/firestore';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Channel } from '../../../models/channel.class';
 import { User } from '../../userManagement/user.interface';
@@ -10,6 +9,7 @@ import { MessageSharedService } from '../message-service';
 import { ChannelsComponent } from '../../style-components/channels/channels.component';
 import { UsersComponent } from '../../style-components/users/users.component';
 import { SearchbarComponent } from '../../header/searchbar/searchbar.component';
+import { ChannelSharedService } from '../../channel-management/channel-shared.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -33,65 +33,87 @@ export class SideNavComponent implements OnInit, OnDestroy {
   selectedChannelId: string | null = null;
   selectedUserId: string | null = null;
 
-  private firestore = inject(Firestore);
   public userService = inject(UserSharedService);
+  private channelService = inject(ChannelSharedService);
   private messageSharedService = inject(MessageSharedService);
-  private unsubscribeChannels?: () => void;
-  private unsubscribeUsers?: () => void;
   private userSub?: Subscription;
+  private channelsSub?: Subscription;
+  private loadUserSub?: Subscription;
+  private lastAddedSub?: Subscription;
 
   ngOnInit() {
-    this.listenToChannels();
-    this.userService.subscribeValidUsers();
+    this.loadUserSub = this.userService.actualUser$.subscribe(userId => {
+      if (userId) {
+        this.subscribeToValidChannels();
+        this.subscribeToValidUsers();
+      }
+    });
 
-    this.userSub = this.userService.allValidUsers$.subscribe(users => {
-      const currentUserId = this.userService.actualUserID;
-      const sortedUsers = this.sortUsers(users, currentUserId);
-      this.users = sortedUsers;
+    this.userService.channelListRefresh$.subscribe(() => {
+      this.subscribeToValidChannels();
+    });
+
+    this.lastAddedSub = this.userService.lastAddedChannel$.subscribe(channel => {
+      if (channel) {
+        this.selectedChannelId = channel.channelId;
+        this.selectChannel.emit(channel);
+      }
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.unsubscribeChannels) this.unsubscribeChannels();
-    if (this.unsubscribeUsers) this.unsubscribeUsers();
-    this.userSub?.unsubscribe();
-  }
+  subscribeToValidChannels() {
+    this.channelService.subscribeValidChannels();
 
-  listenToChannels() {
-    const channelsRef = collection(this.firestore, 'channels');
+    this.channelsSub = this.channelService.allValidChannels$.subscribe(channels => {
+      this.channels = channels;
 
-    this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
-      this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-
-      if (this.channels.length > 0 && !this.selectedChannelId && !this.isMobile) {
+      if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId && !this.isMobile) {
         this.defaultChannel();
       }
     });
   }
 
+  subscribeToValidUsers() {
+    this.userService.subscribeValidUsers();
+
+    this.userSub = this.userService.allValidUsers$.subscribe(users => {
+      const currentUserId = this.userService.actualUserID;
+      const usersWithMarkedNames = users.map(user => this.markUserName(user, user.id!, currentUserId));
+      const sortedUsers = this.sortUsers(usersWithMarkedNames, currentUserId);
+      this.users = sortedUsers;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.userSub?.unsubscribe();
+    this.channelsSub?.unsubscribe();
+    this.loadUserSub?.unsubscribe();
+    this.lastAddedSub?.unsubscribe();
+  }
+
   defaultChannel() {
-    const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy');
+    const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy') || this.channels[0];
 
     if (defaultChannel) {
       this.selectedChannelId = defaultChannel.channelId;
       this.selectChannel.emit(defaultChannel);
-    } else {
-      this.selectedChannelId = this.channels[0].channelId;
-      this.selectChannel.emit(this.channels[0]);
     }
   }
 
-  // listenToUsers(currentUserId: string) {
-  //   const usersRef = collection(this.firestore, 'users');
+  setDefaultChannelIfNoneSelected() {
+    const noSelection = !this.selectedChannelId && !this.selectedUserId;
+    if (noSelection && !this.isMobile && this.channels.length > 0) {
+      const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy');
 
-  //   this.unsubscribeUsers?.();
-  //   this.unsubscribeUsers = onSnapshot(usersRef, snapshot => {
-  //     const usersArray = snapshot.docs.map(doc =>
-  //       this.markUserName(doc.data() as User, doc.id, currentUserId)
-  //     );
-  //     this.users = this.sortUsers(usersArray, currentUserId);
-  //   });
-  // }
+      if (defaultChannel) {
+        this.selectedChannelId = defaultChannel.channelId;
+        this.selectChannel.emit(defaultChannel);
+      } else {
+        this.selectedChannelId = this.channels[0].channelId;
+        this.selectChannel.emit(this.channels[0]);
+      }
+    }
+  }
 
   private markUserName(data: User, id: string, currentUserId: string): User {
     const displayName = id === currentUserId ? `${data.name} (Du)` : data.name;

@@ -10,7 +10,7 @@
       </p>
 
       <app-channel-name [control]="channelNameControl" [channelExistsError]="channelExistsError" [allowEditName]="false"
-        class="components-width">
+        [validationUntouched]="false" class="components-width">
       </app-channel-name>
 
       <app-channel-description [control]="channelDescriptionControl" [allowEditDescription]="false"

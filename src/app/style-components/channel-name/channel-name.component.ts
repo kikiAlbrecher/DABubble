@@ -14,5 +14,6 @@ export class ChannelNameComponent {
   @Input() control!: FormControl<string>;
   @Input() channelExistsError: boolean = false;
   @Input() allowEditName: boolean = false;
+  @Input() validationUntouched: boolean = false;
   @Output() saveName = new EventEmitter<void>();
 }

@@ -38,7 +38,7 @@
 
             @if(isEditingName) {
             <app-channel-name [control]="channelNameControl" [channelExistsError]="channelExistsError"
-                [allowEditName]="true" (saveName)="saveEditName()" class="components-width">
+                [allowEditName]="true" [validationUntouched]="true" (saveName)="saveEditName()" class="components-width">
             </app-channel-name>
             }
 

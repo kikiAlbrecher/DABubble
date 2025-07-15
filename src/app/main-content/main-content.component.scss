@@ -125,9 +125,3 @@
         width: auto;
     }
 }
-
-.main-components.threads-open app-main-chat {
-    @media (max-width: 1000px) {
-        display: none !important;
-    }
-}
