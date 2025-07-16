@@ -67,8 +67,7 @@ export class MainContentComponent implements OnInit {
   showMainChatMobile = false;
   isInitializing = true;
 
-  @ViewChild(SideNavComponent)
-  sideNavComponent!: SideNavComponent;
+  @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
 
   ngOnInit() {
     this.isMobile = window.innerWidth <= 1000;
@@ -163,7 +162,7 @@ export class MainContentComponent implements OnInit {
     this.editChannel = false;
   }
 
-  onReceiveMembers(data: { users: User[]; position: { top: number; left: number } }) {
+  openMembers(data: { users: User[]; position: { top: number; left: number } }) {
     this.users = data.users;
     this.showMembers = true;
     this.showMembersPosition = data.position;
@@ -219,6 +218,8 @@ export class MainContentComponent implements OnInit {
     if (wasMobile !== this.isMobile) {
       this.handleResponsiveChange();
     }
+
+    this.updateOverlayPositions();
   }
 
   handleResponsiveChange() {
@@ -229,5 +230,38 @@ export class MainContentComponent implements OnInit {
         // this.sideNavComponent?.setDefaultChannelIfNoneSelected();
       });
     }
+  }
+
+  private updateOverlayPositions() {
+    if (this.editChannel && this.selectedChannel) {
+      const trigger = document.querySelector('[data-edit-channel-btn]');
+      if (trigger) {
+        if (!this.isMobile) {
+          this.editChannelPosition = this.calculatePosition(trigger as HTMLElement, 0, 'left');
+        } else {
+          this.editChannelPosition = { top: 0, left: 0 };
+        }
+      }
+    }
+
+    if (this.showMembers) {
+      const trigger = document.querySelector('[data-show-members-btn]');
+      if (trigger) this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 415, 'right');
+    }
+
+    if (this.showAddMemberDialog) {
+      const trigger = document.querySelector('[data-add-member-btn]');
+      if (trigger) this.addMemberPosition = this.calculatePosition(trigger as HTMLElement, 514, 'right');
+    }
+  }
+
+  private calculatePosition(el: HTMLElement, dialogWidth: number, align: 'left' | 'right' = 'right'): { top: number; left: number } {
+    const rect = el.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY + 8;
+    let left: number;
+
+    (align === 'right') ? left = rect.right + window.scrollX - dialogWidth : left = rect.left + window.scrollX;
+
+    return { top, left };
   }
 }
