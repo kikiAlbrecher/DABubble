@@ -282,6 +282,25 @@
     @include fontNunito(16px, 400);
 }
 
+@media (max-width: 1150px){
+    .answer-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 800px) {
+    .answer-emoji-container{
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .answer-container {
+        flex-direction: row;
+        gap: 10px;
+    }
+}
+
 .d-none {
     display: none;
 }
