@@ -43,6 +43,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Input() selectedUser: User | null = null;
   @Input() showAddMemberDialog = false;
   @Input() isShowMembersOverlayVisible: boolean = false;
+  @Input() isMobile: boolean = false;
   @Output() showUserProfile = new EventEmitter<void>();
   @Output() editChannel = new EventEmitter<{ top: number, left: number }>();
   @Output() showMembers = new EventEmitter<void>();
@@ -78,14 +79,11 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
 
   openDialogEditChannel(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const windowWidth = window.innerWidth;
 
-    if (windowWidth >= 1000) {
-      let left = rect.left;
-
+    if (!this.isMobile) {
       this.editChannel.emit({
-        top: rect.bottom,
-        left: left
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX
       });
     } else {
       this.editChannel.emit({ top: 0, left: 0 });

@@ -16,7 +16,7 @@
             </app-side-nav>
             <app-main-chat *ngIf="!isMobile || (isMobile && showMainChatMobile)"
                 (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
-                (editChannel)="openDialogEditChannel($event)" (members)="onReceiveMembers($event)"
+                (editChannel)="openDialogEditChannel($event)" (members)="openMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog"
                 [isShowMembersOverlayVisible]="showMembers">
