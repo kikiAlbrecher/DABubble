@@ -171,4 +171,138 @@
     }
 }
 
+@media (max-height: 800px) {
+    .login-section {
+        height: 450px;
+        position: relative;
+        margin-bottom: 45px;
+    }
+
+    .login-header {
+        margin: 5px 0;
+        font-size: 32px;
+    }
+
+    .input-container {
+        padding: 10px 20px;
+    }
+
+    .login-button-container {
+        margin: 20px 0;
+    }
+
+    .or-container {
+        margin-bottom: 17px;
+    }
+}
+
+@media (orientation: landscape) and (max-width: 1000px) {
+    .login-section {
+        height: 400px;
+        position: relative;
+        margin-bottom: 0px;
+    }
+
+    .or-container {
+        margin: 10px 0;
+    }
+
+    .login-button-container {
+        margin-top: 10px;
+    }
+
+
+}
+
+@media (orientation: landscape) and (max-width: 800px) {
+    .logo-name {
+        display: none;
+    }
+
+    .login-section {
+        width: 300px;
+        height: 370px;
+    }
+
+    .input-container {
+        gap: 10px;
+    }
+
+    .login-text {
+        font-size: 16px;
+    }
+
+    .login-button-container {
+        gap: 20px;
+        margin: 5px 0;
+        .login-button {
+            @include fontNunito(16px, 700);
+        }  
+    }
+
+    .or-container {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+
+    .login-header {
+        margin: 3px 0;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    .logo-name {
+        display: none;
+    }
+
+    .login-section {
+        width: 300px;
+        height: 370px;
+    }
+
+    .input-container {
+        gap: 10px;
+    }
+
+    .login-text {
+        font-size: 16px;
+    }
+
+    .login-button-container {
+        gap: 20px;
+        margin: 5px 0;
+        .login-button {
+            @include fontNunito(16px, 700);
+        }  
+    }
+
+    .or-container {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+
+    .login-header {
+        margin: 3px 0;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 370px) {
+    .login-section {
+        width: 300px;
+        height: 355px;
+    }
+
+.input-field-image {
+    top:6px;
+}
+
+.input-container {
+
+    .input-field {
+        height: 32px;      
+
+    }
+}
+}
+
 
