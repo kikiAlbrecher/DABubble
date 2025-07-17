@@ -46,15 +46,11 @@
 
 <div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     <div class="chat-header">
-        <div class="selected-item selected-item-dm">
+        <div class="selected-item selected-item-dm" (click)="openProfile()">
             <app-user-image-status [user]="selectedUser"></app-user-image-status>
             <span class="title">{{ selectedUser.name }}</span>
         </div>
-        <!-- <app-user-profile [user]="selectedUser" [allowEdit]="false">
-        </app-user-profile> -->
     </div>
-    <div class="time-separator"></div>
-    <div class="past-messages"></div>
     <app-message-board class="main-content"></app-message-board>
     <app-write-message [selectedUser]="selectedUser" class="write-message-container"></app-write-message>
 </div>

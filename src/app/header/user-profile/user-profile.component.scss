@@ -4,15 +4,39 @@
     width: 500px;
     background-color: white;
     @include dFlex($fd: column, $jc: space-between, $g: 45px);
-    position: absolute;
-    top: 0;
-    right: 0px;
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
-    z-index: 1000;
+    z-index: 9999;
     padding: 40px;
     box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+
+    @media (max-width: 568px) {
+        width: 100%;
+    }
+}
+
+.header-profile {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.own-profile {
+    position: absolute;
+    top: 86px;
+    right: 32px;
+
+    @media (max-width: 1000px) {
+        top: 80px;
+        right: 16px;
+    }
+}
+
+.not-own-profile {
+    position: relative;
+    border-top-right-radius: 30px;
 }
 
 .dropdown-container {

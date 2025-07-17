@@ -23,7 +23,12 @@
             </app-main-chat>
             <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
             <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">
-                <app-user-profile [user]="selectedUser!" [allowEdit]="false"></app-user-profile>
+                <div class="profile-overlay">
+                    <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
+                        [actualUserId]="shared.actualUserID" (close)="showProfile = false"
+                        (sendMessage)="sendUserMessage($event)">
+                    </app-user-profile>
+                </div>
             </div>
         </div>
 
@@ -42,8 +47,9 @@
         </app-dialog-edit-channel>
         <app-dialog-show-channel-members *ngIf="showMembers" [users]="users" [selectedUserId]="selectedUser?.id ?? null"
             (close)="closeDialogShowMembers()" (openAddMembers)="openDialogAddMember($event)"
-            [position]="showMembersPosition" [style.top.px]="showMembersPosition.top"
-            [style.left.px]="showMembersPosition.left" style="position: fixed; z-index: 999;">
+            (userClicked)="onOpenUserProfile($event)" [position]="showMembersPosition"
+            [style.top.px]="showMembersPosition.top" [style.left.px]="showMembersPosition.left"
+            style="position: fixed; z-index: 999;">
         </app-dialog-show-channel-members>
         <app-dialog-add-member *ngIf="showAddMemberDialog" [validUsers]="users" [selectedChannel]="selectedChannel"
             (close)="closeDialogAddMember()" (save)="saveAddMember($event)" [position]="addMemberPosition"

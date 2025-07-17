@@ -14,6 +14,7 @@ export class HeaderSharedService {
     toggleHeaderOverlay(event: Event): void {
         event.stopPropagation();
         this.shared.showUserEdit();
+        this.dropdownProfile = false;
     }
 
     editNameMask() {

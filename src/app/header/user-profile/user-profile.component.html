@@ -1,6 +1,7 @@
-<div class="dopdown">
+@if (isHeader) {
+<div class="dopdown header-profile">
     <div class="dropdown-container">
-        @if (sharedHeader.editName && allowEdit) {
+        @if (sharedHeader.editName && isOwnProfile) {
         <span class="header">Dein Profil bearbeiten</span>
         } @else {
         <span class="header">Profil</span>
@@ -14,7 +15,7 @@
         <div class="name-status">
             <div class="dropdown-container">
                 <span class="name">{{ user?.name }}</span>
-                @if (allowEdit && !sharedHeader.editName) {
+                @if (isOwnProfile && !sharedHeader.editName) {
                 <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
                 }
             </div>
@@ -33,9 +34,9 @@
             </div>
         </div>
     </div>
-    @if (!allowEdit) {
+    @if (!isOwnProfile) {
     <div class="message-container">
-        <button class="submit-button message-btn">
+        <button class="submit-button message-btn" (click)="sendMessage.emit(user!)">
             <img src="assets/icons/message.svg" alt="message icon">
             <span>Nachricht</span>
         </button>
@@ -43,7 +44,7 @@
     }
     }
 
-    @if (sharedHeader.editName && allowEdit) {
+    @if (sharedHeader.editName && isOwnProfile) {
     <form [formGroup]="updateName" (ngSubmit)="onSubmit()" class="change-container-change">
         <div class="full-name-container">
             <img src="assets/icons/account_circle.svg" alt="">
@@ -59,3 +60,68 @@
     </form>
     }
 </div>
+}
+
+@if (!isHeader) {
+<div class="dopdown" [ngClass]="{ 'own-profile': isOwnProfile, 'not-own-profile': !isOwnProfile }">
+    <div class="dropdown-container">
+        @if (sharedHeader.editName && isOwnProfile) {
+        <span class="header">Dein Profil bearbeiten</span>
+        } @else {
+        <span class="header">Profil</span>
+        }
+        <img (click)="close.emit()" src="assets/icons/close.svg" alt="close icon">
+    </div>
+    <img class="profile-image" src="{{ user?.picture }}" alt="">
+
+    @if (!sharedHeader.editName) {
+    <div class="change-container-info">
+        <div class="name-status">
+            <div class="dropdown-container">
+                <span class="name">{{ user?.name }}</span>
+                @if (isOwnProfile && !sharedHeader.editName) {
+                <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
+                }
+            </div>
+            <div class="baseline-container">
+                <div class="check-status" [class.online]="user?.status" [class.offline]="!user?.status"></div>
+                <span [class.active]="user?.status" [class.inactive]="!user?.status">{{ user?.status ? 'Aktiv' :
+                    'Abwesend'
+                    }}</span>
+            </div>
+        </div>
+        <div class="baseline-container-mail">
+            <img class="mail-icon" src="assets/icons/mail.svg" alt="">
+            <div class="mail-container">
+                <span class="mailtext">E-Mail Adresse</span>
+                <span class="mail-adress">{{ user?.email }}</span>
+            </div>
+        </div>
+    </div>
+    @if (!isOwnProfile) {
+    <div class="message-container">
+        <button class="submit-button message-btn" (click)="sendMessage.emit(user!)">
+            <img src="assets/icons/message.svg" alt="message icon">
+            <span>Nachricht</span>
+        </button>
+    </div>
+    }
+    }
+
+    @if (sharedHeader.editName && isOwnProfile) {
+    <form [formGroup]="updateName" (ngSubmit)="onSubmit()" class="change-container-change">
+        <div class="full-name-container">
+            <img src="assets/icons/account_circle.svg" alt="">
+            <span>Vollständiger Name</span>
+        </div>
+        <div class="input-container-profile">
+            <input class="input-field" type="text" formControlName="name">
+        </div>
+        <div class="login-button-container">
+            <div (click)="sharedHeader.editNameMask()" type="submit" class="login-button button-guest">Abbrechen</div>
+            <button type="submit" class="login-button button-log-in">Speichern</button>
+        </div>
+    </form>
+    }
+</div>
+}

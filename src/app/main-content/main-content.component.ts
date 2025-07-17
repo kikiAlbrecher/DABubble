@@ -18,6 +18,7 @@ import { DialogAddChannelMemberComponent } from './dialog-add-channel-member/dia
 import { DialogEditChannelComponent } from './dialog-edit-channel/dialog-edit-channel.component';
 import { UserProfileComponent } from '../header/user-profile/user-profile.component';
 import { DialogShowChannelMembersComponent } from './dialog-show-channel-members/dialog-show-channel-members.component';
+import { HeaderSharedService } from '../header/user-header/header-service';
 
 @Component({
   selector: 'app-main-content',
@@ -45,29 +46,31 @@ export class MainContentComponent implements OnInit {
   constructor(
     public shared: UserSharedService,
     public messageService: MessageSharedService,
+    public sharedHeader: HeaderSharedService,
     private router: Router,
   ) { }
 
   users: User[] = [];
-  showAddChannelDialog = false;
-  addChannelMember = false;
-  editChannel = false;
+  showAddChannelDialog: boolean = false;
+  addChannelMember: boolean = false;
+  editChannel: boolean = false;
   editChannelPosition = { top: 0, left: 0 };
-  showMembers = false;
+  showMembers: boolean = false;
   showMembersPosition = { top: 0, left: 0 }
-  showAddMemberDialog = false;
+  showAddMemberDialog: boolean = false;
   addMemberPosition = { top: 0, left: 0 }
-  threadsVisible = false;
+  threadsVisible: boolean = false;
   statusMessage = '';
   statusMessageType: 'success' | 'error' = 'success';
   selectedChannel: Channel | null = null;
   selectedUser: User | null = null;
-  showProfile = false;
-  isMobile = false;
-  showMainChatMobile = false;
-  isInitializing = true;
+  showProfile: boolean = false;
+  isMobile: boolean = false;
+  showMainChatMobile: boolean = false;
+  isInitializing: boolean = true;
 
   @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
+  @ViewChild(MainChatComponent) mainChatComponent!: MainChatComponent;
 
   ngOnInit() {
     this.isMobile = window.innerWidth <= 1000;
@@ -176,6 +179,12 @@ export class MainContentComponent implements OnInit {
     this.showMembers = false;
   }
 
+  onOpenUserProfile(user: User) {
+    this.selectedUser = user;
+    this.selectedChannel = null;
+    this.showProfile = true;
+  }
+
   openDialogAddMember(event?: MouseEvent | { top: number; left: number }) {
     let position = { top: 200, left: 0 };
 
@@ -203,6 +212,24 @@ export class MainContentComponent implements OnInit {
 
   openProfile() {
     this.showProfile = true;
+  }
+
+  sendUserMessage(user: User) {
+    this.selectedUser = user;
+    this.selectedChannel = null;
+    this.messageService.setSelectedUser(user);
+    this.messageService.setSelectedChannel(null);
+    this.showProfile = false;
+
+    if (this.isMobile && !this.isInitializing) {
+      this.showMainChatMobile = true;
+    }
+
+    setTimeout(() => {
+      if (this.mainChatComponent) {
+        this.mainChatComponent.focusWriteMessageInput();
+      }
+    }, 30);
   }
 
   onBackToSideNav() {
@@ -233,6 +260,12 @@ export class MainContentComponent implements OnInit {
   }
 
   private updateOverlayPositions() {
+    this.dynamicPositionEditChannel();
+    this.dynamicPositionShowMembers();
+    this.dynamicPositionAddMembers();
+  }
+
+  dynamicPositionEditChannel() {
     if (this.editChannel && this.selectedChannel) {
       const trigger = document.querySelector('[data-edit-channel-btn]');
       if (trigger) {
@@ -243,12 +276,16 @@ export class MainContentComponent implements OnInit {
         }
       }
     }
+  }
 
+  dynamicPositionShowMembers() {
     if (this.showMembers) {
       const trigger = document.querySelector('[data-show-members-btn]');
       if (trigger) this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 415, 'right');
     }
+  }
 
+  dynamicPositionAddMembers() {
     if (this.showAddMemberDialog) {
       const trigger = document.querySelector('[data-add-member-btn]');
       if (trigger) this.addMemberPosition = this.calculatePosition(trigger as HTMLElement, 514, 'right');

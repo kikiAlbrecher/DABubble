@@ -265,7 +265,10 @@ export class UserSharedService {
 
     getActualUser() {
         const unsub = onSnapshot(doc(this.firestore, "users", this.actualUserID), (doc) => {
-            this.actualUser = doc.data()
+            const data = doc.data();
+            if (data) {
+                this.actualUser = { ...data, id: doc.id };
+            }
         });
     }
 
