@@ -40,23 +40,55 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private channelsSub?: Subscription;
   private loadUserSub?: Subscription;
   private lastAddedSub?: Subscription;
+  private selectedUserSub?: Subscription;
+  private selectedChannelSub?: Subscription;
 
   ngOnInit() {
+    this.loadValidUsers();
+    this.refreshChannelList();
+    this.refreshChannelListAfterAddingChannel();
+    this.refreshUsersForMessage();
+    this.refreshChannelsForMessage();
+  }
+
+  loadValidUsers() {
     this.loadUserSub = this.userService.actualUser$.subscribe(userId => {
       if (userId) {
         this.subscribeToValidChannels();
         this.subscribeToValidUsers();
       }
     });
+  }
 
+  refreshChannelList() {
     this.userService.channelListRefresh$.subscribe(() => {
       this.subscribeToValidChannels();
     });
+  }
 
+  refreshChannelListAfterAddingChannel() {
     this.lastAddedSub = this.userService.lastAddedChannel$.subscribe(channel => {
       if (channel) {
         this.selectedChannelId = channel.channelId;
         this.selectChannel.emit(channel);
+      }
+    });
+  }
+
+  refreshUsersForMessage() {
+    this.selectedUserSub = this.messageSharedService.selectedUser$.subscribe(user => {
+      if (user) {
+        this.selectedUserId = user.id ?? null;
+        this.selectedChannelId = null;
+      }
+    });
+  }
+
+  refreshChannelsForMessage() {
+    this.selectedChannelSub = this.messageSharedService.selectedChannel$.subscribe(channel => {
+      if (channel) {
+        this.selectedChannelId = channel.channelId;
+        this.selectedUserId = null;
       }
     });
   }
@@ -89,6 +121,8 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.channelsSub?.unsubscribe();
     this.loadUserSub?.unsubscribe();
     this.lastAddedSub?.unsubscribe();
+    this.selectedUserSub?.unsubscribe();
+    this.selectedChannelSub?.unsubscribe();
   }
 
   defaultChannel() {

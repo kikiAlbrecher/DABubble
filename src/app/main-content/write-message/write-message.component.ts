@@ -1,4 +1,7 @@
-import { Component, ViewChild, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component, ViewChild, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges,
+  SimpleChanges, AfterViewInit
+} from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Firestore, serverTimestamp, collection, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
@@ -26,7 +29,7 @@ import { ChannelSharedService } from '../../channel-management/channel-shared.se
   templateUrl: './write-message.component.html',
   styleUrl: './write-message.component.scss'
 })
-export class WriteMessageComponent implements OnInit, OnChanges {
+export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
   constructor(
     public shared: UserSharedService,
@@ -40,7 +43,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   @Input() mode: 'default' | 'thread' = 'default';
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
-  @ViewChild('input', { static: false }) input!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
 
   textError: boolean = false;
   chatExists: boolean = true;
@@ -59,8 +62,8 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   private firestore = inject(Firestore);
   private channelShared = inject(ChannelSharedService);
   private userSub?: Subscription;
-  // private unsubscribeChannels?: () => void;
   private channelSub?: Subscription;
+  private savedRange: Range | null = null;
 
   messageForm = new FormGroup({
     message: new FormControl('', [Validators.required]),
@@ -69,6 +72,16 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.takeInChannels();
     this.takeInUsers();
+
+    if (this.editor?.nativeElement) {
+      this.editor.nativeElement.innerText = '';
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.editor?.nativeElement) {
+      this.editor.nativeElement.innerText = '';
+    }
   }
 
   takeInChannels() {
@@ -120,48 +133,61 @@ export class WriteMessageComponent implements OnInit, OnChanges {
   }
 
   async onSubmit() {
-    const message = this.messageForm.value.message?.trim();
-    if (!message) return;
+    let cleanedMessage = this.removeMentionsFromDOM();
+    if (!cleanedMessage) return;
+
     if (this.mode === 'thread') {
       this.pushAnswerMessageChannel();
     } else {
       if (this.selectedUser) {
-        await this.pushDirectChatMessages();
+        await this.pushDirectChatMessages(cleanedMessage);
       } else if (this.selectedChannel) {
-        await this.pushChannelMessages();
+        await this.pushChannelMessages(cleanedMessage);
       }
     }
+
+    this.editor.nativeElement.innerHTML = '';
   }
 
-  async pushDirectChatMessages() {
+  private removeMentionsFromDOM(): string {
+    const editorDiv = this.editor.nativeElement;
+    const mentionElements = editorDiv.querySelectorAll('.mention');
+
+    mentionElements.forEach(el => {
+      el.remove();
+    });
+
+    return editorDiv.innerText.trim();
+  }
+
+  async pushDirectChatMessages(cleanedMessage: string) {
     const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
     const chatId = sortedIds.join('_');
-    const messageText = this.messageForm.value.message ?? '';
 
     const chatDocRef = doc(this.firestore, 'directMessages', chatId);
-    if (!this.chatExists) {
-      await setDoc(chatDocRef, { chatId });
-    }
+    if (!this.chatExists) await setDoc(chatDocRef, { chatId });
+
     const messagesRef = collection(this.firestore, 'directMessages', chatId, 'messages');
     await addDoc(messagesRef, {
       user: this.shared.actualUser.uid,
-      text: messageText,
+      text: cleanedMessage,
       timeStamp: serverTimestamp(),
       channelId: chatId
     });
+
     this.messageForm.reset();
   }
 
-  async pushChannelMessages() {
-    const messageText = this.messageForm.value.message ?? '';
+  async pushChannelMessages(cleanedMessage: string) {
     const selectedId = this.selectedChannel?.channelId ?? '';
     const messagesRef = collection(this.firestore, 'channels', selectedId, 'messages');
     await addDoc(messagesRef, {
       user: this.shared.actualUser.uid,
-      text: messageText,
+      text: cleanedMessage,
       timeStamp: serverTimestamp(),
       channelId: selectedId
     });
+
     this.messageForm.reset();
   }
 
@@ -175,12 +201,100 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     }
   }
 
+  insertMention(text: string) {
+    const div = this.editor.nativeElement;
+    div.focus();
+
+    this.ensureCursorPosition();
+
+    const range = this.savedRange!.cloneRange();
+    const span = this.createMentionSpan(text);
+    const space = document.createTextNode('\u00A0');
+
+    range.deleteContents();
+    range.insertNode(span);
+    span.parentNode?.insertBefore(space, span.nextSibling);
+
+    range.setStartAfter(space);
+    range.collapse(true);
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    this.saveCursorPosition();
+    this.syncEditorToForm();
+  }
+
+  private ensureCursorPosition() {
+    if (this.savedRange) return;
+
+    const div = this.editor.nativeElement;
+    const selection = window.getSelection();
+    const range = document.createRange();
+
+    if (div.childNodes.length > 0) {
+      range.selectNodeContents(div);
+      range.collapse(false);
+    } else {
+      const textNode = document.createTextNode('');
+      div.appendChild(textNode);
+      range.setStart(textNode, 0);
+      range.collapse(true);
+    }
+
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    this.savedRange = range;
+  }
+
+  private createMentionSpan(text: string): HTMLElement {
+    const span = document.createElement('span');
+    span.className = 'mention';
+    span.textContent = text;
+    span.contentEditable = 'false';
+    return span;
+  }
+
+  onContentInput() {
+    const html = this.editor.nativeElement.innerText;
+    this.messageForm.controls['message'].setValue(html);
+  }
+
+  onEditorKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Backspace') {
+      const sel = window.getSelection()!;
+      const node = sel.anchorNode as HTMLElement;
+      if (node && node.nodeType === Node.ELEMENT_NODE && (node as HTMLElement).classList.contains('mention')) {
+        (node as HTMLElement).remove();
+        event.preventDefault();
+        this.syncEditorToForm();
+      }
+    }
+  }
+
+  syncEditorToForm() {
+    if (!this.editor) return;
+    const div = this.editor.nativeElement;
+    let content = div.innerText.trim();
+
+    content = content.replace(/[@#][^@\s]+/g, '').replace(/\s{2,}/g, ' ').trim();
+
+    this.messageForm.controls['message'].setValue(content);
+  }
+
   onSelectChannel(channel: Channel) {
     this.selectedChannel = channel;
     this.selectedUser = null;
     this.selectedChannelId = channel.channelId;
     this.showChannels = false;
     this.sharedMessages.setSelectedChannel(channel);
+
+    setTimeout(() => {
+      if (this.editor?.nativeElement) {
+        this.insertMention(`#${channel.channelName.slice(1)}`);
+      }
+    }, 0);
   }
 
   @HostListener('document:click', ['$event'])
@@ -196,6 +310,13 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.selectedUserId = user.id ?? null;
     this.showUsers = false;
     this.sharedMessages.setSelectedUser(user);
+
+    const fullName = user.displayName || user.name;
+    setTimeout(() => {
+      if (this.editor?.nativeElement) {
+        this.insertMention(`@${fullName}`);
+      }
+    }, 0);
   }
 
   @HostListener('document:click', ['$event'])
@@ -205,12 +326,8 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     const clickedAtButton = target.closest('.at');
     const clickedEmojiButton = target.closest('.smiley');
     const clickedEmojiOverlay = target.closest('.emoji-picker-container');
-    if (
-      !clickedInsideOverlay &&
-      !clickedAtButton &&
-      !clickedEmojiButton &&
-      !clickedEmojiOverlay
-    ) {
+
+    if (!clickedInsideOverlay && !clickedAtButton && !clickedEmojiButton && !clickedEmojiOverlay) {
       this.showChannels = false;
       this.emojiOverlay = false;
       this.emojiThreadOverlay = false;
@@ -226,12 +343,14 @@ export class WriteMessageComponent implements OnInit, OnChanges {
       } else {
         this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName : 'Nachricht an ' + this.selectedUser?.name
       }
-
     }
   }
 
   public focusInput() {
-    setTimeout(() => this.input?.nativeElement.focus());
+    setTimeout(() => {
+      this.editor?.nativeElement.focus();
+      this.restoreCursorPosition();
+    });
   }
 
   async pushAnswerMessageChannel() {
@@ -266,12 +385,44 @@ export class WriteMessageComponent implements OnInit, OnChanges {
 
   addEmoji(selected: any) {
     const emoji: string = selected.emoji.native;
-    const input = this.input.nativeElement;
-    input.focus();
-    const [start, end] = [input.selectionStart, input.selectionEnd];
-    input.setRangeText(emoji, start, end, 'end');
-    this.messageForm.controls['message'].setValue(input.value);
+    const div = this.editor.nativeElement;
+    div.focus();
+
+    this.ensureCursorPosition();
+
+    const range = this.savedRange!.cloneRange();
+    const emojiNode = document.createTextNode(emoji);
+    range.insertNode(emojiNode);
+
+    range.setStartAfter(emojiNode);
+    range.collapse(true);
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    this.saveCursorPosition();
+    this.syncEditorToForm();
+    this.closeEmojiOverlay();
+  }
+
+  private closeEmojiOverlay() {
     this.emojiOverlay = false;
-    this.emojiThreadOverlay = false
+    this.emojiThreadOverlay = false;
+  }
+
+  saveCursorPosition() {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      this.savedRange = selection.getRangeAt(0);
+    }
+  }
+
+  restoreCursorPosition() {
+    const selection = window.getSelection();
+    if (this.savedRange && selection) {
+      selection.removeAllRanges();
+      selection.addRange(this.savedRange.cloneRange());
+    }
   }
 }
