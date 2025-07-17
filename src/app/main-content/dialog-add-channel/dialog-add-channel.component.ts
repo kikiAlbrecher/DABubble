@@ -82,6 +82,7 @@ export class DialogAddChannelComponent implements OnInit {
   private async prepareChannelData() {
     this.channel.channelName = this.channelNameControl.value.trim();
     this.channel.channelDescription = this.channelDescriptionControl.value.trim();
+    this.channel.channelTimeStamp = new Date().toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
     this.channelNameConvention();
   }
 

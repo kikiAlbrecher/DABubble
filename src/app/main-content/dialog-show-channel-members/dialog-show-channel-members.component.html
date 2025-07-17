@@ -1,4 +1,5 @@
-<div *ngIf="asOverlay" class="outside-overlay" (click)="closeShowMembers()">
+@if (asOverlay) {
+<div class="outside-overlay" (click)="closeShowMembers()">
     <form (click)="$event.stopPropagation()" class="dialog-add-channel dialog-members" [style.top.px]="position.top"
         [style.left.px]="position.left">
         <div class="add-headline">
@@ -27,8 +28,10 @@
         </div>
     </form>
 </div>
+}
 
-<div *ngIf="!asOverlay">
+@if (!asOverlay) {
+<div>
     <div class="add-headline">
         <h2 class="h2-responsive">Mitglieder</h2>
     </div>
@@ -52,3 +55,4 @@
         </button>
     </div>
 </div>
+}

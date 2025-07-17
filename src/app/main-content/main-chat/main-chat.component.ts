@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -51,6 +51,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Output() addMember = new EventEmitter<{ top: number, left: number }>();
   @Output() selectedUserChange = new EventEmitter<User | null>();
   @Output() userLeftChannel = new EventEmitter<void>();
+  @ViewChild(WriteMessageComponent) writeMessageComponent!: WriteMessageComponent;
 
   private channelUsersService = inject(ChannelUsersService);
   public sharedUser = inject(UserSharedService);
@@ -75,6 +76,12 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.membershipSubscription?.unsubscribe();
     this.messagesSubscription?.unsubscribe();
     this.userSub?.unsubscribe();
+  }
+
+  focusWriteMessageInput() {
+    setTimeout(() => {
+      this.writeMessageComponent?.focusInput();
+    }, 30);
   }
 
   openDialogEditChannel(event: MouseEvent): void {
@@ -118,6 +125,10 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
 
   toggleMainChat() {
     this.mainChatOpen = !this.mainChatOpen;
+  }
+
+  openProfile() {
+    this.showUserProfile.emit();
   }
 
   async ngOnChanges(changes: SimpleChanges) {

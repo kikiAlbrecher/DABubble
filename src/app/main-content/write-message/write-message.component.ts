@@ -101,24 +101,6 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.putPlaceHolderText();
   }
 
-  // async loadChannels() {
-  //   const channelsRef = collection(this.firestore, 'channels');
-  //   const snapshot = await getDocs(channelsRef);
-  //   this.channels = snapshot.docs.map(doc => {
-  //     const data = doc.data();
-  //     return new Channel({ ...data, channelId: doc.id });
-  //   });
-  // }
-
-  // async loadUsers() {
-  //   const usersRef = collection(this.firestore, 'users');
-  //   const snapshot = await getDocs(usersRef);
-  //   this.users = snapshot.docs.map(doc => {
-  //     const data = doc.data();
-  //     return { ...data, id: doc.id } as User;
-  //   });
-  // }
-
   checkChatExists() {
     const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
     const chatId = sortedIds.join('_');
@@ -183,22 +165,9 @@ export class WriteMessageComponent implements OnInit, OnChanges {
     this.messageForm.reset();
   }
 
-  // listenToChannels() {
-  //   const channelsRef = collection(this.firestore, 'channels');
-  //   this.unsubscribeChannels = onSnapshot(channelsRef, snapshot => {
-  //     this.channels = snapshot.docs.map(doc => doc.data() as Channel);
-  //     if (this.channels.length > 0 && !this.selectedChannelId) {
-  //       const defaultChannel = this.channels[0];
-  //       this.selectedChannelId = defaultChannel.channelId;
-  //       this.selectChannel.emit(defaultChannel);
-  //     }
-  //   });
-  // }
-
   toggleChannelsOverlay() {
     if (!this.showChannels) {
       this.showChannels = !this.showChannels;
-      // this.listenToChannels();
       this.showUsers = false;
     } else if (this.showChannels) {
       this.showChannels = false;
@@ -257,8 +226,12 @@ export class WriteMessageComponent implements OnInit, OnChanges {
       } else {
         this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName : 'Nachricht an ' + this.selectedUser?.name
       }
-      
+
     }
+  }
+
+  public focusInput() {
+    setTimeout(() => this.input?.nativeElement.focus());
   }
 
   async pushAnswerMessageChannel() {
