@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MessageSharedService } from '../../main-content/message-service';
 
 @Component({
   selector: 'app-user-detail',
@@ -13,6 +14,7 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 export class UserDetailComponent {
 constructor(
     public sharedUser: UserSharedService,  
+    public sharedMessages: MessageSharedService
 
   ) {}
 }

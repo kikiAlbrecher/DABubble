@@ -4,7 +4,6 @@ import { MessageSharedService } from '../message-service';
 import { ChatMessage } from '../message.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Firestore, Timestamp, orderBy, collection, query, onSnapshot, doc } from '@angular/fire/firestore';
-import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { CdkPortal, CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
 import { Overlay, OverlayPositionBuilder } from '@angular/cdk/overlay';
 import { EmojiPickerComponent } from "./../../style-components/emoji-picker/emoji-picker.component"
@@ -17,7 +16,6 @@ import { Reaction } from "./../../../models/reaction.model";
   imports: [
     CommonModule,
     DatePipe,
-    PickerComponent,
     EmojiPickerComponent,
     PortalModule
   ],

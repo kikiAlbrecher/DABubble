@@ -253,7 +253,7 @@ export class WriteMessageComponent implements OnInit, OnChanges {
       this.placeHolderText = 'Antworten...';
     } else {
       if (this.sharedMessages.selectedUser?.id == this.shared.actualUserID) {
-        this.placeHolderText = 'Nachricht an dich selbst'
+        this.placeHolderText = 'Nachricht an dich selbst';
       } else {
         this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName : 'Nachricht an ' + this.selectedUser?.name
       }

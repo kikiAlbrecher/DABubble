@@ -1,12 +1,17 @@
-  .privacy-wrapper {
-    position: absolute;
-    top: 20%;
-    left: 10%;
-    right: 10%;
-    bottom: 10%;
-    border-radius: 50px;
-    overflow: hidden;
-    background-color: #ffffff;
+.privacy-section {
+    height: 600px;
+    width: 850px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+    font-family: 'Nunito';
+    overflow-y: auto;
+    padding: 3% 4%;
+    h1{
+      margin-bottom: 20px;
+    }
+    h2{
+      margin: 20px 0;
+    }
   }
 
   .privacy {
@@ -20,7 +25,7 @@
     text-align: center;
   }
 
-.privacy::-webkit-scrollbar {
+.privacy-section::-webkit-scrollbar {
     width: 8px;
     height: 50px;
 }
@@ -28,4 +33,34 @@
 .privacy::-webkit-scrollbar-thumb {
     background-color: #aaa;
     border-radius: 4px;
+}
+
+@media (max-width: 880px) {
+  .privacy-section {
+      width: 650px;
+  }
+}
+
+@media (max-width: 680px) {
+  .privacy-section {
+      width: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+  .privacy-section {
+      width: 300px;
+  }
+}
+
+@media (max-height: 700px) {
+  .privacy-section {
+      height: 450px;
+  }
+}
+
+@media (max-height: 400px) {
+  .privacy-section {
+      height: 200px;
+  }
 }

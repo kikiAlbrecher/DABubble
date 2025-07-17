@@ -3,12 +3,12 @@
         <span class="header">Profil</span>
         <img (click)="sharedUser.userEditOverlay" src="assets/icons/close.svg" alt="">
     </div>
-    <img class="profile-image" src="{{sharedUser.actualUser.picture}}" alt="">
+    <img class="profile-image" src="{{sharedMessages.selectedUser?.picture}}" alt="">
     
 
     <div class="change-container-info">
         <div class="dropdown-container">
-            <span class="name">{{sharedUser.actualUser.name}}</span>      
+            <span class="name">{{sharedMessages.selectedUser?.displayName}}</span>      
         </div>
         <div class="baseline-container">
             <div class="check-status online"></div>
@@ -18,7 +18,7 @@
             <img class="mail-icon" src="assets/icons/mail.svg" alt="">
             <div class="mail-container">
                 <span class="mailtext">E-Mail Adresse</span>
-                <span class="mail-adress">Mailadress</span>
+                <span class="mail-adress">{{sharedMessages.selectedUser?.email}}</span>
             </div>    
         </div>
     </div>

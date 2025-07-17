@@ -16,20 +16,22 @@
                     }
                 </div>
             </div>
-            <div class="buttons-left">
-                <div (click)="toggleChannelsOverlay()" *ngIf="selectedChannel" class="at"></div>
-                <div class="list-overlay" *ngIf="showChannels">
-                    <app-channels [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
-                        (channelSelected)="onSelectChannel($event)">
-                    </app-channels>
+            @if(mode != 'thread') {
+                <div class="buttons-left">
+                    <div (click)="toggleChannelsOverlay()" *ngIf="selectedChannel" class="at"></div>
+                    <div class="list-overlay" *ngIf="showChannels">
+                        <app-channels [channels]="channels" [selectedChannelId]="selectedChannel?.channelId ?? null"
+                            (channelSelected)="onSelectChannel($event)">
+                        </app-channels>
+                    </div>
+                    <div (click)="toggleChannelsOverlay()" *ngIf="selectedUser" class="at"></div>
+                    <div class="list-overlay" *ngIf="showUsers">
+                        <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null"
+                            (userSelected)="onSelectUser($event)">
+                        </app-users>
+                    </div>
                 </div>
-                <div (click)="toggleChannelsOverlay()" *ngIf="selectedUser" class="at"></div>
-                <div class="list-overlay" *ngIf="showUsers">
-                    <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null"
-                        (userSelected)="onSelectUser($event)">
-                    </app-users>
-                </div>
-            </div>
+            }
         </div>
         <button type="submit" class="send-button" src="assets/icons/send.svg" alt=""></button>
     </div>

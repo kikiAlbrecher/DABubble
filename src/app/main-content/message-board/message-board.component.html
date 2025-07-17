@@ -16,11 +16,15 @@
                 
         }
     }
-    @if (this.sharedMessages.channelSelected && sharedMessages.groupedMessageDates.length == 0) {
+    @if (this.sharedMessages.channelSelected && sharedMessages.groupedMessageDates?.length === 0) {
         <div class="empty-channel-info-container">
             <span class="empty-channel-info-channel-name">{{sharedMessages.selectedChannel?.channelName}}</span>
             <div>
-                <span class="empty-channel-info-channel-text">Du hast </span>
+                @if (creatorId == sharedUser.actualUserID) {
+                    <span class="empty-channel-info-channel-text">Du hast </span>
+                } @else {
+                    <span class="empty-channel-info-channel-text">{{creatorName}} hat </span>
+                }
                 <span class="empty-channel-info-channel-text">diesen Channel </span>
                 <span class="empty-channel-info-channel-text">am 14.Juli erstellt. </span>
                 <span class="empty-channel-info-channel-text">Das ist der Anfang des Channels </span>
@@ -31,8 +35,8 @@
     @if (this.sharedMessages.userSelected && sharedMessages.groupedMessageDates.length == 0) {
         <div class="empty-channel-info-container">
             <div class="empty-channel-user-container">
-                <img src="{{this.sharedMessages.selectedUser?.picture}}" alt="">
-                <span class="empty-channel-info-user-name">{{sharedMessages.selectedUser?.displayName}}</span>
+                <img (click)="openUserDetail()" src="{{this.sharedMessages.selectedUser?.picture}}" alt="">
+                <span (click)="openUserDetail()" class="empty-channel-info-user-name">{{sharedMessages.selectedUser?.displayName}}</span>
             </div>        
             @if (this.sharedMessages.selectedUser?.id == sharedUser.actualUserID) {
                 <div>

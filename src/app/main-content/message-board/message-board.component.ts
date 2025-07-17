@@ -1,4 +1,4 @@
-import { Component, AfterViewChecked, ElementRef, ViewChild, Input  } from '@angular/core';
+import { Component, inject, AfterViewChecked, ElementRef, ViewChild, Input  } from '@angular/core';
 import { OwnMessageComponent } from "../own-message/own-message.component";
 import { UserMessageComponent } from "../user-message/user-message.component";
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -6,6 +6,7 @@ import { MessageSharedService } from '../message-service';
 import { combineLatest } from 'rxjs';
 import { ChatMessage } from '../message.model';
 import { CommonModule } from '@angular/common';
+import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-message-board',
@@ -26,8 +27,10 @@ export class MessageBoardComponent {
     ) {}
 
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
-
-messagesLength = 0;
+  private firestore = inject(Firestore);
+  messagesLength = 0;
+  creatorName:[] = [];
+  creatorId: string = ""
 
 ngAfterViewChecked() {
   if (this.sharedMessages.messages.length !== this.messagesLength) {
@@ -59,19 +62,32 @@ ngOnInit() {
       this.sharedMessages.channelSelected = true;
       this.sharedMessages.userSelected = false;
       this.sharedMessages.getChannelMessages();
+      this.getChannelCreator();
     } else {
       this.sharedMessages.selectedUser = null;
       this.sharedMessages.selectedChannel = null;
     }
-  });  
+  });    
 }
 
-
-
-  
+openUserDetail() {
+  this.sharedUser.detailOverlay = !this.sharedUser.detailOverlay
 }
 
+async getChannelCreator() {
+  const creatorId = this.sharedMessages.selectedChannel?.channelCreatorId ?? '';
+  this.creatorId = creatorId;
+  const channelRef = doc(this.firestore, 'users', creatorId);
+  const docSnap = await getDoc(channelRef);
+    if (docSnap.exists()) {
+    const user = docSnap.data();
+    this.creatorName = user['displayName'];     
+    console.log(this.sharedUser.actualUserID);
+    
+  } 
+}
 
+}
 
 
 
