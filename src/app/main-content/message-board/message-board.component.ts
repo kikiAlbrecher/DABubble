@@ -81,9 +81,7 @@ async getChannelCreator() {
   const docSnap = await getDoc(channelRef);
     if (docSnap.exists()) {
     const user = docSnap.data();
-    this.creatorName = user['displayName'];     
-    console.log(this.sharedUser.actualUserID);
-    
+    this.creatorName = user['displayName'];        
   } 
 }
 
