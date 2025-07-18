@@ -51,16 +51,20 @@ export class IntroComponent implements AfterViewInit {
     }
   }
 
-  animateLogoToTopLeft() {
-    if (this.logocontainer?.nativeElement) {
-      const factory = this.animationBuilder.build([
-        style({ top: '40%', left: '33%', transform: 'scale(1)'}),
-        animate('0.5s ease-in-out', style({ top: '6%', left: '-5%', transform: 'scale(0.6)' }))
-      ]);
-      this.animationPlayer = factory.create(this.logocontainer.nativeElement);
-      this.animationPlayer.play();
-    }
+animateLogoToTopLeft() {
+  if (this.logocontainer?.nativeElement) {
+    const factory = this.animationBuilder.build([
+      style({ top: '40%', left: '33%', transform: 'scale(1)' }),
+      animate('0.6s ease-in-out', style({
+        top: '21px',     // ← passe hier die echte Zielposition an
+        left: '9px',    // ← passe hier die echte Zielposition an
+        transform: 'scale(0.4)'
+      }))
+    ]);
+    this.animationPlayer = factory.create(this.logocontainer.nativeElement);
+    this.animationPlayer.play();
   }
+}
 
   animateWrapperBackground() {
   const animation = this.animationBuilder.build([

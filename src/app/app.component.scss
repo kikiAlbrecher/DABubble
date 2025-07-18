@@ -57,8 +57,9 @@
 }
 
 .logo-name {
-    height: 24px;
-    width: auto;
+    @include fontNunito(32px, 700);
+    color: black;
+    text-align: center;
 }
 
 .create-account-container {
@@ -201,8 +202,10 @@ footer {
     }
 
     .logo-name {
-        height: 20px;
-        width: auto;
+    @include fontNunito(24px, 700);
+    color: black;
+    text-align: center;
+
     }
 
     .create-account-container {
@@ -288,11 +291,14 @@ footer {
 
 @media (orientation: landscape) {
     .logo-container {
-        position: absolute;
-        top: 20px;
-        left: 115px;
-        bottom: auto;
-        right: auto;
+    position: absolute;
+    top: 20px;
+    left: 135px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap:16px;
     }    
 
     .create-account-container {

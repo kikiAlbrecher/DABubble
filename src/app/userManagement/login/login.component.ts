@@ -1,3 +1,14 @@
+/**
+ * LoginComponent
+ * --------------
+ * This component provides the login functionality for the application.
+ * It uses Angular Reactive Forms to capture and validate user credentials,
+ * and interacts with the UserSharedService to authenticate the user.
+ *
+ * If authentication is successful, the user is redirected to the main content page.
+ * If authentication fails or input is invalid, an error state is triggered for UI feedback.
+ */
+
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
@@ -20,11 +31,21 @@ export class LoginComponent {
     public shared: UserSharedService,
     private router: Router) { }
 
-  logInForm = new FormGroup({
+  /**
+   * Reactive form group for user login inputs.
+   * Contains email and password fields, both required.
+   */
+    logInForm = new FormGroup({
     email: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required),
   })
 
+  /**
+   * Handles form submission for login.
+   * If the form is valid, attempts to log the user in via the shared service.
+   * On success, navigates to the main content page.
+   * On failure, sets the inputData flag to trigger an error message in the UI.
+   */
   submitLogData() {
     if (this.logInForm.valid) {
       const email = this.logInForm.value.email ?? '';
