@@ -7,26 +7,6 @@
     border: 1px solid #ADB0D9;
     border-radius: 20px;
     padding: 10px 15px;
-
-    .editable-input {
-        width: 100%;
-        height: 90px;
-        border: none;
-        box-sizing: border-box;
-        resize: none;
-        @include fontNunito(18px, 400);
-        color: black;
-        position: relative;
-        outline: none;
-        overflow-y: auto;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-
-        &:empty:before {
-            content: attr(placeholder);
-            color: #A9A9A9;
-        }
-    }
 }
 
 .buttons-container {
@@ -99,21 +79,6 @@
         background-image: url('./../../../assets/icons/at-button-hover.svg');
         background-size: contain;
     }
-}
-
-.list-overlay {
-    position: absolute;
-    bottom: 126px;
-    left: -36px;
-    z-index: 9999;
-    background: $white;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    border: 1px solid $light-purple;
-    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.08);
-    padding: 20px 21px 20px 0;
-    min-height: auto;
 }
 
 .add-emoji-container {

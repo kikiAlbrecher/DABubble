@@ -1,8 +1,16 @@
 <section class="searchbar-section">
     <div class="input-container">
         <div class="input-field-container">
-            <input placeholder="Devspace durchsuchen" class="input-field password" type="text">
+            <div #editor contenteditable="true" class="editable-input"
+                (input)="onContentInput(); mentionComponent?.saveCursorPosition()"
+                (click)="mentionComponent?.saveCursorPosition()" (keyup)="mentionComponent?.saveCursorPosition()"
+                (keydown)="onEditorKeyDown($event)" [attr.placeholder]="placeholderQuote" class="input-field">
+            </div>
             <img plac class="input-field-image" src="assets/icons/search-loupe.svg" alt="search loupe icon">
         </div>
+        <app-mention *ngIf="editorNativeElement" [users]="users" [channels]="channels"
+            [targetInputElement]="editorNativeElement" contextClass="in-search-bar"
+            (mentionSelected)="onMentionSelected($event)">
+        </app-mention>
     </div>
 </section>

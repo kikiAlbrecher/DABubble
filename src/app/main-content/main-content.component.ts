@@ -68,6 +68,7 @@ export class MainContentComponent implements OnInit {
   isMobile: boolean = false;
   showMainChatMobile: boolean = false;
   isInitializing: boolean = true;
+  showDevspace: boolean = false;
 
   @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
   @ViewChild(MainChatComponent) mainChatComponent!: MainChatComponent;
@@ -300,5 +301,9 @@ export class MainContentComponent implements OnInit {
     (align === 'right') ? left = rect.right + window.scrollX - dialogWidth : left = rect.left + window.scrollX;
 
     return { top, left };
+  }
+
+  onToggleDevspace() {
+    this.showDevspace = !this.showDevspace;
   }
 }

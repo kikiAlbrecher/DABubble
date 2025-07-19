@@ -15,6 +15,8 @@ import { MessageSharedService } from '../message-service';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { Subscription } from 'rxjs';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
+import { MentionComponent } from '../../search/mention/mention.component';
+import { MentionUtilsService } from '../../search/mention-utils.service';
 
 @Component({
   selector: 'app-write-message',
@@ -24,7 +26,8 @@ import { ChannelSharedService } from '../../channel-management/channel-shared.se
     CommonModule,
     ChannelsComponent,
     UsersComponent,
-    PickerComponent
+    PickerComponent,
+    MentionComponent
   ],
   templateUrl: './write-message.component.html',
   styleUrl: './write-message.component.scss'
@@ -44,6 +47,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
+  @ViewChild(MentionComponent) mentionComponent?: MentionComponent;
 
   textError: boolean = false;
   chatExists: boolean = true;
@@ -57,13 +61,14 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   placeHolderText: string = "";
   emojiOverlay: boolean = false;
   emojiThreadOverlay: boolean = false;
-  messageText: any = ""
+  messageText: any = "";
+  toggleMention: '@' | '#' = '@';
 
   private firestore = inject(Firestore);
   private channelShared = inject(ChannelSharedService);
   private userSub?: Subscription;
   private channelSub?: Subscription;
-  private savedRange: Range | null = null;
+  public editorNativeElement?: HTMLElement;
 
   messageForm = new FormGroup({
     message: new FormControl('', [Validators.required]),
@@ -79,9 +84,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.editor?.nativeElement) {
-      this.editor.nativeElement.innerText = '';
-    }
+    setTimeout(() => {
+      if (this.editor?.nativeElement) {
+        this.editorNativeElement = this.editor.nativeElement;
+        this.editor.nativeElement.innerText = '';
+      }
+    });
   }
 
   takeInChannels() {
@@ -114,6 +122,45 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.putPlaceHolderText();
   }
 
+  onMentionSelected(name: string): void {
+    this.mentionComponent?.insertMention(name);
+
+    if (this.editor) {
+      MentionUtilsService.syncEditorToForm(
+        this.editor.nativeElement,
+        this.messageForm.controls['message']
+      );
+    }
+
+    if (name.startsWith('@')) {
+      this.autocompleteUserName(name.slice(1).toLowerCase());
+    } else if (name.startsWith('#')) {
+      this.autocompleteChannelName(name.slice(1).toLowerCase());
+    }
+  }
+
+  private autocompleteUserName(username: string): void {
+    const user = this.users.find(u =>
+      (u.displayName || u.name).toLowerCase() === username
+    );
+    if (!user) return;
+
+    this.selectedUser = user;
+    this.selectedChannel = null;
+    this.selectUser.emit(user);
+  }
+
+  private autocompleteChannelName(channelName: string): void {
+    const channel = this.channels.find(c =>
+      c.channelName.replace(/^#/, '').toLowerCase() === channelName
+    );
+    if (!channel) return;
+
+    this.selectedChannel = channel;
+    this.selectedUser = null;
+    this.selectChannel.emit(channel);
+  }
+
   checkChatExists() {
     const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
     const chatId = sortedIds.join('_');
@@ -132,17 +179,59 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.channelMessagesExist = !snapshot.empty;
   }
 
+  private extractMentions(): { users: User[], channels: Channel[] } {
+    const mentions = this.editor.nativeElement.querySelectorAll('.mention');
+    const mentionedUsers: User[] = [];
+    const mentionedChannels: Channel[] = [];
+
+    mentions.forEach((mention) => {
+      const text = mention.textContent ?? '';
+
+      if (text.startsWith('@')) {
+        const name = text.slice(1).toLowerCase();
+        const user = this.users.find(u =>
+          (u.displayName || u.name).toLowerCase() === name
+        );
+        if (user && !mentionedUsers.some(u => u.id === user.id)) {
+          mentionedUsers.push(user);
+        }
+      }
+
+      if (text.startsWith('#')) {
+        const normalizedMention = text.slice(1).toLowerCase();
+        const channel = this.channels.find(chan =>
+          chan.channelName.replace(/^#/, '').toLowerCase() === normalizedMention
+        );
+        if (channel && !mentionedChannels.some(c => c.channelId === channel.channelId)) {
+          mentionedChannels.push(channel);
+        }
+      }
+    });
+
+    return { users: mentionedUsers, channels: mentionedChannels };
+  }
+
   async onSubmit() {
+    const { users, channels } = this.extractMentions();
     let cleanedMessage = this.removeMentionsFromDOM();
     if (!cleanedMessage) return;
 
-    if (this.mode === 'thread') {
-      this.pushAnswerMessageChannel();
+    if (users.length === 0 && channels.length === 0) {
+      if (this.mode === 'thread') {
+        await this.pushAnswerMessageChannel();
+      } else {
+        if (this.selectedUser) {
+          await this.pushDirectChatMessages(cleanedMessage, this.selectedUser);
+        } else if (this.selectedChannel) {
+          await this.pushChannelMessages(cleanedMessage, this.selectedChannel);
+        }
+      }
     } else {
-      if (this.selectedUser) {
-        await this.pushDirectChatMessages(cleanedMessage);
-      } else if (this.selectedChannel) {
-        await this.pushChannelMessages(cleanedMessage);
+      for (const user of users) {
+        await this.pushDirectChatMessages(cleanedMessage, user);
+      }
+      for (const channel of channels) {
+        await this.pushChannelMessages(cleanedMessage, channel);
       }
     }
 
@@ -150,22 +239,21 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private removeMentionsFromDOM(): string {
-    const editorDiv = this.editor.nativeElement;
-    const mentionElements = editorDiv.querySelectorAll('.mention');
-
-    mentionElements.forEach(el => {
-      el.remove();
-    });
-
-    return editorDiv.innerText.trim();
+    return MentionUtilsService.removeMentionsFromElement(this.editor.nativeElement);
   }
 
-  async pushDirectChatMessages(cleanedMessage: string) {
-    const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
+  async pushDirectChatMessages(cleanedMessage: string, user: User) {
+    const sortedIds = [this.shared.actualUser.uid, user.id].sort();
     const chatId = sortedIds.join('_');
 
     const chatDocRef = doc(this.firestore, 'directMessages', chatId);
-    if (!this.chatExists) await setDoc(chatDocRef, { chatId });
+    const directMessages = collection(this.firestore, 'directMessages');
+    const q = query(directMessages, where('chatId', '==', chatId));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      await setDoc(chatDocRef, { chatId });
+    }
 
     const messagesRef = collection(this.firestore, 'directMessages', chatId, 'messages');
     await addDoc(messagesRef, {
@@ -178,109 +266,49 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.messageForm.reset();
   }
 
-  async pushChannelMessages(cleanedMessage: string) {
-    const selectedId = this.selectedChannel?.channelId ?? '';
-    const messagesRef = collection(this.firestore, 'channels', selectedId, 'messages');
+  async pushChannelMessages(cleanedMessage: string, channel: Channel) {
+    const messagesRef = collection(this.firestore, 'channels', channel.channelId, 'messages');
+
     await addDoc(messagesRef, {
       user: this.shared.actualUser.uid,
       text: cleanedMessage,
       timeStamp: serverTimestamp(),
-      channelId: selectedId
+      channelId: channel.channelId
     });
 
     this.messageForm.reset();
   }
 
-  toggleChannelsOverlay() {
-    if (!this.showChannels) {
-      this.showChannels = !this.showChannels;
-      this.showUsers = false;
-    } else if (this.showChannels) {
-      this.showChannels = false;
-      this.showUsers = !this.showUsers;
-    }
+  toggleMentionOverlay() {
+    this.toggleMention = this.toggleMention === '@' ? '#' : '@';
+
+    this.mentionComponent?.mentionService.trigger$.next(this.toggleMention);
+    this.mentionComponent?.mentionService.query$.next('');
+    this.mentionComponent?.mentionService.showOverlay$.next(true);
   }
 
-  insertMention(text: string) {
-    const div = this.editor.nativeElement;
-    div.focus();
-
-    this.ensureCursorPosition();
-
-    const range = this.savedRange!.cloneRange();
-    const span = this.createMentionSpan(text);
-    const space = document.createTextNode('\u00A0');
-
-    range.deleteContents();
-    range.insertNode(span);
-    span.parentNode?.insertBefore(space, span.nextSibling);
-
-    range.setStartAfter(space);
-    range.collapse(true);
-
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-
-    this.saveCursorPosition();
-    this.syncEditorToForm();
-  }
-
-  private ensureCursorPosition() {
-    if (this.savedRange) return;
-
-    const div = this.editor.nativeElement;
-    const selection = window.getSelection();
-    const range = document.createRange();
-
-    if (div.childNodes.length > 0) {
-      range.selectNodeContents(div);
-      range.collapse(false);
-    } else {
-      const textNode = document.createTextNode('');
-      div.appendChild(textNode);
-      range.setStart(textNode, 0);
-      range.collapse(true);
-    }
-
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-    this.savedRange = range;
-  }
-
-  private createMentionSpan(text: string): HTMLElement {
-    const span = document.createElement('span');
-    span.className = 'mention';
-    span.textContent = text;
-    span.contentEditable = 'false';
-    return span;
+  onEditorClick() {
+    this.mentionComponent?.mentionService.reset();
   }
 
   onContentInput() {
-    const html = this.editor.nativeElement.innerText;
-    this.messageForm.controls['message'].setValue(html);
+    const sel = window.getSelection();
+    const pre = MentionUtilsService.getTextBeforeCursor(this.editor.nativeElement, sel);
+    const match = pre.match(/(?:^|\s)([@#])(\w*)$/);
+
+    if (match) {
+      this.mentionComponent?.mentionService.trigger$.next(match[1] as '@' | '#');
+      this.mentionComponent?.mentionService.query$.next(match[2]);
+      this.mentionComponent?.mentionService.showOverlay$.next(true);
+    } else {
+      this.mentionComponent?.mentionService.reset();
+    }
+
+    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
   }
 
   onEditorKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Backspace') {
-      const sel = window.getSelection()!;
-      const node = sel.anchorNode as HTMLElement;
-      if (node && node.nodeType === Node.ELEMENT_NODE && (node as HTMLElement).classList.contains('mention')) {
-        (node as HTMLElement).remove();
-        event.preventDefault();
-        this.syncEditorToForm();
-      }
-    }
-  }
-
-  syncEditorToForm() {
-    if (!this.editor) return;
-    const div = this.editor.nativeElement;
-    let content = div.innerText.trim();
-
-    content = content.replace(/[@#][^@\s]+/g, '').replace(/\s{2,}/g, ' ').trim();
-
-    this.messageForm.controls['message'].setValue(content);
+    MentionUtilsService.handleEditorKeyDown(event, this.editor.nativeElement, this.messageForm.controls['message']);
   }
 
   onSelectChannel(channel: Channel) {
@@ -292,7 +320,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
     setTimeout(() => {
       if (this.editor?.nativeElement) {
-        this.insertMention(`#${channel.channelName.slice(1)}`);
+        this.mentionComponent?.insertMention(`#${channel.channelName.slice(1)}`);
       }
     }, 0);
   }
@@ -314,7 +342,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     const fullName = user.displayName || user.name;
     setTimeout(() => {
       if (this.editor?.nativeElement) {
-        this.insertMention(`@${fullName}`);
+        this.mentionComponent?.insertMention(`@${fullName}`);
       }
     }, 0);
   }
@@ -349,7 +377,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   public focusInput() {
     setTimeout(() => {
       this.editor?.nativeElement.focus();
-      this.restoreCursorPosition();
+      this.mentionComponent?.restoreCursorPosition();
     });
   }
 
@@ -386,11 +414,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   addEmoji(selected: any) {
     const emoji: string = selected.emoji.native;
     const div = this.editor.nativeElement;
-    div.focus();
 
-    this.ensureCursorPosition();
+    this.mentionComponent?.restoreCursorPosition();
 
-    const range = this.savedRange!.cloneRange();
+    const range = window.getSelection()?.getRangeAt(0).cloneRange();
+    if (!range) return;
+
     const emojiNode = document.createTextNode(emoji);
     range.insertNode(emojiNode);
 
@@ -401,28 +430,13 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     selection?.removeAllRanges();
     selection?.addRange(range);
 
-    this.saveCursorPosition();
-    this.syncEditorToForm();
+    this.mentionComponent?.saveCursorPosition();
+    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
     this.closeEmojiOverlay();
   }
 
   private closeEmojiOverlay() {
     this.emojiOverlay = false;
     this.emojiThreadOverlay = false;
-  }
-
-  saveCursorPosition() {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      this.savedRange = selection.getRangeAt(0);
-    }
-  }
-
-  restoreCursorPosition() {
-    const selection = window.getSelection();
-    if (this.savedRange && selection) {
-      selection.removeAllRanges();
-      selection.addRange(this.savedRange.cloneRange());
-    }
   }
 }

@@ -42,7 +42,7 @@ button {
     width: 100%;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
-    z-index: 550;
+    z-index: 200;
     @include dFlex($fd: column, $ai: flex-start);
 }
 
@@ -331,5 +331,25 @@ input {
     padding: 2px 6px;
     border-radius: 30px;
     cursor: default;
-    margin-right: 8px;
+    margin-right: 6px;
+}
+
+.editable-input {
+    width: 100%;
+    height: 90px;
+    border: none;
+    box-sizing: border-box;
+    resize: none;
+    @include fontNunito(18px, 400);
+    color: black;
+    position: relative;
+    outline: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+
+    &:empty:before {
+        content: attr(placeholder);
+        color: #A9A9A9;
+    }
 }

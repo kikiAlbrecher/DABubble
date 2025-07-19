@@ -21,6 +21,7 @@ export class UserProfileComponent implements OnInit {
   @Input() user: User | null = null;
   @Input() actualUserId: string = '';
   @Input() isHeader: boolean = false;
+  @Input() showUser: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() sendMessage = new EventEmitter<User>();
 

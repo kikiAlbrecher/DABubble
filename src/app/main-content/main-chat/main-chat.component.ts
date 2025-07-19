@@ -5,7 +5,7 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Subscription } from 'rxjs';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
-import { ChannelUsersService } from '../../userManagement/channel-users.service';
+import { ChannelUsersService } from '../../channel-management/channel-users.service';
 import { DialogAddMemberComponent } from '../dialog-add-member/dialog-add-member.component';
 import { DialogEditChannelComponent } from '../dialog-edit-channel/dialog-edit-channel.component';
 import { UserImageStatusComponent } from '../../style-components/user-image-status/user-image-status.component';
@@ -13,6 +13,7 @@ import { WriteMessageComponent } from '../write-message/write-message.component'
 import { MessageBoardComponent } from "../message-board/message-board.component";
 import { HeaderSharedService } from '../../header/user-header/header-service';
 import { UserProfileComponent } from '../../header/user-profile/user-profile.component';
+import { MessageSharedService } from '../message-service';
 
 @Component({
   selector: 'app-main-chat',
@@ -44,6 +45,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Input() showAddMemberDialog = false;
   @Input() isShowMembersOverlayVisible: boolean = false;
   @Input() isMobile: boolean = false;
+  @Input() devspace: boolean = false;
   @Output() showUserProfile = new EventEmitter<void>();
   @Output() editChannel = new EventEmitter<{ top: number, left: number }>();
   @Output() showMembers = new EventEmitter<void>();
@@ -58,6 +60,8 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   private messagesSubscription?: Subscription;
   public sharedHeader = inject(HeaderSharedService);
   private userSub?: Subscription;
+  private messageService = inject(MessageSharedService);
+
 
   ngOnInit() {
     this.sharedUser.subscribeValidUsers();
@@ -133,11 +137,32 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedChannel'] && this.selectedChannel) {
+      this.messageService.setSelectedChannel(this.selectedChannel);
+      this.messageService.setSelectedUser(null);
       this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
+    }
+
+    if (changes['selectedUser'] && this.selectedUser) {
+      this.messageService.setSelectedUser(this.selectedUser);
+      this.messageService.setSelectedChannel(null);
     }
 
     if (changes['isShowMembersOverlayVisible'] && !changes['isShowMembersOverlayVisible'].currentValue) {
       this.openMembersOverlay = false;
     }
+  }
+
+  onSelectUser(user: User) {
+    this.selectedUser = user;
+    this.selectedChannel = null;
+    this.messageService.setSelectedUser(user);
+    this.messageService.setSelectedChannel(null);
+  }
+
+  onSelectChannel(channel: Channel) {
+    this.selectedChannel = channel;
+    this.selectedUser = null;
+    this.messageService.setSelectedChannel(channel);
+    this.messageService.setSelectedUser(null);
   }
 }

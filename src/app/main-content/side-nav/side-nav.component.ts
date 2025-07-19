@@ -24,10 +24,11 @@ export class SideNavComponent implements OnInit, OnDestroy {
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
+  @Output() toggleDevspace = new EventEmitter<void>();
 
-  workspaceOpen = true;
-  showChannels = true;
-  showUsers = true;
+  workspaceOpen: boolean = true;
+  showChannels: boolean = true;
+  showUsers: boolean = true;
   channels: Channel[] = [];
   users: User[] = [];
   selectedChannelId: string | null = null;
@@ -178,17 +179,25 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.showUsers = !this.showUsers;
   }
 
-  onSelectChannel(channel: Channel) {
-    this.selectedChannelId = channel.channelId;
-    this.selectedUserId = null;
-    this.selectChannel.emit(channel);
-    this.userService.threadsVisible$.next(false);
+  toggleDevspaceClicked() {
+    this.toggleDevspace.emit();
   }
 
   onSelectUser(user: User) {
-    this.selectedUserId = user.id ?? null;
-    this.selectedChannelId = null;
-    this.selectUser.emit(user);
-    this.userService.threadsVisible$.next(false);
+    if (this.selectedUserId !== user.id) {
+      this.selectedUserId = user.id ?? null;
+      this.selectedChannelId = null;
+      this.selectUser.emit(user);
+      this.userService.threadsVisible$.next(false);
+    }
+  }
+
+  onSelectChannel(channel: Channel) {
+    if (this.selectedChannelId !== channel.channelId) {
+      this.selectedChannelId = channel.channelId;
+      this.selectedUserId = null;
+      this.selectChannel.emit(channel);
+      this.userService.threadsVisible$.next(false);
+    }
   }
 }

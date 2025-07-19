@@ -12,24 +12,17 @@
             [class.threads-open]="(shared.threadsVisible$ | async)">
             <app-side-nav *ngIf="!isMobile || (isMobile && !showMainChatMobile)" [isMobile]="isMobile"
                 (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
-                (addChannel)="openDialogAddChannel()" [showAddChannelDialog]="showAddChannelDialog">
+                (addChannel)="openDialogAddChannel()" (toggleDevspace)="onToggleDevspace()"
+                [showAddChannelDialog]="showAddChannelDialog">
             </app-side-nav>
             <app-main-chat *ngIf="!isMobile || (isMobile && showMainChatMobile)"
                 (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="openMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog"
-                [isShowMembersOverlayVisible]="showMembers">
+                [isShowMembersOverlayVisible]="showMembers" [devspace]="showDevspace">
             </app-main-chat>
             <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
-            <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">
-                <div class="profile-overlay">
-                    <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
-                        [actualUserId]="shared.actualUserID" (close)="showProfile = false"
-                        (sendMessage)="sendUserMessage($event)">
-                    </app-user-profile>
-                </div>
-            </div>
         </div>
 
         <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="closeDialogAddChannel()"
@@ -49,7 +42,7 @@
             (close)="closeDialogShowMembers()" (openAddMembers)="openDialogAddMember($event)"
             (userClicked)="onOpenUserProfile($event)" [position]="showMembersPosition"
             [style.top.px]="showMembersPosition.top" [style.left.px]="showMembersPosition.left"
-            style="position: fixed; z-index: 999;">
+            style="position: fixed; z-index: 400;">
         </app-dialog-show-channel-members>
         <app-dialog-add-member *ngIf="showAddMemberDialog" [validUsers]="users" [selectedChannel]="selectedChannel"
             (close)="closeDialogAddMember()" (save)="saveAddMember($event)" [position]="addMemberPosition"
@@ -59,5 +52,13 @@
         <app-status-messages *ngIf="statusMessage" [statusMessage]="statusMessage"
             [statusMessageType]="statusMessageType">
         </app-status-messages>
+        <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">
+            <div class="profile-overlay" (click)="$event.stopPropagation()">
+                <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
+                    [actualUserId]="shared.actualUserID" (close)="showProfile = false"
+                    (sendMessage)="sendUserMessage($event)">
+                </app-user-profile>
+            </div>
+        </div>
     </div>
 </div>

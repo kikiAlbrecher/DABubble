@@ -1,0 +1,7 @@
+<div *ngIf="showOverlay" [hidden]="listEmpty" [ngClass]="['list-overlay', contextClass]">
+  <app-users *ngIf="trigger === '@'" [users]="filteredUsers" (userSelected)="handleUserSelect($event)">
+  </app-users>
+
+  <app-channels *ngIf="trigger === '#'" [channels]="filteredChannels" (channelSelected)="handleChannelSelect($event)">
+  </app-channels>
+</div>

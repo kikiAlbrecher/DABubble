@@ -1,6 +1,10 @@
-<div *ngIf="selectedChannel" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
-    <div class="chat-header">
-        <div class="selected-item" (click)="openDialogEditChannel($event)" data-edit-channel-btn>
+<div *ngIf="selectedChannel || selectedUser || devspace" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
+    <div *ngIf="devspace" class="main-content devspace">
+        Hallo
+    </div>
+    <div class="chat-header" *ngIf="!devspace">
+        <div class="selected-item" *ngIf="selectedChannel" (click)="openDialogEditChannel($event)"
+            data-edit-channel-btn>
             <svg class="hashtag" width="32" height="33" viewBox="0 0 32 33" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -15,7 +19,13 @@
                     fill="black" />
             </svg>
         </div>
-        <div class="members-add">
+
+        <div class="selected-item selected-item-dm" *ngIf="selectedUser && !selectedChannel" (click)="openProfile()">
+            <app-user-image-status [user]="selectedUser"></app-user-image-status>
+            <span class="title">{{ selectedUser.name }}</span>
+        </div>
+
+        <div class="members-add" *ngIf="selectedChannel">
             <div [ngStyle]="{ width: ((channelMembers.length > 3 ? 60 : 30) + (channelMembers.slice(-3).length) * 30) + 'px' }"
                 class="members" [class.active-overlay]="openMembersOverlay" (click)="openShowMembers($event)"
                 data-show-members-btn>
@@ -40,17 +50,9 @@
             </svg>
         </div>
     </div>
-    <app-message-board class="main-content"></app-message-board>
-    <app-write-message [selectedChannel]="selectedChannel" class="write-message-container"></app-write-message>
-</div>
 
-<div *ngIf="selectedUser" class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
-    <div class="chat-header">
-        <div class="selected-item selected-item-dm" (click)="openProfile()">
-            <app-user-image-status [user]="selectedUser"></app-user-image-status>
-            <span class="title">{{ selectedUser.name }}</span>
-        </div>
-    </div>
-    <app-message-board class="main-content"></app-message-board>
-    <app-write-message [selectedUser]="selectedUser" class="write-message-container"></app-write-message>
+    <app-message-board class="main-content" *ngIf="!devspace"></app-message-board>
+    <app-write-message class="write-message-container" [selectedChannel]="selectedChannel" [selectedUser]="selectedUser"
+        (selectUser)="onSelectUser($event)" (selectChannel)="onSelectChannel($event)">
+    </app-write-message>
 </div>
