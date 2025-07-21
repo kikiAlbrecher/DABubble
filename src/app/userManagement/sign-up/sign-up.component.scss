@@ -179,10 +179,13 @@
     .next-container {
         margin-top: 0;
         .next {
-        font-size: 16px;
+            font-size: 16px;
+        }    
     }
-    
+}
+
+@media (orientation: portrait) and (max-height: 700px)  {
+    .sign-up-section {
+        height: 500px;
     }
-
-
 }

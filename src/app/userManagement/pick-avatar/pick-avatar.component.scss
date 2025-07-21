@@ -197,4 +197,13 @@
     } 
 }
 
+@media (orientation: portrait) and (max-height: 700px)  {
+    .avatar-section {
+        height: 500px;
+    }
+    .avatar-header {
+        margin: 22px 0;
+    }
+}
+
 
