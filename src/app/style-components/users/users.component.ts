@@ -13,9 +13,14 @@ import { UserImageStatusComponent } from '../user-image-status/user-image-status
 export class UsersComponent {
   @Input() users: User[] = [];
   @Input() selectedUserId: string | null = null;
+  @Input() stopClickPropagation: boolean = false;
   @Output() userSelected = new EventEmitter<User>();
 
-  onSelectUser(user: User) {
+  onSelectUser(user: User, event?: MouseEvent) {
+    if (this.stopClickPropagation && event) {
+      event.stopPropagation();
+    }
+
     this.userSelected.emit(user);
   }
 }

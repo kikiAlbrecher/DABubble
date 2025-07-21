@@ -181,9 +181,14 @@ export class MainContentComponent implements OnInit {
   }
 
   onOpenUserProfile(user: User) {
+    if (this.sideNavComponent) this.sideNavComponent.onSelectUser(user);
+    console.log('[MainContent] User clicked in members dialog:', user.name);
+
     this.selectedUser = user;
     this.selectedChannel = null;
-    this.showProfile = true;
+    this.showMembers = false;
+
+    setTimeout(() => this.showProfile = true, 10);
   }
 
   openDialogAddMember(event?: MouseEvent | { top: number; left: number }) {

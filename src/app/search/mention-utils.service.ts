@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { User } from '../userManagement/user.interface';
+import { Channel } from '../../models/channel.class';
+import { collection, Firestore, getDocs, query, where } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +20,89 @@ export class MentionUtilsService {
     mentionElements.forEach(el => el.remove());
     return element.innerText.trim();
   }
+
+  /**
+   * Extracts all mentions (@users and #channels) from the given editor element
+   * and also attempts to determine a search query (text outside mentions).
+   *
+   * @param {HTMLElement} editor - The editor element containing mentions.
+   * @returns {{ users: string[], channels: string[], query: string }} - Extracted mentions and a possible query.
+   */
+  static extractMentionsFromEditor(editor: HTMLElement): {
+    users: string[];
+    channels: string[];
+    query: string;
+  } {
+    const mentions = editor.querySelectorAll('.mention');
+    const mentionedUsers: string[] = [];
+    const mentionedChannels: string[] = [];
+
+    mentions.forEach(mention => {
+      const text = mention.textContent?.trim() ?? '';
+      if (text.startsWith('@')) {
+        const name = text.slice(1).toLowerCase();
+        if (!mentionedUsers.includes(name)) {
+          mentionedUsers.push(name);
+        }
+      } else if (text.startsWith('#')) {
+        const name = text.slice(1).toLowerCase();
+        if (!mentionedChannels.includes(name)) {
+          mentionedChannels.push(name);
+        }
+      }
+    });
+
+    // Extract remaining non-mention text as potential search query
+    const clone = editor.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('.mention').forEach(m => m.remove());
+    const query = clone.innerText.trim();
+
+    return {
+      users: mentionedUsers,
+      channels: mentionedChannels,
+      query
+    };
+  }
+
+
+
+  static extractMentionsFromElement(
+    element: HTMLElement,
+    users: User[],
+    channels: Channel[]
+  ): { users: User[], channels: Channel[] } {
+    const mentions = element.querySelectorAll('.mention');
+    const mentionedUsers: User[] = [];
+    const mentionedChannels: Channel[] = [];
+
+    mentions.forEach((mention) => {
+      const text = mention.textContent ?? '';
+
+      if (text.startsWith('@')) {
+        const name = text.slice(1).toLowerCase();
+        const user = users.find(u =>
+          (u.displayName || u.name).toLowerCase() === name
+        );
+        if (user && !mentionedUsers.some(u => u.id === user.id)) {
+          mentionedUsers.push(user);
+        }
+      }
+
+      if (text.startsWith('#')) {
+        const name = text.slice(1).toLowerCase();
+        const channel = channels.find(c =>
+          c.channelName.replace(/^#/, '').toLowerCase() === name
+        );
+        if (channel && !mentionedChannels.some(c => c.channelId === channel.channelId)) {
+          mentionedChannels.push(channel);
+        }
+      }
+    });
+
+    return { users: mentionedUsers, channels: mentionedChannels };
+  }
+
+
 
   /**
    * Retrieves the text content from the beginning of the editor to the current cursor position.
@@ -129,5 +215,61 @@ export class MentionUtilsService {
       return true;
     }
     return false;
+  }
+
+  static async findEmails(text: string, firestore: Firestore): Promise<string[]> {
+    const matches = [...text.matchAll(/[\w.-]+@[\w.-]+\.\w{2,}/g)];
+    const results: string[] = [];
+
+    for (const match of matches) {
+      const email = match[0].toLowerCase();
+      const user = await this.getUserByEmail(email, firestore);
+      if (user) results.push(`@${user.displayName || user.name}`);
+    }
+
+    return results;
+  }
+
+  private static async getUserByEmail(email: string, firestore: Firestore): Promise<User | null> {
+    const usersRef = collection(firestore, 'users');
+    const q = query(usersRef, where('email', '==', email));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    return snapshot.docs[0].data() as User;
+  }
+
+  /**
+   * Find @user mentions based on text and known user list.
+   */
+  static findUserMentions(text: string, users: User[]): string[] {
+    const matches = [...text.matchAll(/@(\w{1,30})/g)];
+    const mentions: string[] = [];
+
+    for (const [, username] of matches) {
+      const name = username.toLowerCase();
+      const user = users.find(u =>
+        u.name?.toLowerCase() === name || u.displayName?.toLowerCase() === name
+      );
+      if (user) mentions.push(`@${user.displayName || user.name}`);
+    }
+
+    return mentions;
+  }
+
+  /**
+   * Find #channel mentions based on text and known channel list.
+   */
+  static findChannelMentions(text: string, channels: Channel[]): string[] {
+    const matches = [...text.matchAll(/#(\w{1,50})/g)];
+    const mentions: string[] = [];
+
+    for (const [, name] of matches) {
+      const channel = channels.find(c =>
+        c.channelName?.toLowerCase() === name.toLowerCase()
+      );
+      if (channel) mentions.push(`#${channel.channelName}`);
+    }
+
+    return mentions;
   }
 }

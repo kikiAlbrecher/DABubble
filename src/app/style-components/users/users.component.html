@@ -1,6 +1,6 @@
 <div class="list">
-    <button *ngFor="let user of users" [class.active]="user.id === selectedUserId" class="menu-item list-entry"
-        (click)="onSelectUser(user)">
+    <button type=“button“ *ngFor="let user of users" [class.active]="user.id === selectedUserId" class="menu-item list-entry"
+        (click)="onSelectUser(user, $event)">
         <app-user-image-status [user]="user"></app-user-image-status>
         <span class="list-name">{{ user.displayName || user.name }}</span>
     </button>

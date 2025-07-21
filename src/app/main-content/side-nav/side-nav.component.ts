@@ -70,8 +70,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
   refreshChannelListAfterAddingChannel() {
     this.lastAddedSub = this.userService.lastAddedChannel$.subscribe(channel => {
       if (channel) {
-        this.selectedChannelId = channel.channelId;
-        this.selectChannel.emit(channel);
+        setTimeout(() => {
+          this.selectedChannelId = channel.channelId;
+          this.selectChannel.emit(channel);
+        });
       }
     });
   }
@@ -130,8 +132,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
     const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy') || this.channels[0];
 
     if (defaultChannel) {
-      this.selectedChannelId = defaultChannel.channelId;
-      this.selectChannel.emit(defaultChannel);
+      setTimeout(() => {
+        this.selectedChannelId = defaultChannel.channelId;
+        this.selectChannel.emit(defaultChannel);
+      });
     }
   }
 

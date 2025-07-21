@@ -5,6 +5,7 @@
     width: 434px;
 
     >.input-wrapper-content {
+        position: relative;
         background: $white;
         color: $grey;
         padding: 15px 20px;
@@ -16,6 +17,21 @@
 
         &:focus-within {
             border-color: $purple;
+        }
+
+        >.suggestions {
+            position: absolute;
+            top: calc(100% - 12px);
+            left: 20px;
+            border-radius: 0 20px 20px 20px;
+            border: 1px solid $light-purple;
+            padding: 20px 21px;
+            @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 99;
+            background: $white;
+            max-height: 250px;
+            overflow-y: auto;
         }
     }
 }
@@ -45,24 +61,6 @@
             aspect-ratio: 1 / 1;
         }
     }
-}
-
-.suggestions {
-    position: absolute;
-    top: 40px;
-    left: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    border-bottom-left-radius: 20px;
-    border: 1px solid $light-purple;
-    padding: 20px 21px;
-    @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    // width: 335px;
-    z-index: 99;
-    background: $white;
-    max-height: 250px;
-    overflow-y: auto;
 }
 
 #userInput {

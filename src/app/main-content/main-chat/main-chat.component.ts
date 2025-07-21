@@ -14,6 +14,9 @@ import { MessageBoardComponent } from "../message-board/message-board.component"
 import { HeaderSharedService } from '../../header/user-header/header-service';
 import { UserProfileComponent } from '../../header/user-profile/user-profile.component';
 import { MessageSharedService } from '../message-service';
+import { SearchForUserComponent } from '../../style-components/search-for-user/search-for-user.component';
+import { SearchService } from '../../header/searchbar/search.service';
+import { DevspaceComponent } from '../devspace/devspace.component';
 
 @Component({
   selector: 'app-main-chat',
@@ -25,7 +28,8 @@ import { MessageSharedService } from '../message-service';
     WriteMessageComponent,
     MessageBoardComponent,
     UserImageStatusComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    DevspaceComponent
   ],
   templateUrl: './main-chat.component.html',
   styleUrls: ['./../side-nav/side-nav.component.scss', './main-chat.component.scss']
@@ -38,6 +42,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   users: User[] = [];
   membershipSubscription?: Subscription;
   openMembersOverlay: boolean = false;
+  searchResults: any[] = [];
 
   @Input() sideNavOpen: boolean = true;
   @Input() selectedChannel: Channel | null = null;
@@ -53,6 +58,8 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Output() addMember = new EventEmitter<{ top: number, left: number }>();
   @Output() selectedUserChange = new EventEmitter<User | null>();
   @Output() userLeftChannel = new EventEmitter<void>();
+  @Output() userClicked = new EventEmitter<User>();
+  @Output() channelClicked = new EventEmitter<Channel>();
   @ViewChild(WriteMessageComponent) writeMessageComponent!: WriteMessageComponent;
 
   private channelUsersService = inject(ChannelUsersService);
@@ -61,7 +68,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   public sharedHeader = inject(HeaderSharedService);
   private userSub?: Subscription;
   private messageService = inject(MessageSharedService);
-
+  public searchService = inject(SearchService);
 
   /**
    * Angular lifecycle hook called on component initialization.
@@ -73,6 +80,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.userSub = this.sharedUser.allValidUsers$.subscribe(users => {
       this.users = users;
     });
+
     this.membershipSubscription = this.sharedUser.channelMembersChanged$.subscribe(async () => {
       if (this.selectedChannel) {
         this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
@@ -195,6 +203,8 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
    * Handles selection of a user.
    * Updates selectedUser and clears selectedChannel.
    * Notifies message service about the selected user.
+   * Emits the signal to the mother main-content, that the user has changed, 
+   * so that she can informs her children, especially the sidebar.
    * 
    * @param user - The user selected.
    */
@@ -203,12 +213,14 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedChannel = null;
     this.messageService.setSelectedUser(user);
     this.messageService.setSelectedChannel(null);
+    this.userClicked.emit(user);
   }
 
   /**
    * Handles selection of a channel.
    * Updates selectedChannel and clears selectedUser.
    * Notifies message service about the selected channel.
+   * Emits the signal to the main-content that selected channel has changed.
    * 
    * @param channel - The channel selected.
    */
@@ -217,5 +229,11 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedUser = null;
     this.messageService.setSelectedChannel(channel);
     this.messageService.setSelectedUser(null);
+    this.channelClicked.emit(channel);
+  }
+
+  handleSearchResults(results: any[]) {
+    this.searchResults = results;
+    console.log('Suchergebnisse in MainChat angekommen:', results);
   }
 }

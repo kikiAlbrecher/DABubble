@@ -17,6 +17,8 @@ import { Subscription } from 'rxjs';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
 import { MentionComponent } from '../../search/mention/mention.component';
 import { MentionUtilsService } from '../../search/mention-utils.service';
+import { DevspaceService } from '../devspace/devspace.service';
+import { MentionHandlerService } from '../../search/mention-handler.service';
 
 @Component({
   selector: 'app-write-message',
@@ -37,17 +39,20 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   constructor(
     public shared: UserSharedService,
     public sharedMessages: MessageSharedService,
-    private eRef: ElementRef
+    private eRef: ElementRef,
+    private devspaceService: DevspaceService
   ) { }
 
   @Input() user!: User;
   @Input() selectedUser: User | null = null;
   @Input() selectedChannel: Channel | null = null;
   @Input() mode: 'default' | 'thread' = 'default';
+  @Input() devspaceOpen: boolean = false;
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
   @ViewChild(MentionComponent) mentionComponent?: MentionComponent;
+  @ViewChild('devspaceText') devspaceText?: ElementRef<HTMLInputElement>;
 
   textError: boolean = false;
   chatExists: boolean = true;
@@ -63,23 +68,23 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   emojiThreadOverlay: boolean = false;
   messageText: any = "";
   toggleMention: '@' | '#' = '@';
-
-  private firestore = inject(Firestore);
-  private channelShared = inject(ChannelSharedService);
-  private userSub?: Subscription;
-  private channelSub?: Subscription;
-  public editorNativeElement?: HTMLElement;
-
   messageForm = new FormGroup({
     message: new FormControl('', [Validators.required]),
   });
+
+  private firestore = inject(Firestore);
+  private channelShared = inject(ChannelSharedService);
+  private mentionHandler = inject(MentionHandlerService);
+  private userSub?: Subscription;
+  private channelSub?: Subscription;
+  public editorNativeElement?: HTMLElement;
 
   ngOnInit(): void {
     this.takeInChannels();
     this.takeInUsers();
 
     if (this.editor?.nativeElement) {
-      this.editor.nativeElement.innerText = '';
+      this.editor.nativeElement.innerHTML = '';
     }
   }
 
@@ -87,7 +92,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     setTimeout(() => {
       if (this.editor?.nativeElement) {
         this.editorNativeElement = this.editor.nativeElement;
-        this.editor.nativeElement.innerText = '';
+        this.editor.nativeElement.innerHTML = '';
       }
     });
   }
@@ -123,42 +128,27 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   onMentionSelected(name: string): void {
-    this.mentionComponent?.insertMention(name);
-
-    if (this.editor) {
-      MentionUtilsService.syncEditorToForm(
-        this.editor.nativeElement,
-        this.messageForm.controls['message']
-      );
-    }
-
-    if (name.startsWith('@')) {
-      this.autocompleteUserName(name.slice(1).toLowerCase());
-    } else if (name.startsWith('#')) {
-      this.autocompleteChannelName(name.slice(1).toLowerCase());
-    }
-  }
-
-  private autocompleteUserName(username: string): void {
-    const user = this.users.find(u =>
-      (u.displayName || u.name).toLowerCase() === username
+    this.mentionHandler.handleMentionSelected(
+      name,
+      this.users,
+      this.channels,
+      mention => this.mentionComponent?.insertMention(mention),
+      user => {
+        this.selectedUser = user;
+        this.selectedChannel = null;
+        this.selectUser.emit(user);
+      },
+      channel => {
+        this.selectedChannel = channel;
+        this.selectedUser = null;
+        this.selectChannel.emit(channel);
+      },
+      () => {
+        if (this.editor) {
+          MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
+        }
+      }
     );
-    if (!user) return;
-
-    this.selectedUser = user;
-    this.selectedChannel = null;
-    this.selectUser.emit(user);
-  }
-
-  private autocompleteChannelName(channelName: string): void {
-    const channel = this.channels.find(c =>
-      c.channelName.replace(/^#/, '').toLowerCase() === channelName
-    );
-    if (!channel) return;
-
-    this.selectedChannel = channel;
-    this.selectedUser = null;
-    this.selectChannel.emit(channel);
   }
 
   checkChatExists() {
@@ -180,38 +170,41 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private extractMentions(): { users: User[], channels: Channel[] } {
-    const mentions = this.editor.nativeElement.querySelectorAll('.mention');
-    const mentionedUsers: User[] = [];
-    const mentionedChannels: Channel[] = [];
+    return MentionUtilsService.extractMentionsFromElement(
+      this.editor.nativeElement,
+      this.users,
+      this.channels
+    );
+  }
 
-    mentions.forEach((mention) => {
-      const text = mention.textContent ?? '';
+  private async handleDevspaceEntry(): Promise<boolean> {
+    const input = this.devspaceService.getEditorTextContent();
+    if (!input) return false;
 
-      if (text.startsWith('@')) {
-        const name = text.slice(1).toLowerCase();
-        const user = this.users.find(u =>
-          (u.displayName || u.name).toLowerCase() === name
-        );
-        if (user && !mentionedUsers.some(u => u.id === user.id)) {
-          mentionedUsers.push(user);
-        }
-      }
+    const foundMentions: string[] = [];
 
-      if (text.startsWith('#')) {
-        const normalizedMention = text.slice(1).toLowerCase();
-        const channel = this.channels.find(chan =>
-          chan.channelName.replace(/^#/, '').toLowerCase() === normalizedMention
-        );
-        if (channel && !mentionedChannels.some(c => c.channelId === channel.channelId)) {
-          mentionedChannels.push(channel);
-        }
-      }
-    });
+    foundMentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
+    foundMentions.push(...MentionUtilsService.findUserMentions(input, this.users));
+    foundMentions.push(...MentionUtilsService.findChannelMentions(input, this.channels));
 
-    return { users: mentionedUsers, channels: mentionedChannels };
+    foundMentions.forEach(m => this.mentionComponent?.insertMention(m));
+
+    if (foundMentions.length > 0) {
+      this.devspaceService.clearEditor();
+      return true;
+    }
+
+    return false;
   }
 
   async onSubmit() {
+    if (this.devspaceOpen) {
+      const handled = await this.handleDevspaceEntry();
+      if (handled) return;
+    }
+
+    if (this.devspaceOpen) await this.handleDevspaceEntry()
+
     const { users, channels } = this.extractMentions();
     let cleanedMessage = this.removeMentionsFromDOM();
     if (!cleanedMessage) return;

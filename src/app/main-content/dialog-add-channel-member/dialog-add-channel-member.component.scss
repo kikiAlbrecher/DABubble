@@ -60,11 +60,9 @@
 }
 
 .channel-suggestions {
-    max-height: 250px;
-    padding: 0 20px;
+    padding: 20px;
     border: 1px solid $grey;
-    border-top-left-radius: 30px;
-    border-bottom-left-radius: 30px;
+    border-radius: 0 30px 30px 30px;
     width: 300px;
     z-index: 80;
     position: relative;
@@ -74,15 +72,15 @@
     &:focus-within {
         border-color: $background-purple;
     }
+}
 
-    >.channel-entry {
-        padding: 8px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        @include fontNunito($size: 18px, $weight: 400);
+.channel-entry {
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    @include fontNunito($size: 18px, $weight: 400);
 
-        &:hover {
-            background: $background-purple;
-        }
+    &:hover {
+        background: $background-purple;
     }
 }

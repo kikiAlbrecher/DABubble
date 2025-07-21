@@ -22,8 +22,8 @@
             [placeholder]="userSearchTerm.length === 0 && selectedUsers.length === 0 ? 'Name(n) eingeben …' : ''"
             [(ngModel)]="userSearchTerm" name="userSearchTerm" (ngModelChange)="onUserSearch(userSearchTerm)"
             autocomplete="off">
-    </div>
-    <div class="suggestions" *ngIf="suggestedUsers.length">
-        <app-users [users]="suggestedUsers" (userSelected)="addUser($event)"></app-users>
+        <div class="suggestions" *ngIf="suggestedUsers.length">
+            <app-users [users]="suggestedUsers" (userSelected)="addUser($event)"></app-users>
+        </div>
     </div>
 </div>

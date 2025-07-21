@@ -1,10 +1,12 @@
 <div class="outside-overlay" (click)="closeAddMember()">
     <div class="overlay-content">
-        <form (click)="$event.stopPropagation()" #addMemberForm="ngForm" (ngSubmit)="saveMember()"
+        <form (click)="$event.stopPropagation()" (ngSubmit)="saveMember()" #addMemberForm="ngForm"
             class="dialog-add-channel dialog-add-member">
+
             <div class="closing-sign">
                 <span class="rectangle"></span>
             </div>
+
             <div class="add-headline">
                 <h2>Personen hinzufügen</h2>
                 <app-close-button (close)="closeAddMember()"></app-close-button>
@@ -23,22 +25,33 @@
                             hinzufügen.
                         </label>
                     </div>
-                    <div *ngIf="channelListVisible" class="list channel-suggestions">
-                        <div class="channel-entry" *ngFor="let channel of channelList" (click)="selectChannel(channel)">
-                            {{ channel.channelName.slice(1) }}
+
+                    <div class="channel-suggestions">
+                        @if (channelListVisible) {
+                        <div class="list">
+                            @for (channel of channelList; track channel.channelId) {
+                            <div class="channel-entry" (click)="selectChannel(channel)">
+                                {{ channel.channelName.slice(1) }}
+                            </div>
+                            }
                         </div>
+                        }
                     </div>
                 </div>
+
                 <div class="option-block">
                     <div class="option">
                         <input type="radio" id="addSelectedColleagues" name="add-options" [(ngModel)]="mode"
                             value="selectedColleagues" (ngModelChange)="onModeChange($event)" required>
                         <label for="addSelectedColleagues">Bestimmte Personen hinzufügen.</label>
                     </div>
-                    <div *ngIf="mode==='selectedColleagues'" class="input-colleagues-name">
-                        <app-search-for-user [validUsers]="validUsers"
-                            [(selectedUsers)]="selectedUsers"></app-search-for-user>
+
+                    @if (mode === 'selectedColleagues') {
+                    <div class="input-colleagues-name">
+                        <app-search-for-user [validUsers]="validUsers" [(selectedUsers)]="selectedUsers">
+                        </app-search-for-user>
                     </div>
+                    }
                 </div>
             </div>
 

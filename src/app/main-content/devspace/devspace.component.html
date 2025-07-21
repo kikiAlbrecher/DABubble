@@ -1,0 +1,18 @@
+<section class="devspace-section">
+    <div class="input-container">
+        <p>Neue Nachricht</p>
+        <div class="input-field-container">
+            <!-- #devspaceText -->
+            <div #editor contenteditable="true" class="input-field editable-input"
+                (input)="onContentInput(); mentionComponent?.saveCursorPosition()"
+                (click)="mentionComponent?.saveCursorPosition()" (keyup)="mentionComponent?.saveCursorPosition()"
+                (keydown)="onEditorKeyDown($event)" [attr.placeholder]="placeholderQuote">
+                <span class="placeholder" *ngIf="isEditorEmpty">{{ placeholderQuote }}</span>
+            </div>
+            <app-mention *ngIf="editorNativeElement" [users]="users" [channels]="channels"
+                [targetInputElement]="editorNativeElement" contextClass="in-devspace"
+                (mentionSelected)="onMentionSelected($event)">
+            </app-mention>
+        </div>
+    </div>
+</section>

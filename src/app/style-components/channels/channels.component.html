@@ -1,5 +1,5 @@
 <div class="list">
-    <button *ngFor="let channel of channels" [class.active]="channel.channelId === selectedChannelId"
+    <button type=“button“ *ngFor="let channel of channels" [class.active]="channel.channelId === selectedChannelId"
         class="menu-item list-entry" (click)="onSelectChannel(channel)">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <mask id="mask0_139385_8743" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24"

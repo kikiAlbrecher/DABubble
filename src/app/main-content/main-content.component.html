@@ -2,57 +2,79 @@
     <div class="section-content">
         <div class="header">
             <app-logo [isMobile]="isMobile" [showMainChatMobile]="showMainChatMobile"
-                (backToSideNavClick)="onBackToSideNav()">
-            </app-logo>
+                (backToSideNavClick)="onBackToSideNav()"></app-logo>
             <app-searchbar class="header-searchbar"></app-searchbar>
             <app-user-header></app-user-header>
         </div>
 
         <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"
             [class.threads-open]="(shared.threadsVisible$ | async)">
-            <app-side-nav *ngIf="!isMobile || (isMobile && !showMainChatMobile)" [isMobile]="isMobile"
-                (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
-                (addChannel)="openDialogAddChannel()" (toggleDevspace)="onToggleDevspace()"
-                [showAddChannelDialog]="showAddChannelDialog">
+
+            @if (!isMobile || (isMobile && !showMainChatMobile)) {
+            <app-side-nav [isMobile]="isMobile" (selectChannel)="onChannelSelected($event)"
+                (selectUser)="onUserSelected($event)" (addChannel)="openDialogAddChannel()"
+                (toggleDevspace)="onToggleDevspace()" [showAddChannelDialog]="showAddChannelDialog">
             </app-side-nav>
-            <app-main-chat *ngIf="!isMobile || (isMobile && showMainChatMobile)"
-                (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
+            }
+
+            @if (!isMobile || (isMobile && showMainChatMobile)) {
+            <app-main-chat (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="openMembers($event)"
-                (selectedUserChange)="onSelectedUserChanged($event)" [selectedChannel]="selectedChannel"
+                (selectedUserChange)="onSelectedUserChanged($event)" (userClicked)="onUserSelected($event)"
+                (channelClicked)="onChannelSelected($event)" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog"
                 [isShowMembersOverlayVisible]="showMembers" [devspace]="showDevspace">
             </app-main-chat>
-            <app-threads *ngIf="shared.threadsVisible$ | async"></app-threads>
+            }
+
+            @if (shared.threadsVisible$ | async) {
+            <app-threads></app-threads>
+            }
         </div>
 
-        <app-dialog-add-channel *ngIf="showAddChannelDialog" (close)="closeDialogAddChannel()"
-            (save)="createChannel($event)">
+        @if (showAddChannelDialog) {
+        <app-dialog-add-channel (close)="closeDialogAddChannel()" (save)="createChannel($event)">
         </app-dialog-add-channel>
-        <app-dialog-add-channel-member *ngIf="addChannelMember" [validUsers]="users"
-            [currentChannelId]="selectedChannel?.channelId" (close)="closeAddChannelMember()"
-            (save)="saveAddChannelMember($event)">
+        }
+
+        @if (addChannelMember) {
+        <app-dialog-add-channel-member [validUsers]="users" [currentChannelId]="selectedChannel?.channelId"
+            (close)="closeAddChannelMember()" (save)="saveAddChannelMember($event)">
         </app-dialog-add-channel-member>
-        <app-dialog-edit-channel *ngIf="editChannel" [selectedChannel]="selectedChannel"
-            (close)="closeDialogEditChannel()" (saveName)="saveEditChannel($event)"
-            (saveDescription)="saveEditChannel($event)" (userLeftChannel)="updateChannelMember($event)"
-            [position]="editChannelPosition" [style.top.px]="editChannelPosition.top"
-            [style.left.px]="editChannelPosition.left" style="position: fixed; z-index: 999;">
+        }
+
+        @if (editChannel) {
+        <app-dialog-edit-channel [selectedChannel]="selectedChannel" (close)="closeDialogEditChannel()"
+            (saveName)="saveEditChannel($event)" (saveDescription)="saveEditChannel($event)"
+            (userLeftChannel)="updateChannelMember($event)" [position]="editChannelPosition"
+            [style.top.px]="editChannelPosition.top" [style.left.px]="editChannelPosition.left"
+            style="position: fixed; z-index: 999;">
         </app-dialog-edit-channel>
-        <app-dialog-show-channel-members *ngIf="showMembers" [users]="users" [selectedUserId]="selectedUser?.id ?? null"
+        }
+
+        @if (showMembers) {
+        <app-dialog-show-channel-members [users]="users" [selectedUserId]="selectedUser?.id ?? null"
             (close)="closeDialogShowMembers()" (openAddMembers)="openDialogAddMember($event)"
             (userClicked)="onOpenUserProfile($event)" [position]="showMembersPosition"
             [style.top.px]="showMembersPosition.top" [style.left.px]="showMembersPosition.left"
             style="position: fixed; z-index: 400;">
         </app-dialog-show-channel-members>
-        <app-dialog-add-member *ngIf="showAddMemberDialog" [validUsers]="users" [selectedChannel]="selectedChannel"
-            (close)="closeDialogAddMember()" (save)="saveAddMember($event)" [position]="addMemberPosition"
-            [style.top.px]="addMemberPosition.top" [style.left.px]="addMemberPosition.left"
-            style="position: fixed; z-index: 999;">
+        }
+
+        @if (showAddMemberDialog) {
+        <app-dialog-add-member [validUsers]="users" [selectedChannel]="selectedChannel" (close)="closeDialogAddMember()"
+            (save)="saveAddMember($event)" [position]="addMemberPosition" [style.top.px]="addMemberPosition.top"
+            [style.left.px]="addMemberPosition.left" style="position: fixed; z-index: 999;">
         </app-dialog-add-member>
-        <app-status-messages *ngIf="statusMessage" [statusMessage]="statusMessage"
-            [statusMessageType]="statusMessageType">
+        }
+
+        @if (statusMessage) {
+        <app-status-messages [statusMessage]="statusMessage" [statusMessageType]="statusMessageType">
         </app-status-messages>
-        <div class="outside-overlay" *ngIf="showProfile" (click)="showProfile = false">
+        }
+
+        @if (showProfile) {
+        <div class="outside-overlay outside-overlay-profile" (click)="showProfile = false">
             <div class="profile-overlay" (click)="$event.stopPropagation()">
                 <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
                     [actualUserId]="shared.actualUserID" (close)="showProfile = false"
@@ -60,5 +82,6 @@
                 </app-user-profile>
             </div>
         </div>
+        }
     </div>
 </div>

@@ -86,31 +86,31 @@ export class DialogAddChannelMemberComponent implements OnInit {
   async saveMember() {
     try {
       const batch = writeBatch(this.firestore);
+      const isAll = this.mode === 'allChannels' && this.chosenChannelId;
+      const isSelected = this.mode === 'selectedColleagues';
 
-      if (this.mode === 'allChannels' && this.chosenChannelId) await this.addAllMembersFromChannel(batch);
-      else if (this.mode === 'selectedColleagues') await this.addSelectedColleagues(batch);
+      if (isAll) await this.addAllMembersFromChannel(batch);
+      else if (isSelected) await this.addSelectedColleagues(batch);
 
       await batch.commit();
-      this.sharedUser.channelMembersChanged$.next();
-      this.closeAddMember();
+      this.afterSave();
     } catch (e) {
       console.error('Fehler beim Speichern der Mitglieder:', e);
     }
   }
 
   private async addAllMembersFromChannel(batch: ReturnType<typeof writeBatch>) {
-    const qSnap = await getDocs(query(collection(this.firestore, 'users'),
+    const usersSnap = await getDocs(query(
+      collection(this.firestore, 'users'),
       where(`channelIds.${this.chosenChannelId}`, '==', true)
     ));
 
-    qSnap.forEach(docSnap => {
+    usersSnap.forEach(docSnap => {
       const userRef = doc(this.firestore, 'users', docSnap.id);
       batch.update(userRef, {
         [`channelIds.${this.currentChannelId}`]: true
       });
     });
-
-    this.save.emit('Alle Mitglieder');
   }
 
   private async addSelectedColleagues(batch: ReturnType<typeof writeBatch>) {
@@ -122,12 +122,17 @@ export class DialogAddChannelMemberComponent implements OnInit {
         [`channelIds.${this.currentChannelId}`]: true
       });
     });
+  }
 
-    const userList = this.selectedUsers
-      .map(u => u.displayName || u.name)
-      .join(', ');
+  private afterSave() {
+    this.sharedUser.channelMembersChanged$.next();
 
-    this.save.emit(userList);
+    const label = this.mode === 'selectedColleagues'
+      ? this.selectedUsers.map(u => u.displayName || u.name).join(', ')
+      : 'Alle Mitglieder';
+
+    this.save.emit(label);
+    this.closeAddMember();
   }
 
   closeAddMember() {

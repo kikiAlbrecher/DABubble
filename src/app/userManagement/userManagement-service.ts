@@ -593,8 +593,6 @@ async logOutUser() {
     }
 
     async removeChannelUser(userId: string, channelId: string): Promise<void> {
-        if (channelId === 'ClExENSKqKRsmjb17kGy') throw new Error('Der Standard-Channel kann nicht verlassen werden.');
-
         const userDocRef = doc(this.firestore, 'users', userId);
         const userSnap = await getDoc(userDocRef);
 
