@@ -10,6 +10,19 @@
     position: relative;
 }
 
+.fade-in {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .overlay {
     position: fixed;
     height: 100vh;

@@ -1,36 +1,24 @@
 @import './../../styles/shared';
 .wrapper {
-    background: linear-gradient(to bottom, #797EF3, #313AE5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-    position: relative;
-    z-index: 100;
-
-    img {
-        width: 120px;
-    }
-
-    .title-container {
-        width: 347px;
-        height: 91px;
-        left: 65px;
-        top: 4px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .title {
-        position: absolute;
-        transform: translateX(-100%);
-        font-size: 80px;
-        overflow: clip;
-        color: black;
-        @include fontNunito(69px, 700);
-    }
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  overflow: hidden;
 }
+
+.bg-layer {
+  position: absolute;
+  inset: 0; /* top, right, bottom, left = 0 */
+  background: linear-gradient(to bottom, #797EF3, #313AE5);
+  z-index: -1; /* Hintergrund */
+  opacity: 1;
+}
+
+
 
 .logo-container {
   position: absolute;
@@ -40,4 +28,41 @@
   top: 40%;
   left: 33%;
   transform-origin: top left;  
+      img {
+        width: 140px;
+        height: auto;
+    }
+}
+
+.logo-name {
+    height: 24px;
+    width: auto;
+    position: absolute;
+    left: 161px;
+    top: 100px;
+    transform: translateX(50px);
+    opacity: 0;
+}
+
+@media (max-width: 1000px ) and (orientation: landscape) {
+    .logo-container {
+        top: 25px;
+        left: 25px;
+    }
+    .logo-image {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (orientation: portrait) {
+    .logo-container {
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .logo-image {
+        width: 70px; /* ggf anpassen */
+        height: 70px;
+    }
 }

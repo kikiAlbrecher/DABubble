@@ -1,5 +1,5 @@
-<!-- <app-intro *ngIf="showIntro" (animationDone)="showIntro = false"></app-intro> -->
-<div class="app-wrapper">
+<app-intro *ngIf="showIntro" (animationDone)="onIntroDone()"></app-intro> 
+<div class="app-wrapper" *ngIf="!showIntro">
   @if (sharedUser.userEditOverlay) {<div (click)="sharedUser.showUserEdit()" class="overlay"></div>}
   @if (sharedUser.detailOverlay) {
   <div (click)="sharedUser.userDetailOverlay()" class="overlay-user-detail">
@@ -18,16 +18,20 @@
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>
       <img class="logo-name" src="assets/img/logo-name.svg" alt="">
     </div>
-    <div *ngIf="router.url === '/login'" class="create-account-container">
+    <div *ngIf="router.url === '/login'" class="create-account-container" [ngClass]="{'fade-in': !showIntro}">
       <span class="create-account-text">Neu bei DABubble</span>
       <a class="create-account-link" routerLink="/signup">Konto erstellen</a>
     </div>
   </header>
 
-  <main [ngClass]="router.url === '/main-content' ? 'main-content' : 'center-content'">
+  <main     [ngClass]="{
+      'main-content': router.url === '/main-content',
+      'center-content': router.url !== '/main-content',
+      'fade-in': !showIntro && hasPlayedIntro
+    }">
     <router-outlet></router-outlet>
   </main>
-  <footer>
+  <footer [ngClass]="{'fade-in': !showIntro}">
     <div *ngIf="router.url != '/main-content'" class="footer-container">
       <a routerLink="/impressum">Impressum</a>
       <a routerLink="/datenschutz">Datenschutz</a>

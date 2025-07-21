@@ -25,6 +25,7 @@ import { MessageSharedService } from './main-content/message-service';
 export class AppComponent {
   title = 'DABubble';
   showIntro = true;
+  hasPlayedIntro = false;
 
   constructor(
     public router: Router,
@@ -32,4 +33,19 @@ export class AppComponent {
     public sharedHeader: HeaderSharedService,
     public sharedMessages: MessageSharedService
   ) { this.sharedUser.initAuth(); }
+
+  ngOnInit() {
+    const introShown = localStorage.getItem('introShown');
+    this.showIntro = introShown !== 'true';
+    this.hasPlayedIntro = this.showIntro;
+  }
+
+  onIntroDone() {
+    this.showIntro = false;
+    localStorage.setItem('introShown', 'true');
+  }
+
+  
 }
+
+

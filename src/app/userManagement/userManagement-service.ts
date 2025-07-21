@@ -144,7 +144,7 @@ export class UserSharedService {
             this.actualUserID = '';
             this.router.navigate(['/login']);
             this.userEditOverlay = false;
-
+            localStorage.removeItem('introShown');
         }).catch((error) => {
             this.firebaseFailure = true;
             setTimeout(() => {
