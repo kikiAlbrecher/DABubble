@@ -12,6 +12,10 @@ export class LogoComponent {
   @Input() showMainChatMobile: boolean = false;
   @Output() backToSideNavClick = new EventEmitter<void>();
 
+  /**
+   * Method called when the back-to-side-nav button is clicked.
+   * Emits the `backToSideNavClick` event.
+   */
   backToSideNav() {
     this.backToSideNavClick.emit();
   }

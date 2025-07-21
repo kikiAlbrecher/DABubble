@@ -25,7 +25,10 @@ export class IntroComponent implements AfterViewInit {
 
   constructor() { }
   
-
+  /**
+   * Lifecycle hook called after the component's view has been initialized.
+   * Determines the screen size and orientation and triggers the corresponding animation.
+   */
   ngAfterViewInit() {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -46,6 +49,10 @@ export class IntroComponent implements AfterViewInit {
     } 
   }
 
+  /**
+   * Plays the desktop version of the intro animation.
+   * Moves and scales the logo container to the top-left corner, then fades out background and animates logo name.
+   */
   animationDesktop() {
     if (this.logocontainer?.nativeElement) {
       const moveAndScaleFactory = this.animationBuilder.build([
@@ -68,6 +75,10 @@ export class IntroComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Plays the big tablet version of the intro animation.
+   * Moves and scales the logo container similarly to desktop, but ends with background fade only.
+   */
   animationBigTablet () {
     if (this.logocontainer?.nativeElement) {
       const moveAndScaleFactory = this.animationBuilder.build([
@@ -90,6 +101,9 @@ export class IntroComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Plays the small tablet version of the intro animation.
+   */
   animationSmallTablet() {
     if (this.logocontainer?.nativeElement) {
       const moveAndScaleFactory = this.animationBuilder.build([
@@ -112,44 +126,23 @@ export class IntroComponent implements AfterViewInit {
     }
   }
 
-animationMobileSmallPortrait() {
-  if (this.logocontainer?.nativeElement) {
-    const moveAndScaleFactory = this.animationBuilder.build([
-      style({
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%) scale(1)',
-        transformOrigin: 'center center',
-        position: 'absolute'
-      }),
-      animate('0.6s 1s ease-in-out', style({
-        top: '49px', 
-        left: '50%',
-        transform: 'translate(-50%, -50%) scale(0.4)',  
-        transformOrigin: 'center center',
-        position: 'absolute'
-      }))
-    ]);
-    this.animationPlayer = moveAndScaleFactory.create(this.logocontainer.nativeElement);
-    this.animationPlayer.play();
-    this.animationPlayer.onDone(() => {
-      this.animateWrapperBackgroundWithoutNameAnimation();
-    });
-  }
-}
-
-animationMobileBigPortrait() {
+  /**
+   * Plays the small portrait mobile version of the intro animation.
+   */
+  animationMobileSmallPortrait() {
     if (this.logocontainer?.nativeElement) {
       const moveAndScaleFactory = this.animationBuilder.build([
         style({
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(1)'
+          transform: 'translate(-50%, -50%) scale(1)',
+          transformOrigin: 'center center',
+          position: 'absolute'
         }),
         animate('0.6s 1s ease-in-out', style({
-          top: '94px', 
+          top: '49px', 
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(0.5)',  
+          transform: 'translate(-50%, -50%) scale(0.4)',  
           transformOrigin: 'center center',
           position: 'absolute'
         }))
@@ -160,8 +153,38 @@ animationMobileBigPortrait() {
         this.animateWrapperBackgroundWithoutNameAnimation();
       });
     }
-}
+  }
 
+  /**
+   * Plays the big portrait mobile version of the intro animation.
+   */
+  animationMobileBigPortrait() {
+      if (this.logocontainer?.nativeElement) {
+        const moveAndScaleFactory = this.animationBuilder.build([
+          style({
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) scale(1)'
+          }),
+          animate('0.6s 1s ease-in-out', style({
+            top: '94px', 
+            left: '50%',
+            transform: 'translate(-50%, -50%) scale(0.5)',  
+            transformOrigin: 'center center',
+            position: 'absolute'
+          }))
+        ]);
+        this.animationPlayer = moveAndScaleFactory.create(this.logocontainer.nativeElement);
+        this.animationPlayer.play();
+        this.animationPlayer.onDone(() => {
+          this.animateWrapperBackgroundWithoutNameAnimation();
+        });
+      }
+  }
+
+  /**
+   * Fades out the background layer and then plays the logo name animation.
+   */
   animateWrapperBackground() {
     const animation = this.animationBuilder.build([
       style({ opacity: 1 }),
@@ -174,6 +197,10 @@ animationMobileBigPortrait() {
     });
   }
 
+  
+  /**
+   * Fades out the background layer and emits the animationDone event without playing logo name animation.
+   */
   animateWrapperBackgroundWithoutNameAnimation() { 
     const animation = this.animationBuilder.build([
       style({ opacity: 1 }),
@@ -186,6 +213,10 @@ animationMobileBigPortrait() {
     });
   }
 
+  /**
+   * Animates the logo name by fading it in and sliding it from right to left.
+   * Emits animationDone event when complete.
+   */
   animateLogoName() {
     if (!this.logoName?.nativeElement) {
       this.animationDone.emit();

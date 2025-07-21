@@ -63,6 +63,10 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   private messageService = inject(MessageSharedService);
 
 
+  /**
+   * Angular lifecycle hook called on component initialization.
+   * Subscribes to user data and channel member changes to update component state.
+   */
   ngOnInit() {
     this.sharedUser.subscribeValidUsers();
 
@@ -76,18 +80,31 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  /**
+   * Angular lifecycle hook called when the component is destroyed.
+   * Unsubscribes from all active subscriptions to prevent memory leaks.
+   */
   ngOnDestroy() {
     this.membershipSubscription?.unsubscribe();
     this.messagesSubscription?.unsubscribe();
     this.userSub?.unsubscribe();
   }
 
+  /**
+   * Sets focus on the message input field after a short delay.
+   */
   focusWriteMessageInput() {
     setTimeout(() => {
       this.writeMessageComponent?.focusInput();
     }, 30);
   }
 
+  /**
+   * Opens the dialog for editing a channel.
+   * Positions the dialog relative to the event target element.
+   * 
+   * @param event - The mouse event triggering the dialog.
+   */
   openDialogEditChannel(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
 
@@ -101,6 +118,12 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  /**
+   * Opens the overlay showing channel members.
+   * Emits the position and users to be displayed.
+   * 
+   * @param event - The mouse event triggering the overlay.
+   */
   openShowMembers(event: MouseEvent): void {
     this.openMembersOverlay = true;
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
@@ -117,6 +140,12 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedUserChange.emit(this.selectedUser);
   }
 
+  /**
+   * Opens the dialog to add a new member to the channel.
+   * Positions the dialog relative to the event target element.
+   * 
+   * @param event - The mouse event triggering the dialog.
+   */
   openDialogAddMember(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     let dialogWidth = 514;
@@ -127,31 +156,48 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  /**
+   * Toggles the visibility of the main chat panel.
+   */
   toggleMainChat() {
     this.mainChatOpen = !this.mainChatOpen;
   }
 
+  /**
+   * Emits an event to open the user profile view.
+   */
   openProfile() {
     this.showUserProfile.emit();
   }
 
+  /**
+   * Angular lifecycle hook called when input properties change.
+   * Updates the selected channel and user, and fetches channel members as needed.
+   * 
+   * @param changes - Object containing changes to input properties.
+   */
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedChannel'] && this.selectedChannel) {
       this.messageService.setSelectedChannel(this.selectedChannel);
       this.messageService.setSelectedUser(null);
       this.channelMembers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
     }
-
     if (changes['selectedUser'] && this.selectedUser) {
       this.messageService.setSelectedUser(this.selectedUser);
       this.messageService.setSelectedChannel(null);
     }
-
     if (changes['isShowMembersOverlayVisible'] && !changes['isShowMembersOverlayVisible'].currentValue) {
       this.openMembersOverlay = false;
     }
   }
 
+  /**
+   * Handles selection of a user.
+   * Updates selectedUser and clears selectedChannel.
+   * Notifies message service about the selected user.
+   * 
+   * @param user - The user selected.
+   */
   onSelectUser(user: User) {
     this.selectedUser = user;
     this.selectedChannel = null;
@@ -159,6 +205,13 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.messageService.setSelectedChannel(null);
   }
 
+  /**
+   * Handles selection of a channel.
+   * Updates selectedChannel and clears selectedUser.
+   * Notifies message service about the selected channel.
+   * 
+   * @param channel - The channel selected.
+   */
   onSelectChannel(channel: Channel) {
     this.selectedChannel = channel;
     this.selectedUser = null;
