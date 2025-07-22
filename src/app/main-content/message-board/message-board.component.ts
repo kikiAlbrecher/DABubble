@@ -37,6 +37,11 @@ export class MessageBoardComponent {
   creatorName: [] = [];
   creatorId: string = ""
 
+  /**
+   * Angular lifecycle hook that is called after the view has been checked.
+   * It compares the current number of messages with the previous count,
+   * and if there are new messages, it updates the count and scrolls the view to the bottom.
+   */
   ngAfterViewChecked() {
     if (this.sharedMessages.messages.length !== this.messagesLength) {
       this.messagesLength = this.sharedMessages.messages.length;
@@ -44,41 +49,95 @@ export class MessageBoardComponent {
     }
   }
 
+  /**
+   * Scrolls the message container element to the bottom.
+   * Uses a small delay to ensure the view has updated before scrolling.
+   */
   scrollToBottom() {
     setTimeout(() => {
       this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
     }, 100);
   }
 
+  /**
+   * Angular lifecycle hook called on component initialization.
+   * Sets up subscription to selected user and channel observables,
+   * reacting to changes by updating selection states and loading corresponding messages.
+   */
   ngOnInit() {
+    this.subscribeToSelectedEntities();
+  }
+
+  /**
+   * Subscribes to the combined observable of selectedUser$ and selectedChannel$,
+   * updates the sharedMessages service state accordingly,
+   * and triggers message loading or channel creator retrieval based on the selection.
+   */
+  private subscribeToSelectedEntities() {
     combineLatest([
       this.sharedMessages.selectedUser$,
       this.sharedMessages.selectedChannel$
     ]).subscribe(([user, channel]) => {
       if (user) {
-        this.sharedMessages.selectedUser = user;
-        this.sharedMessages.selectedChannel = null;
-        this.sharedMessages.channelSelected = false;
-        this.sharedMessages.userSelected = true;
-        this.sharedMessages.getUserMessages();
+        this.handleUserSelection(user);
       } else if (channel) {
-        this.sharedMessages.selectedChannel = channel;
-        this.sharedMessages.selectedUser = null;
-        this.sharedMessages.channelSelected = true;
-        this.sharedMessages.userSelected = false;
-        this.sharedMessages.getChannelMessages();
-        this.getChannelCreator();
+        this.handleChannelSelection(channel);
       } else {
-        this.sharedMessages.selectedUser = null;
-        this.sharedMessages.selectedChannel = null;
+        this.clearSelections();
       }
     });
   }
 
-  openUserDetail() {
-    this.sharedUser.detailOverlay = !this.sharedUser.detailOverlay
+  /**
+   * Handles logic when a user is selected.
+   * Updates sharedMessages state to reflect user selection and loads user messages.
+   * 
+   * @param user The selected user object.
+   */
+  private handleUserSelection(user: any) {
+    this.sharedMessages.selectedUser = user;
+    this.sharedMessages.selectedChannel = null;
+    this.sharedMessages.channelSelected = false;
+    this.sharedMessages.userSelected = true;
+    this.sharedMessages.getUserMessages();
   }
 
+  /**
+   * Handles logic when a channel is selected.
+   * Updates sharedMessages state to reflect channel selection,
+   * loads channel messages, and retrieves the channel creator.
+   * 
+   * @param channel The selected channel object.
+   */
+  private handleChannelSelection(channel: any) {
+    this.sharedMessages.selectedChannel = channel;
+    this.sharedMessages.selectedUser = null;
+    this.sharedMessages.channelSelected = true;
+    this.sharedMessages.userSelected = false;
+    this.sharedMessages.getChannelMessages();
+    this.getChannelCreator();
+  }
+
+  /**
+   * Clears both user and channel selections in sharedMessages state.
+   */
+  private clearSelections() {
+    this.sharedMessages.selectedUser = null;
+    this.sharedMessages.selectedChannel = null;
+  }
+
+  /**
+   * Toggles the visibility of the user detail overlay.
+   * If the overlay is currently visible, it will be hidden, and vice versa.
+   */
+  openUserDetail() {
+    this.sharedUser.detailOverlay = !this.sharedUser.detailOverlay;
+  }
+
+  /**
+   * Retrieves the creator's user data for the currently selected channel
+   * from Firestore and updates local state with the creator's ID and display name.
+   */
   async getChannelCreator() {
     const creatorId = this.sharedMessages.selectedChannel?.channelCreatorId ?? '';
     this.creatorId = creatorId;

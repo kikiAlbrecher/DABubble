@@ -199,7 +199,7 @@
   z-index: 1000;
 }
 
-.answer-contaier {
+.answer-container {
     @include dFlex(row, center, center, 20px);
         white-space: nowrap; 
         flex-shrink: 0; 
@@ -304,4 +304,5 @@
 .d-none {
     display: none;
 }
+
  

@@ -22,7 +22,7 @@
             <div 
                 [ngClass]="answerDetails.length > 0 ? 'answer-emoji-container' : 'answer-emoji-container-only-emoji'">
                 @if (answerDetails.length > 0) {
-                <div class="answer-contaier">
+                <div class="answer-container">
                     @if (answerDetails.length == 1) {
                         <Span (click)="answerMessage()" class="answer-count">{{ answerDetails.length }} Antwort</Span>
                     }@else {
