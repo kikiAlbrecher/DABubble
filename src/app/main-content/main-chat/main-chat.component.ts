@@ -14,7 +14,6 @@ import { MessageBoardComponent } from "../message-board/message-board.component"
 import { HeaderSharedService } from '../../header/user-header/header-service';
 import { UserProfileComponent } from '../../header/user-profile/user-profile.component';
 import { MessageSharedService } from '../message-service';
-import { SearchForUserComponent } from '../../style-components/search-for-user/search-for-user.component';
 import { SearchService } from '../../header/searchbar/search.service';
 import { DevspaceComponent } from '../devspace/devspace.component';
 
@@ -60,6 +59,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Output() userLeftChannel = new EventEmitter<void>();
   @Output() userClicked = new EventEmitter<User>();
   @Output() channelClicked = new EventEmitter<Channel>();
+  @Output() searchMail = new EventEmitter<{ success: boolean; message: string }>();
   @ViewChild(WriteMessageComponent) writeMessageComponent!: WriteMessageComponent;
 
   private channelUsersService = inject(ChannelUsersService);
@@ -235,5 +235,9 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   handleSearchResults(results: any[]) {
     this.searchResults = results;
     console.log('Suchergebnisse in MainChat angekommen:', results);
+  }
+
+  onSearchMail(event: { success: boolean; message: string }) {
+    this.searchMail.emit(event);
   }
 }

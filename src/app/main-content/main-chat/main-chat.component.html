@@ -68,7 +68,8 @@
     <app-message-board class="main-content"></app-message-board>
     }
     <app-write-message class="write-message-container" [selectedChannel]="selectedChannel" [selectedUser]="selectedUser"
-        [devspaceOpen]="devspace" (selectUser)="onSelectUser($event)" (selectChannel)="onSelectChannel($event)">
+        [devspaceOpen]="devspace" (selectUser)="onSelectUser($event)" (selectChannel)="onSelectChannel($event)"
+        (searchMail)="onSearchMail($event)">
     </app-write-message>
 </div>
 }

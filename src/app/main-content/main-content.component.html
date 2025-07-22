@@ -3,7 +3,8 @@
         <div class="header">
             <app-logo [isMobile]="isMobile" [showMainChatMobile]="showMainChatMobile"
                 (backToSideNavClick)="onBackToSideNav()"></app-logo>
-            <app-searchbar class="header-searchbar"></app-searchbar>
+            <app-searchbar class="header-searchbar" (selectUser)="onUserSelected($event)"
+                (selectChannel)="onChannelSelected($event)"></app-searchbar>
             <app-user-header></app-user-header>
         </div>
 
@@ -23,7 +24,8 @@
                 (selectedUserChange)="onSelectedUserChanged($event)" (userClicked)="onUserSelected($event)"
                 (channelClicked)="onChannelSelected($event)" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog"
-                [isShowMembersOverlayVisible]="showMembers" [devspace]="showDevspace">
+                [isShowMembersOverlayVisible]="showMembers" [devspace]="showDevspace"
+                (searchMail)="onSearchMail($event)">
             </app-main-chat>
             }
 

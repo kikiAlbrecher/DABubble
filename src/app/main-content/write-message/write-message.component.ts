@@ -50,9 +50,9 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() devspaceOpen: boolean = false;
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
+  @Output() searchMail = new EventEmitter<{ success: boolean; message: string }>();
   @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
   @ViewChild(MentionComponent) mentionComponent?: MentionComponent;
-  @ViewChild('devspaceText') devspaceText?: ElementRef<HTMLInputElement>;
 
   textError: boolean = false;
   chatExists: boolean = true;
@@ -78,6 +78,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   private userSub?: Subscription;
   private channelSub?: Subscription;
   public editorNativeElement?: HTMLElement;
+  private devspaceMentions: string[] = [];
 
   ngOnInit(): void {
     this.takeInChannels();
@@ -169,66 +170,87 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.channelMessagesExist = !snapshot.empty;
   }
 
-  private extractMentions(): { users: User[], channels: Channel[] } {
-    return MentionUtilsService.extractMentionsFromElement(
-      this.editor.nativeElement,
-      this.users,
-      this.channels
-    );
-  }
-
-  private async handleDevspaceEntry(): Promise<boolean> {
+  async handleDevspaceEntry(): Promise<boolean> {
     const input = this.devspaceService.getEditorTextContent();
     if (!input) return false;
 
-    const foundMentions: string[] = [];
+    const mentions: string[] = [];
 
-    foundMentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
-    foundMentions.push(...MentionUtilsService.findUserMentions(input, this.users));
-    foundMentions.push(...MentionUtilsService.findChannelMentions(input, this.channels));
-
-    foundMentions.forEach(m => this.mentionComponent?.insertMention(m));
-
-    if (foundMentions.length > 0) {
-      this.devspaceService.clearEditor();
-      return true;
+    try {
+    mentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
+    } catch (error: any) {
+    this.searchMail.emit({ success: false, message: 'Es gibt keinen registrierten User mit dieser E-Mail-Adresse.' });
+      return false;
     }
 
-    return false;
+    mentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
+    mentions.push(...MentionUtilsService.findUserMentions(input, this.users));
+    mentions.push(...MentionUtilsService.findChannelMentions(input, this.channels));
+
+    this.devspaceMentions = mentions;
+
+    this.devspaceService.clearEditor();
+    return mentions.length > 0;
   }
 
   async onSubmit() {
     if (this.devspaceOpen) {
-      const handled = await this.handleDevspaceEntry();
-      if (handled) return;
+      await this.handleDevspaceEntry();
     }
 
-    if (this.devspaceOpen) await this.handleDevspaceEntry()
+    const message = this.removeMentionsFromDOM();
+    if (!message) return;
 
-    const { users, channels } = this.extractMentions();
-    let cleanedMessage = this.removeMentionsFromDOM();
-    if (!cleanedMessage) return;
+    const { mentionedUsers, mentionedChannels } = this.getMentionedEntities();
+    await this.sendMessages(message, mentionedUsers, mentionedChannels);
 
+    this.clearAfterSend();
+  }
+
+  private getMentionedEntities() {
+    const users = this.devspaceMentions
+      .filter(m => m.startsWith('@'))
+      .map(m => m.substring(1).toLowerCase());
+    const channels = this.devspaceMentions
+      .filter(m => m.startsWith('#'))
+      .map(m => m.substring(1).toLowerCase());
+
+    const mentionedUsers = this.users.filter(u =>
+      users.includes((u.displayName || u.name).toLowerCase())
+    );
+    const mentionedChannels = this.channels.filter(c =>
+      channels.includes(c.channelName.toLowerCase())
+    );
+
+    return { mentionedUsers, mentionedChannels };
+  }
+
+  private async sendMessages(message: string, users: User[], channels: Channel[]) {
     if (users.length === 0 && channels.length === 0) {
-      if (this.mode === 'thread') {
-        await this.pushAnswerMessageChannel();
-      } else {
-        if (this.selectedUser) {
-          await this.pushDirectChatMessages(cleanedMessage, this.selectedUser);
-        } else if (this.selectedChannel) {
-          await this.pushChannelMessages(cleanedMessage, this.selectedChannel);
-        }
-      }
+      await this.sendDefaultMessage(message);
     } else {
       for (const user of users) {
-        await this.pushDirectChatMessages(cleanedMessage, user);
+        await this.pushDirectChatMessages(message, user);
       }
       for (const channel of channels) {
-        await this.pushChannelMessages(cleanedMessage, channel);
+        await this.pushChannelMessages(message, channel);
       }
     }
+  }
 
+  private async sendDefaultMessage(message: string) {
+    if (this.mode === 'thread') {
+      await this.pushAnswerMessageChannel();
+    } else if (this.selectedUser) {
+      await this.pushDirectChatMessages(message, this.selectedUser);
+    } else if (this.selectedChannel) {
+      await this.pushChannelMessages(message, this.selectedChannel);
+    }
+  }
+
+  private clearAfterSend() {
     this.editor.nativeElement.innerHTML = '';
+    this.devspaceMentions = [];
   }
 
   private removeMentionsFromDOM(): string {

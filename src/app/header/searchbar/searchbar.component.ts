@@ -12,6 +12,7 @@ import { SearchService } from './search.service';
 import { ChatMessage } from '../../main-content/message.model';
 import { SearchResult } from '../../../models/search.class';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
+import { MentionHandlerService } from '../../search/mention-handler.service';
 
 @Component({
     selector: 'app-searchbar',
@@ -35,6 +36,7 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     private firestore = inject(Firestore);
     public sharedUsers = inject(UserSharedService);
     public channelService = inject(ChannelSharedService);
+    private mentionHandler = inject(MentionHandlerService);
     private usersSub?: Subscription;
     private channelsSub?: Subscription;
     private eRef = inject(ElementRef);
@@ -45,6 +47,8 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
 
     @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
     @ViewChild(MentionComponent) mentionComponent?: MentionComponent;
+    @Output() selectUser = new EventEmitter<User>();
+    @Output() selectChannel = new EventEmitter<Channel>();
     @Output() resultSelected = new EventEmitter<SearchResult>();
 
     ngOnInit() {
@@ -75,19 +79,24 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
         this.channelsSub?.unsubscribe();
     }
 
-    onMentionSelected(name: string) {
-        if (name.startsWith('@')) {
-            this.mentionContext = 'user';
-        } else if (name.startsWith('#')) {
-            this.mentionContext = 'channel';
-        }
-        this.mentionCompleted = true;
+    onMentionSelected(name: string): void {
+        this.mentionHandler.handleMentionSelected(
+            name,
+            this.users,
+            this.channels,
+            mention => this.mentionComponent?.insertMention(mention),
+            user => this.selectUser.emit(user),
+            channel => this.selectChannel.emit(channel),
+            () => {
+                if (this.editor) {
+                    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
+                }
+            }
+        );
+    }
 
-        this.mentionComponent?.insertMention(name);
-
-        if (this.editor) {
-            MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
-        }
+    onEditorKeyDown(event: KeyboardEvent) {
+        MentionUtilsService.handleEditorKeyDown(event, this.editor.nativeElement, this.messageForm.controls['message']);
     }
 
     async onContentInput() {
@@ -185,9 +194,7 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
         this.resultSelected.emit(res);
     }
 
-    onEditorKeyDown(event: KeyboardEvent) {
-        MentionUtilsService.handleEditorKeyDown(event, this.editor.nativeElement, this.messageForm.controls['message']);
-    }
+
 
 
 
