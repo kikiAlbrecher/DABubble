@@ -34,10 +34,17 @@
     }
     @if (this.sharedMessages.userSelected && sharedMessages.groupedMessageDates.length == 0) {
         <div class="empty-channel-info-container">
-            <div class="empty-channel-user-container">
-                <img (click)="openUserDetail()" src="{{this.sharedMessages.selectedUser?.picture}}" alt="">
-                <span (click)="openUserDetail()" class="empty-channel-info-user-name">{{sharedMessages.selectedUser?.displayName}}</span>
-            </div>        
+            @if (this.sharedMessages.selectedUser?.id == sharedUser.actualUserID){
+                <div class="empty-channel-user-container-own">
+                    <img src="{{this.sharedMessages.selectedUser?.picture}}" alt="User-Bild">
+                    <span class="empty-channel-info-own-name">{{sharedMessages.selectedUser?.displayName}}</span>
+                </div>    
+            }@else {
+                <div class="empty-channel-user-container">
+                    <img (click)="openUserDetail()" src="{{this.sharedMessages.selectedUser?.picture}}" alt="User-Bild">
+                    <span (click)="openUserDetail()" class="empty-channel-info-user-name">{{sharedMessages.selectedUser?.displayName}}</span>
+                </div>     
+            }      
             @if (this.sharedMessages.selectedUser?.id == sharedUser.actualUserID) {
                 <div>
                     <span class="empty-channel-info-channel-text">Dieser Raum ist nur für dich da. Mache dir Notizen, liste deine To-dos auf oder bewahre Links griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen. </span>

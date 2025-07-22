@@ -54,10 +54,17 @@
     .online {
         background-color: #92C83E;
     }
+    .offline {
+        background-color: #686868;
+    }
     .active {
         @include fontNunito(20px, 400);
         color: #92C83E;
-}
+    }
+    .inactive {
+        @include fontNunito(20px, 400);
+        color: #686868;
+    }
 }
 
 .baseline-container-mail {

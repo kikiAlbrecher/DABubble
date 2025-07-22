@@ -21,6 +21,7 @@ export class UserProfileComponent implements OnInit {
   @Input() user: User | null = null;
   @Input() actualUserId: string = '';
   @Input() isHeader: boolean = false;
+  @Input() allowEdit: boolean = true;
   @Input() showUser: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() sendMessage = new EventEmitter<User>();
@@ -53,7 +54,7 @@ export class UserProfileComponent implements OnInit {
   onSubmit() {
     this.newName = this.updateName.value.name ?? '';
     this.sharedUser.updateName(this.newName);
-    this.sharedHeader.editName = !this.sharedHeader.editName;
+    this.sharedHeader.editName = !this.sharedHeader.editName;   
   }
 
   /**

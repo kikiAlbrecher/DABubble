@@ -25,7 +25,9 @@ export class ThreadsComponent {
       public sharedMessages: MessageSharedService,
     ) {}
 
-
+  /**
+   * Closes the trheads-window
+   */  
   closeThreads() {
     this.sharedUser.threadsVisible$.next(false);
   }

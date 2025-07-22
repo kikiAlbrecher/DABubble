@@ -101,14 +101,7 @@
         <div [ngClass]="{'thread-mode': mode === 'thread'}" (click)="this.sharedMessages.pushEmojiReaction(message, '👍')" class="edit-overlay-image thread-image">👍</div>
         <div [ngClass]="{'thread-mode': mode === 'thread'}" (click)="this.sharedMessages.pushEmojiReaction(message, '❤️')" class="edit-overlay-image thread-image">❤️</div>
         <div class="add-emoji-container">
-            <div (click)="openEmojiOverlay()" class="edit-overlay-icons smiley"></div>
-            @if(emojiOverlay) {
-                <div class="emoji-picker-scroll-container">
-                    <div class="emoji-picker-container">
-                        <app-emoji-picker (emojiSelected)="addEmoji($event)"></app-emoji-picker>
-                    </div>
-                </div>
-            }   
+            <div (click)="openModal()" #smileyButton class="edit-overlay-icons smiley"></div>
         </div>    
         <div [ngClass]="{'thread-mode': mode === 'thread'}" class="edit-overlay-icons message" (click)="answerMessage()"></div>
     </div>

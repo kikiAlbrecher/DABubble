@@ -11,8 +11,13 @@
             <span class="name">{{sharedMessages.selectedUser?.displayName}}</span>      
         </div>
         <div class="baseline-container">
-            <div class="check-status online"></div>
-            <span class="active">Aktiv</span>
+            @if (sharedMessages.selectedUser?.status) {
+                <div class="check-status online"></div>
+                <span class="active">Aktiv</span>
+            }@else {
+            <div class="check-status offline"></div>
+            <span class="inactive">Abwesend</span>
+            }
         </div>
         <div class="baseline-container-mail">
             <img class="mail-icon" src="assets/icons/mail.svg" alt="">
@@ -21,11 +26,6 @@
                 <span class="mail-adress">{{sharedMessages.selectedUser?.email}}</span>
             </div>    
         </div>
-    </div>
-    <div class="message-container">
-        <img src="assets/icons/message.svg" alt="">
-        <span>Nachricht</span>
-    </div>
-    
+    </div>    
 
 </section>
