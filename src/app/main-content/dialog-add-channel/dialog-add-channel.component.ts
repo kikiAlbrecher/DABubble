@@ -138,10 +138,11 @@ export class DialogAddChannelComponent implements OnInit {
           channelIds
         });
       }
-    } catch (error) {
-      console.error('Fehler beim Hinzufügen des Channels zum User:', error);
-      //      this.errorMessage = 'Beim Speichern des Channels ist ein Fehler aufgetreten. Bitte versuche es später nochmal.';
-      // this.cdr.detectChanges(); 
+    } catch (error) { 
+      this.save.emit({
+        success: false,
+        message: 'Beim Speichern des Channels ist ein Fehler aufgetreten.'
+      });
     }
   }
 

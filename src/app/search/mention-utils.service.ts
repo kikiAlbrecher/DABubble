@@ -52,7 +52,6 @@ export class MentionUtilsService {
       }
     });
 
-    // Extract remaining non-mention text as potential search query
     const clone = editor.cloneNode(true) as HTMLElement;
     clone.querySelectorAll('.mention').forEach(m => m.remove());
     const query = clone.innerText.trim();
@@ -63,8 +62,6 @@ export class MentionUtilsService {
       query
     };
   }
-
-
 
   static extractMentionsFromElement(
     element: HTMLElement,
@@ -101,8 +98,6 @@ export class MentionUtilsService {
 
     return { users: mentionedUsers, channels: mentionedChannels };
   }
-
-
 
   /**
    * Retrieves the text content from the beginning of the editor to the current cursor position.
@@ -224,7 +219,11 @@ export class MentionUtilsService {
     for (const match of matches) {
       const email = match[0].toLowerCase();
       const user = await this.getUserByEmail(email, firestore);
-      if (user) results.push(`@${user.displayName || user.name}`);
+      if (user) {
+        results.push(`@${user.displayName || user.name}`);
+      } else {
+        throw new Error(`Kein Benutzer mit E-Mail-Adresse "${email}" gefunden.`);
+      }
     }
 
     return results;

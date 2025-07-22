@@ -91,7 +91,7 @@ export class MainContentComponent implements OnInit {
     this.statusMessageType = event.success ? 'success' : 'error';
     this.statusMessage = event.message;
 
-    setTimeout(() => this.statusMessage = '', 2000);
+    setTimeout(() => this.statusMessage = '', 2500);
   }
 
   onChannelSelected(channel: Channel) {
@@ -310,5 +310,9 @@ export class MainContentComponent implements OnInit {
 
   onToggleDevspace() {
     this.showDevspace = !this.showDevspace;
+  }
+
+  onSearchMail(event: { success: boolean; message: string }) {
+    this.statusMessageAlternatives(event);
   }
 }

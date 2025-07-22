@@ -4,7 +4,6 @@ import { MentionComponent } from '../../search/mention/mention.component';
 import { User } from '../../userManagement/user.interface';
 import { Channel } from '../../../models/channel.class';
 import { Subscription } from 'rxjs';
-import { Firestore } from '@angular/fire/firestore';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MentionUtilsService } from '../../search/mention-utils.service';
@@ -26,15 +25,12 @@ export class DevspaceComponent implements AfterViewInit {
     message: new FormControl('', [Validators.required]),
   });
 
-  private firestore = inject(Firestore);
   public sharedUsers = inject(UserSharedService);
   public channelService = inject(ChannelSharedService);
   public devspaceService = inject(DevspaceService);
   private mentionHandler = inject(MentionHandlerService);
   private usersSub?: Subscription;
   private channelsSub?: Subscription;
-  private eRef = inject(ElementRef);
-  private savedRange: Range | null = null;
   public editorNativeElement?: HTMLElement;
   public placeholderQuote: string = 'An: #channel, @jemand oder E-Mail-Adresse';
   public isEditorEmpty = true;
@@ -89,30 +85,47 @@ export class DevspaceComponent implements AfterViewInit {
     );
   }
 
-  onEditorKeyDown(event: KeyboardEvent) {
-    MentionUtilsService.handleEditorKeyDown(event, this.editor.nativeElement, this.messageForm.controls['message']);
+  private detectMentionType(text: string): 'user' | 'channel' | 'email' | null {
+    const hasUser = /@\w{1,30}/.test(text);
+    const hasChannel = /#\w{1,16}/.test(text);
+    const hasEmail = /[\w.-]+@[\w.-]+\.\w{2,}/.test(text);
+
+    if (hasUser && !hasChannel && !hasEmail) return 'user';
+    if (hasChannel && !hasUser && !hasEmail) return 'channel';
+    if (hasEmail && !hasUser && !hasChannel) return 'email';
+
+    return null;
   }
 
   onContentInput() {
     const sel = window.getSelection();
     const pre = MentionUtilsService.getTextBeforeCursor(this.editor.nativeElement, sel);
     const textContent = this.editor.nativeElement.textContent?.trim() ?? '';
-    const match = pre.match(/(?:^|\s)([@#])(\w*)$/);
-
     this.isEditorEmpty = textContent.length === 0;
+    const currentMentionType = this.detectMentionType(textContent);
 
-    if (match) {
-      this.mentionComponent?.mentionService.trigger$.next(match[1] as '@' | '#');
-      this.mentionComponent?.mentionService.query$.next(match[2]);
-      this.mentionComponent?.mentionService.showOverlay$.next(true);
-    } else {
+    if (currentMentionType) {
       this.mentionComponent?.mentionService.reset();
+    } else {
+      const match = pre.match(/(?:^|\s)([@#])(\w*)$/);
+      if (match) {
+        this.mentionComponent?.mentionService.trigger$.next(match[1] as '@' | '#');
+        this.mentionComponent?.mentionService.query$.next(match[2]);
+        this.mentionComponent?.mentionService.showOverlay$.next(true);
+      } else {
+        this.mentionComponent?.mentionService.reset();
+      }
     }
 
     MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
   }
 
-  private removeMentionsFromDOM(): string {
-    return MentionUtilsService.removeMentionsFromElement(this.editor.nativeElement);
+  onEditorKeyDown(event: KeyboardEvent) {
+    const textContent = this.editor.nativeElement.textContent?.trim() ?? '';
+    const hasMention = this.detectMentionType(textContent);
+
+    if (hasMention && ['@', '#'].includes(event.key)) event.preventDefault();
+
+    MentionUtilsService.handleEditorKeyDown(event, this.editor.nativeElement, this.messageForm.controls['message']);
   }
 }
