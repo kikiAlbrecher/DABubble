@@ -1,3 +1,7 @@
+/**
+ * 
+ */
+
 import {
   Component, ViewChild, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges,
   SimpleChanges, AfterViewInit
@@ -80,6 +84,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   public editorNativeElement?: HTMLElement;
   private devspaceMentions: string[] = [];
 
+  /**
+  * Lifecycle hook that is called after Angular has initialized the component.
+  * 
+  * - Loads all available channels and users.
+  * - Clears the content of the `editor` element if it exists.
+  */
   ngOnInit(): void {
     this.takeInChannels();
     this.takeInUsers();
@@ -89,6 +99,13 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  /**
+   * Lifecycle hook called after the component's view has been fully initialized.
+   * 
+   * - Delays execution using `setTimeout` to ensure view is stable.
+   * - Initializes `editorNativeElement` with the reference to the editor DOM element.
+   * - Clears the editor content.
+   */  
   ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.editor?.nativeElement) {
@@ -114,11 +131,24 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+/**
+ * Lifecycle hook that is called when the component is about to be destroyed.
+ * 
+ * - Cleans up active subscriptions to prevent memory leaks.
+ */  
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
     this.channelSub?.unsubscribe();
   }
 
+  /**
+   * Lifecycle hook that is called whenever input-bound properties change.
+   * 
+   * @param changes - An object of type `SimpleChanges` that holds the changed input properties.
+   * 
+   * - Checks if a new user or channel has been selected and triggers corresponding data loading.
+   * - Updates placeholder text accordingly.
+   */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedUser'] && this.selectedUser) {
       this.checkChatExists();
@@ -152,6 +182,18 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     );
   }
 
+  /**
+  * Checks whether a direct chat already exists between the current user and the selected user.
+  * 
+  * This method generates a unique `chatId` by sorting and joining the current user's UID
+  * and the selected user's ID. It then queries the Firestore `directMessages` collection
+  * to check if a chat document with that `chatId` already exists.
+  * 
+  * If such a document is found, `chatExists` is set to `true`; otherwise, it is set to `false`.
+  * 
+  * Uses Firestore's real-time listener (`onSnapshot`) to keep `chatExists` updated
+  * if the underlying data changes.
+  */
   checkChatExists() {
     const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
     const chatId = sortedIds.join('_');
@@ -162,6 +204,17 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  /**
+   * Asynchronously checks whether messages exist in the currently selected channel.
+   *
+   * This method retrieves the `channelId` from the selected channel and references
+   * the corresponding `messages` subcollection in Firestore.
+   * 
+   * It then fetches all documents from that subcollection using `getDocs`. If the snapshot
+   * is not empty, it sets `channelMessagesExist` to `true`; otherwise, it is set to `false`.
+   *
+   * This check helps determine whether a channel already contains messages.
+   */  
   async checkChannelMessagesExist() {
     const selectedId = this.selectedChannel?.channelId ?? '';
     const chatDocRef = doc(this.firestore, 'channels', selectedId);
@@ -225,6 +278,20 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     return { mentionedUsers, mentionedChannels };
   }
 
+  /**
+   * Sends a message either as a default message or to specific users and channels.
+   *
+   * This method checks whether there are any users or channels mentioned.
+   * - If no users or channels are provided, it sends the message using `sendDefaultMessage()`.
+   * - If users are provided, it sends a direct message to each user using `pushDirectChatMessages()`.
+   * - If channels are provided, it sends the message to each channel using `pushChannelMessages()`.
+   *
+   * @param message - The message content to be sent.
+   * @param users - An array of `User` objects representing the recipients for direct messages.
+   * @param channels - An array of `Channel` objects representing the target channels.
+   *
+   * @returns A `Promise` that resolves once all messages have been sent.
+   */
   private async sendMessages(message: string, users: User[], channels: Channel[]) {
     if (users.length === 0 && channels.length === 0) {
       await this.sendDefaultMessage(message);
@@ -238,6 +305,19 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  /**
+   * Sends a default message based on the current messaging context.
+   *
+   * This function checks the current mode and context (thread, selected user, or selected channel)
+   * and routes the message accordingly:
+   * - If the mode is `'thread'`, it calls `pushAnswerMessageChannel()` to reply within a thread.
+   * - If a user is selected, it sends a direct message to that user using `pushDirectChatMessages()`.
+   * - If a channel is selected, it sends a message to the selected channel using `pushChannelMessages()`.
+   *
+   * @param message - The message content to be sent.
+   *
+   * @returns A `Promise` that resolves after the appropriate message has been dispatched.
+   */
   private async sendDefaultMessage(message: string) {
     if (this.mode === 'thread') {
       await this.pushAnswerMessageChannel();
@@ -248,6 +328,13 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  /**
+   * Clears the message editor and resets the mention list after a message is sent.
+   *
+   * This method:
+   * - Empties the HTML content of the editor.
+   * - Clears the list of collected mentions (`devspaceMentions`).
+   */
   private clearAfterSend() {
     this.editor.nativeElement.innerHTML = '';
     this.devspaceMentions = [];
@@ -281,6 +368,19 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.messageForm.reset();
   }
 
+  /**
+   * Sends a message to a specific channel by adding it to the channel's messages collection in Firestore.
+   *
+   * @param cleanedMessage - The message text to send, typically sanitized or processed.
+   * @param channel - The channel object to which the message should be sent.
+   *
+   * @returns A Promise that resolves once the message has been successfully added to Firestore.
+   *
+   * This method:
+   * - Gets a reference to the 'messages' sub-collection of the specified channel.
+   * - Adds a new document with the message text, the current user's ID, a timestamp, and the channel ID.
+   * - Resets the message form after sending.
+   */
   async pushChannelMessages(cleanedMessage: string, channel: Channel) {
     const messagesRef = collection(this.firestore, 'channels', channel.channelId, 'messages');
 
@@ -326,6 +426,15 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     MentionUtilsService.handleEditorKeyDown(event, this.editor.nativeElement, this.messageForm.controls['message']);
   }
 
+  /**
+   * Handles the selection of a channel.
+   * - Sets the selected channel and clears the selected user.
+   * - Updates the selectedChannelId and hides the channel list.
+   * - Notifies the shared message service about the selected channel.
+   * - Inserts a mention of the channel name (without the first character) into the editor.
+   *
+   * @param channel - The channel object selected by the user.
+   */
   onSelectChannel(channel: Channel) {
     this.selectedChannel = channel;
     this.selectedUser = null;
@@ -340,6 +449,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }, 0);
   }
 
+  /**
+   * Listens for click events on the entire document.
+   * - Closes the channel list dropdown if the user clicks outside the component element.
+   *
+   * @param event - The mouse click event.
+   */
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: MouseEvent) {
     if (this.showChannels && !this.eRef.nativeElement.contains(event.target)) {
@@ -347,6 +462,15 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  /**
+   * Handles the selection of a user.
+   * - Sets the selected user and clears the selected channel.
+   * - Updates the selectedUserId and hides the user list.
+   * - Notifies the shared message service about the selected user.
+   * - Inserts a mention of the user’s display name or name into the editor.
+   *
+   * @param user - The user object selected by the user.
+   */
   onSelectUser(user: User) {
     this.selectedUser = user;
     this.selectedChannel = null;
@@ -362,6 +486,21 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }, 0);
   }
 
+  /**
+   * Listens for click events on the entire document.
+   * Closes various UI overlays (channel list, emoji pickers) if the click happens outside
+   * of specific elements related to these overlays.
+   * 
+   * Specifically, it checks if the click target or its ancestors have any of the following CSS classes:
+   * - 'list-overlay' (channel/user list overlay)
+   * - 'at' (the "@" mention button)
+   * - 'smiley' (emoji button)
+   * - 'emoji-picker-container' (emoji picker overlay)
+   * 
+   * If the click occurred outside all of these elements, it hides the channel list and emoji overlays.
+   * 
+   * @param event - The MouseEvent triggered by the click.
+   */
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -377,6 +516,14 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  /**
+   * Sets the placeholder text for the message input field based on the current mode and selected user or channel.
+   *
+   * - If the mode is 'thread', the placeholder is set to "Antworten..." (i.e., "Reply...").
+   * - Otherwise, if the selected user is the current user, the placeholder indicates "Message to yourself".
+   * - If a channel is selected, the placeholder shows "Message to [channel name]".
+   * - If a user is selected (and it is not the current user), the placeholder shows "Message to [user name]".
+   */
   putPlaceHolderText() {
     if (this.mode === 'thread') {
       this.placeHolderText = 'Antworten...';
@@ -389,6 +536,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  /**
+   * Sets the keyboard focus to the message input editor and restores the cursor position for mentions.
+   * 
+   * Uses a `setTimeout` to ensure the focus action happens after the current call stack,
+   * which helps avoid timing issues with the DOM rendering.
+   */
   public focusInput() {
     setTimeout(() => {
       this.editor?.nativeElement.focus();
@@ -418,6 +571,14 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.messageForm.reset();
   }
 
+  /**
+   * Toggles the visibility of the emoji overlay based on the current mode.
+   * 
+   * - If the mode is 'thread', toggles the emoji overlay for thread replies (`emojiThreadOverlay`).
+   * - Otherwise, toggles the general emoji overlay (`emojiOverlay`).
+   * 
+   * This function switches the overlay's state between visible and hidden.
+   */
   toggleEmojiOverlay() {
     if (this.mode === 'thread') {
       this.emojiThreadOverlay = !this.emojiThreadOverlay

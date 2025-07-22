@@ -11,16 +11,30 @@ export class HeaderSharedService {
 
     public shared = inject(UserSharedService);
 
+    /**
+     * Toggles the user edit overlay in the header.
+     * Prevents the click event from propagating, shows the user edit form,
+     * and hides the profile dropdown menu.
+     *
+     * @param event - The mouse or click event triggering the toggle.
+     */
     toggleHeaderOverlay(event: Event): void {
         event.stopPropagation();
         this.shared.showUserEdit();
         this.dropdownProfile = false;
     }
 
+    /**
+     * Toggles the visibility of the name editing input.
+     * If the edit input is visible, it will be hidden, and vice versa.
+     */
     editNameMask() {
         this.editName = !this.editName;
     }
 
+    /**
+     * Toggles the visibility of the profile dropdown menu in the header.
+     */
     changeDropdown() {
         this.dropdownProfile = !this.dropdownProfile;
     }
