@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { Firestore, onSnapshot, collection } from '@angular/fire/firestore';
 import { AfterViewInit, Component, ElementRef, EventEmitter, inject, Output, ViewChild } from '@angular/core';
 import { MentionComponent } from '../../search/mention/mention.component';
 import { User } from '../../userManagement/user.interface';
@@ -25,12 +26,12 @@ export class DevspaceComponent implements AfterViewInit {
     message: new FormControl('', [Validators.required]),
   });
 
+  private firestore = inject(Firestore);
   public sharedUsers = inject(UserSharedService);
   public channelService = inject(ChannelSharedService);
   public devspaceService = inject(DevspaceService);
   private mentionHandler = inject(MentionHandlerService);
   private usersSub?: Subscription;
-  private channelsSub?: Subscription;
   public editorNativeElement?: HTMLElement;
   public placeholderQuote: string = 'An: #channel, @jemand oder E-Mail-Adresse';
   public isEditorEmpty = true;
@@ -41,11 +42,7 @@ export class DevspaceComponent implements AfterViewInit {
   @Output() selectChannel = new EventEmitter<Channel>();
 
   ngOnInit() {
-    this.channelService.subscribeValidChannels();
-
-    this.channelsSub = this.channelService.allValidChannels$.subscribe(channels => {
-      this.channels = channels;
-    });
+    this.loadChannels();
 
     this.sharedUsers.subscribeValidUsers();
 
@@ -66,7 +63,14 @@ export class DevspaceComponent implements AfterViewInit {
 
   ngOnDestroy() {
     this.usersSub?.unsubscribe();
-    this.channelsSub?.unsubscribe();
+  }
+
+  loadChannels(): void {
+    const channelsCollection = collection(this.firestore, 'channels');
+
+    onSnapshot(channelsCollection, (snapshot) => {
+      this.channels = snapshot.docs.map(doc => new Channel(doc.data()))
+    });
   }
 
   onMentionSelected(name: string): void {
