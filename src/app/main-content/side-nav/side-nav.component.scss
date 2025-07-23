@@ -206,9 +206,18 @@ app-users {
         display: none;
     }
 
+    @media (max-height: 720px) {
+        width: auto;
+        top: 50%;
+    }
+
     >span {
         @include fontNunito($size: 20px, $weight: 500);
         line-height: 120%;
+
+        @media (max-height: 720px) {
+            display: none;
+        }
     }
 
     >svg {

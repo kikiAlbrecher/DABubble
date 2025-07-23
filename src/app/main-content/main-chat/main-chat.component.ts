@@ -51,7 +51,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isMobile: boolean = false;
   @Input() devspace: boolean = false;
   @Output() showUserProfile = new EventEmitter<void>();
-  @Output() editChannel = new EventEmitter<{ top: number, left: number }>();
+  @Output() editChannel = new EventEmitter<{ position: { top: number; left: number }; isMobileEdit: boolean; }>();
   @Output() showMembers = new EventEmitter<void>();
   @Output() members = new EventEmitter<{ users: User[]; position: { top: number; left: number } }>();
   @Output() addMember = new EventEmitter<{ top: number, left: number }>();
@@ -109,21 +109,18 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Opens the dialog for editing a channel.
-   * Positions the dialog relative to the event target element.
+   * Positions the dialog relative to the event target element and depending on isMobile or not.
    * 
    * @param event - The mouse event triggering the dialog.
    */
   openDialogEditChannel(event: MouseEvent): void {
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const trigger = event.currentTarget as HTMLElement;
+    const rect = trigger.getBoundingClientRect();
 
-    if (!this.isMobile) {
-      this.editChannel.emit({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX
-      });
-    } else {
-      this.editChannel.emit({ top: 0, left: 0 });
-    }
+    this.editChannel.emit({
+      position: this.isMobile ? { top: 0, left: 0 } : { top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX },
+      isMobileEdit: this.isMobile
+    });
   }
 
   /**
@@ -204,7 +201,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
    * Updates selectedUser and clears selectedChannel.
    * Notifies message service about the selected user.
    * Emits the signal to the mother main-content, that the user has changed, 
-   * so that she can informs her children, especially the sidebar.
+   * so that she can inform her children, especially the sidebar.
    * 
    * @param user - The user selected.
    */

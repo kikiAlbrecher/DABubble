@@ -23,7 +23,7 @@
             <app-main-chat (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="openMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" (userClicked)="onUserSelected($event)"
-                (channelClicked)="onChannelSelected($event)" [selectedChannel]="selectedChannel"
+                (channelClicked)="onChannelSelected($event)" [isMobile]="isMobile" [selectedChannel]="selectedChannel"
                 [selectedUser]="selectedUser" [sideNavOpen]="true" [showAddMemberDialog]="showAddMemberDialog"
                 [isShowMembersOverlayVisible]="showMembers" [devspace]="showDevspace"
                 (searchMail)="onSearchMail($event)">
@@ -47,12 +47,18 @@
         }
 
         @if (editChannel) {
-        <app-dialog-edit-channel [selectedChannel]="selectedChannel" (close)="closeDialogEditChannel()"
-            (saveName)="saveEditChannel($event)" (saveDescription)="saveEditChannel($event)"
-            (userLeftChannel)="updateChannelMember($event)" [position]="editChannelPosition"
-            [style.top.px]="editChannelPosition.top" [style.left.px]="editChannelPosition.left"
-            style="position: fixed; z-index: 999;">
-        </app-dialog-edit-channel>
+        <!-- <div class="dialog-wrapper outside-overlay outside-overlay-individual"
+            [ngClass]="{ 'mobile-wrapper': isMobileEdit }" (click)="closeDialogEditChannel()"> -->
+        <div class="dialog-add-channel dialog-edit-channel" (click)="$event.stopPropagation()"
+            [ngStyle]="!isMobileEdit ? { top: editChannelPosition.top + 'px', left: editChannelPosition.left + 'px' } : {}">
+            <app-dialog-edit-channel [selectedChannel]="selectedChannel" (close)="closeDialogEditChannel()"
+                (saveName)="saveEditChannel($event)" (saveDescription)="saveEditChannel($event)"
+                (userLeftChannel)="updateChannelMember($event)" [position]="editChannelPosition"
+                [style.top.px]="editChannelPosition.top" [style.left.px]="editChannelPosition.left"
+                style="position: fixed; z-index: 999;" [isMobileEdit]="isMobileEdit" (click)="$event.stopPropagation()">
+            </app-dialog-edit-channel>
+        </div>
+        <!-- </div> -->
         }
 
         @if (showMembers) {

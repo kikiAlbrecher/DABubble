@@ -7,12 +7,12 @@
     padding: 0 32px 16px 32px;
 
     @media(max-width: 1000px) {
-        padding: 0 16px 16px 16px;
-    }
-
-    @media(max-width: 1000px) {
         padding: 0;
         height: auto;
+    }
+
+    @media (max-height: 424px) and (min-height: 1000px) {
+        padding: 0;
     }
 }
 
@@ -152,3 +152,25 @@
     height: 100vh;
     z-index: 8000;
 }
+
+// .dialog-wrapper {
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     width: 100vw;
+//     height: 100vh;
+//     @include dFlex($ai: flex-start);
+//     z-index: 200;
+//     padding-top: 60px;
+//     overflow: hidden;
+// }
+
+// .mobile-wrapper {
+//     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start);
+//     width: 100vw;
+//     height: 100vh;
+//     background: $white;
+//     overflow: hidden;
+//     position: relative;
+//     z-index: 300;
+// }

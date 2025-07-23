@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
 import { SideNavComponent } from './side-nav/side-nav.component';
 import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement/userManagement-service';
@@ -48,14 +48,17 @@ export class MainContentComponent implements OnInit {
     public messageService: MessageSharedService,
     public sharedHeader: HeaderSharedService,
     private router: Router,
+    private ngZone: NgZone
   ) { }
 
   users: User[] = [];
   channels: Channel[] = [];
+  isMobile: boolean = window.innerWidth <= 1000;
   showAddChannelDialog: boolean = false;
   addChannelMember: boolean = false;
   editChannel: boolean = false;
   editChannelPosition = { top: 0, left: 0 };
+  isMobileEdit: boolean = false;
   showMembers: boolean = false;
   showMembersPosition = { top: 0, left: 0 }
   showAddMemberDialog: boolean = false;
@@ -66,7 +69,6 @@ export class MainContentComponent implements OnInit {
   selectedChannel: Channel | null = null;
   selectedUser: User | null = null;
   showProfile: boolean = false;
-  isMobile: boolean = false;
   showMainChat: boolean = false;
   isInitializing: boolean = true;
   showDevspace: boolean = false;
@@ -88,8 +90,6 @@ export class MainContentComponent implements OnInit {
   }
 
   startDisplay() {
-    this.isMobile = window.innerWidth <= 1000;
-
     if (this.isMobile) {
       this.showMainChat = false;
       this.selectedChannel = null;
@@ -166,8 +166,9 @@ export class MainContentComponent implements OnInit {
     });
   }
 
-  openDialogEditChannel(position: { top: number, left: number }): void {
+  openDialogEditChannel({ position, isMobileEdit }: { position: { top: number; left: number }, isMobileEdit: boolean }) {
     this.editChannelPosition = position;
+    this.isMobileEdit = isMobileEdit;
     this.editChannel = true;
   }
 
@@ -268,6 +269,7 @@ export class MainContentComponent implements OnInit {
 
     if (wasMobile !== this.isMobile) {
       this.handleResponsiveChange();
+      this.handleEditChannel();
     }
 
     this.updateOverlayPositions();
@@ -293,6 +295,14 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  handleEditChannel() {
+    if (!this.isMobile && this.editChannel) {
+      this.ngZone.onStable.pipe().subscribe(() => {
+        this.dynamicPositionEditChannel();
+      });
+    }
+  }
+
   private updateOverlayPositions() {
     this.dynamicPositionEditChannel();
     this.dynamicPositionShowMembers();
@@ -300,15 +310,13 @@ export class MainContentComponent implements OnInit {
   }
 
   dynamicPositionEditChannel() {
-    if (this.editChannel && this.selectedChannel) {
-      const trigger = document.querySelector('[data-edit-channel-btn]');
-      if (trigger) {
-        if (!this.isMobile) {
-          this.editChannelPosition = this.calculatePosition(trigger as HTMLElement, 0, 'left');
-        } else {
-          this.editChannelPosition = { top: 0, left: 0 };
-        }
-      }
+    const trigger = document.querySelector('[data-edit-channel-btn]');
+    if (trigger) {
+      this.editChannelPosition = this.isMobile
+        ? { top: 0, left: 0 }
+        : this.calculatePosition(trigger as HTMLElement, 0, 'left');
+
+      this.isMobileEdit = this.isMobile;
     }
   }
 

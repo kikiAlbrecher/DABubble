@@ -39,6 +39,7 @@ export class DialogEditChannelComponent implements OnInit {
 
   @Input() selectedChannel: Channel | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
+  @Input() isMobileEdit: boolean = false;
   @Output() close = new EventEmitter<void>();
   @Output() userLeftChannel = new EventEmitter<{ success: boolean; message: string }>();
   @Output() saveName = new EventEmitter<{ success: boolean; message: string }>();

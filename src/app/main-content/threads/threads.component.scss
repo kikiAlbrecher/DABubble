@@ -3,15 +3,16 @@
 .threads {
     width: 400px;
     display: flex;
-    overflow: hidden;
 
     @media (max-width: 1000px) {
         width: 100%;
+        height: calc(100vh - 80px);
     }
 }
 
 .threads-content {
     width: 100%;
+    overflow: hidden;
 }
 
 .header {

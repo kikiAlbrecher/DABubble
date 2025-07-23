@@ -1,10 +1,12 @@
 <div class="outside-overlay outside-overlay-individual" (click)="closeEditChannel()">
-    <div (click)="$event.stopPropagation()" class="dialog-add-channel dialog-edit-channel" [style.top.px]="position.top"
-        [style.left.px]="position.left">
+    <div (click)="$event.stopPropagation()" class="dialog-add-channel dialog-edit-channel"
+        [ngStyle]="!isMobileEdit ? { top: position.top + 'px', left: position.left + 'px' } : {}"
+        [class.mobile]="isMobileEdit" (click)="$event.stopPropagation()">
         <div class="add-headline edit-add-headline">
             <div class="headline-channel-name">
                 <img class="hashtag" src="assets/icons/hashtag.svg" alt="hashtag">
-                <span class="channel-title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
+                <span class="channel-title" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1)
+                    }}</span>
             </div>
             <app-close-button (close)="closeEditChannel()"></app-close-button>
         </div>
@@ -31,7 +33,8 @@
                 </div>
                 <div class="headline-channel-name edit-object-description">
                     <img src="assets/icons/hashtag.svg" alt="channel prefix #">
-                    <span class="content-text" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1) }}</span>
+                    <span class="content-text" *ngIf="selectedChannel">{{ selectedChannel.channelName.slice(1)
+                        }}</span>
                 </div>
             </div>
             }
@@ -64,7 +67,8 @@
                         </svg>
                     </div>
                     <div class="edit-object-description">
-                        <p class="content-text" *ngIf="selectedChannel">{{ selectedChannel.channelDescription }}</p>
+                        <p class="content-text" *ngIf="selectedChannel">{{ selectedChannel.channelDescription }}
+                        </p>
                     </div>
                 </div>
                 <div class="separator"></div>
