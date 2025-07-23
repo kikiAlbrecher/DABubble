@@ -7,6 +7,7 @@
     scroll-behavior: smooth;
     box-sizing: border-box;
     color: #000000;
+
 }
 
 .section-content {
@@ -363,4 +364,9 @@ input {
         border-top-left-radius: 0;
         border-bottom-left-radius: 20px;
     }
+}
+
+.widescreen {
+    max-width: 1920px;
+    margin: auto;
 }

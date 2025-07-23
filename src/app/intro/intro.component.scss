@@ -1,6 +1,8 @@
 @import './../../styles/shared';
 .wrapper {
   position: relative;
+  max-width: 1920px;
+  margin: 0 auto;
   height: 100vh;
   width: 100%;
   display: flex;

@@ -115,6 +115,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  /**
+ * Subscribes to the observable stream of valid channels.
+ * 
+ * - Calls a method to initiate the channel subscription (`subscribeValidChannels()`).
+ * - Stores the subscription to `allValidChannels$` and updates the `channels` array when new data is emitted.
+ */
   takeInChannels() {
     this.channelShared.subscribeValidChannels();
 
@@ -123,6 +129,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  /**
+ * Subscribes to the observable stream of valid users.
+ * 
+ * - Calls a method to initiate the user subscription (`subscribeValidUsers()`).
+ * - Stores the subscription to `allValidUsers$` and updates the `users` array when new data is emitted.
+ */
   takeInUsers() {
     this.shared.subscribeValidUsers();
 
@@ -344,19 +356,18 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     return MentionUtilsService.removeMentionsFromElement(this.editor.nativeElement);
   }
 
+  /**
+   * Sends a direct chat message to a specific user.
+   * 
+   * - Ensures that a chat document exists for the user pair.
+   * - Then stores the message under that document's `messages` subcollection.
+   * 
+   * @param cleanedMessage - The sanitized message text to be sent.
+   * @param user - The recipient user object.
+   */
   async pushDirectChatMessages(cleanedMessage: string, user: User) {
-    const sortedIds = [this.shared.actualUser.uid, user.id].sort();
-    const chatId = sortedIds.join('_');
-
-    const chatDocRef = doc(this.firestore, 'directMessages', chatId);
-    const directMessages = collection(this.firestore, 'directMessages');
-    const q = query(directMessages, where('chatId', '==', chatId));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      await setDoc(chatDocRef, { chatId });
-    }
-
+    const chatId = this.getSortedChatId(user);
+    await this.ensureDirectChatExists(chatId);
     const messagesRef = collection(this.firestore, 'directMessages', chatId, 'messages');
     await addDoc(messagesRef, {
       user: this.shared.actualUser.uid,
@@ -364,8 +375,35 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
       timeStamp: serverTimestamp(),
       channelId: chatId
     });
-
     this.messageForm.reset();
+  }
+
+  /**
+   * Returns a unique, sorted chat ID for a direct chat between the current user and the given user.
+   * 
+   * @param user - The other user involved in the chat.
+   * @returns A string representing the combined and sorted chat ID.
+   */
+  private getSortedChatId(user: User): string {
+    const sortedIds = [this.shared.actualUser.uid, user.id].sort();
+    return sortedIds.join('_');
+  }
+
+  /**
+   * Checks if a direct chat document exists for the given chat ID.
+   * If not, creates a new document with that ID.
+   * 
+   * @param chatId - The unique identifier for the direct chat.
+   */
+  private async ensureDirectChatExists(chatId: string): Promise<void> {
+    const directMessages = collection(this.firestore, 'directMessages');
+    const q = query(directMessages, where('chatId', '==', chatId));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      const chatDocRef = doc(this.firestore, 'directMessages', chatId);
+      await setDoc(chatDocRef, { chatId });
+    }
   }
 
   /**
@@ -549,26 +587,55 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  async pushAnswerMessageChannel() {
+  /**
+   * Sends a reply message to the currently selected thread, 
+   * whether it's in a channel or a direct chat.
+   */
+  async pushAnswerMessageChannel(): Promise<void> {
     const messageText = this.messageForm.value.message ?? '';
     const messageId = this.sharedMessages.selectedMessage?.id ?? '';
-    const channelId = this.sharedMessages.selectedMessage?.channelId ?? "";
+    const channelId = this.sharedMessages.selectedMessage?.channelId ?? '';
+
+    if (!messageText || !messageId || !channelId) return;
+
     if (this.sharedMessages.channelSelected) {
-      const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');
-      await addDoc(answerRef, {
-        user: this.shared.actualUser.uid,
-        text: messageText,
-        timeStamp: serverTimestamp()
-      });
+      await this.sendAnswerToChannel(channelId, messageId, messageText);
     } else if (this.sharedMessages.userSelected) {
-      const answerRef = collection(this.firestore, 'directMessages', channelId, 'messages', messageId, 'answers');
-      await addDoc(answerRef, {
-        user: this.shared.actualUser.uid,
-        text: messageText,
-        timeStamp: serverTimestamp()
-      });
+      await this.sendAnswerToDirectChat(channelId, messageId, messageText);
     }
     this.messageForm.reset();
+  }
+
+  /**
+   * Adds a reply to a channel message thread in Firestore.
+   * 
+   * @param channelId - ID of the channel where the message exists.
+   * @param messageId - ID of the message being replied to.
+   * @param text - The reply message content.
+   */
+  private async sendAnswerToChannel(channelId: string, messageId: string, text: string): Promise<void> {
+    const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');
+    await addDoc(answerRef, {
+      user: this.shared.actualUser.uid,
+      text,
+      timeStamp: serverTimestamp()
+    });
+  }
+
+  /**
+   * Adds a reply to a direct message thread in Firestore.
+   * 
+   * @param chatId - ID of the direct message chat.
+   * @param messageId - ID of the message being replied to.
+   * @param text - The reply message content.
+   */
+  private async sendAnswerToDirectChat(chatId: string, messageId: string, text: string): Promise<void> {
+    const answerRef = collection(this.firestore, 'directMessages', chatId, 'messages', messageId, 'answers');
+    await addDoc(answerRef, {
+      user: this.shared.actualUser.uid,
+      text,
+      timeStamp: serverTimestamp()
+    });
   }
 
   /**
@@ -587,19 +654,50 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  addEmoji(selected: any) {
+  /**
+   * Main method to add an emoji to the contenteditable editor at the current cursor position.
+   * @param selected - The selected emoji object.
+   */
+  addEmoji(selected: any): void {
     const emoji: string = selected.emoji.native;
     const div = this.editor.nativeElement;
 
     this.mentionComponent?.restoreCursorPosition();
-
-    const range = window.getSelection()?.getRangeAt(0).cloneRange();
+    const range = this.getCurrentSelectionRange();
     if (!range) return;
 
+    this.insertEmojiAtCursor(range, emoji);
+    this.updateCursorAfterEmoji(range);
+    this.syncEditorContentToForm();
+
+    this.closeEmojiOverlay();
+  }
+
+  /**
+   * Gets the current text selection range in the editor.
+   * @returns A cloned Range object or null if no selection is found.
+   */
+  private getCurrentSelectionRange(): Range | null {
+    const selection = window.getSelection();
+    return selection?.getRangeAt(0).cloneRange() ?? null;
+  }
+
+  /**
+   * Inserts the emoji as a text node at the current cursor position.
+   * @param range - The range where the emoji should be inserted.
+   * @param emoji - The emoji character to insert.
+   */
+  private insertEmojiAtCursor(range: Range, emoji: string): void {
     const emojiNode = document.createTextNode(emoji);
     range.insertNode(emojiNode);
+  }
 
-    range.setStartAfter(emojiNode);
+  /**
+   * Moves the cursor to after the inserted emoji and re-applies the selection.
+   * @param range - The range after emoji insertion.
+   */
+  private updateCursorAfterEmoji(range: Range): void {
+    range.setStartAfter(range.endContainer);
     range.collapse(true);
 
     const selection = window.getSelection();
@@ -607,10 +705,25 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     selection?.addRange(range);
 
     this.mentionComponent?.saveCursorPosition();
-    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
-    this.closeEmojiOverlay();
   }
 
+  /**
+   * Syncs the editor's HTML content back to the message form control.
+   */
+  private syncEditorContentToForm(): void {
+    MentionUtilsService.syncEditorToForm(
+      this.editor.nativeElement,
+      this.messageForm.controls['message']
+    );
+  }
+
+  /**
+ * Closes all emoji overlay popups in both main and thread modes.
+ * 
+ * This method sets both `emojiOverlay` (for the main chat view)
+ * and `emojiThreadOverlay` (for the thread reply view) to false,
+ * effectively hiding any open emoji pickers from the UI.
+ */
   private closeEmojiOverlay() {
     this.emojiOverlay = false;
     this.emojiThreadOverlay = false;
