@@ -16,9 +16,8 @@
     </div>
   </div>
   }
-
-  <header>
-    <div *ngIf="router.url !== '/main-content'" class="logo-container">
+  <header class="header">
+    <div *ngIf="router.url != '/main-content'" class="logo-container">
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>
       <img class="logo-name" src="assets/img/logo-name.svg" alt="">
     </div>

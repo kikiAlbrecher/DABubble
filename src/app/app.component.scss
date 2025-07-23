@@ -10,6 +10,13 @@
     position: relative;
 }
 
+.header {
+  max-width: 1920px;
+  margin: 0 auto;
+  position: relative; // <--- Wichtig!
+  width: 100%; // optional, für Sicherheit
+}
+
 .fade-in {
     animation: fadeIn 0.8s ease forwards;
 }
