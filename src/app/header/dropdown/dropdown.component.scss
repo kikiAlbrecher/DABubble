@@ -10,11 +10,11 @@
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
     z-index: 1000;
+
     span {
         @include fontNunito(24px, 600);
         cursor: pointer;
     }
-
 }
 
 .dropdown-element {
@@ -22,8 +22,9 @@
     height: 53px;
     @include dFlex(row, center, center, );
     border-radius: 100px;
-    &:hover{
-            background-color: #ECEEFE;
-            color: #535AF1;
+
+    &:hover {
+        background-color: #ECEEFE;
+        color: #535AF1;
     }
 }

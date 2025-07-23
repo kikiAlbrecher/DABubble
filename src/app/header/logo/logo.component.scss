@@ -50,6 +50,10 @@
     .logo-image-dev {
         width: 50px;
         aspect-ratio: 1 /1;
+
+        @media(max-height: 424px) {
+            width: 40px;
+        }
     }
 
     .logo-name-dev {

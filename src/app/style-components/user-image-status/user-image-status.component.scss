@@ -6,10 +6,19 @@
     .user-avatar {
         height: 50px;
         aspect-ratio: 1 / 1;
+
+        @media (max-height: 424px) {
+            height: 40px;
+        }
     }
 
     .online-status {
         width: 14px;
         height: 14px;
+
+        @media (max-height: 1000px) {
+            width: 12px;
+            height: 12px;
+        }
     }
 }

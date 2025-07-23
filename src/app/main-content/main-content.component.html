@@ -1,7 +1,7 @@
 <div class="main-content">
     <div class="section-content">
         <div class="header">
-            <app-logo [isMobile]="isMobile" [showMainChatMobile]="showMainChatMobile"
+            <app-logo [isMobile]="isMobile" [showMainChat]="showMainChat"
                 (backToSideNavClick)="onBackToSideNav()"></app-logo>
             <app-searchbar class="header-searchbar" (selectUser)="onUserSelected($event)"
                 (selectChannel)="onChannelSelected($event)"></app-searchbar>
@@ -11,14 +11,15 @@
         <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"
             [class.threads-open]="(shared.threadsVisible$ | async)">
 
-            @if (!isMobile || (isMobile && !showMainChatMobile)) {
+            @if (!isMobile || (isMobile && !showMainChat && !showAddChannelDialog)) {
             <app-side-nav [isMobile]="isMobile" (selectChannel)="onChannelSelected($event)"
                 (selectUser)="onUserSelected($event)" (addChannel)="openDialogAddChannel()"
-                (toggleDevspace)="onToggleDevspace()" [showAddChannelDialog]="showAddChannelDialog">
+                (toggleDevspace)="onToggleDevspace()" (toggleDevspaceM)="toggleDevspaceMobile()"
+                [showAddChannelDialog]="showAddChannelDialog">
             </app-side-nav>
             }
 
-            @if (!isMobile || (isMobile && showMainChatMobile)) {
+            @if (!isMobile || (isMobile && showMainChat && !editChannel)) {
             <app-main-chat (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="openMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" (userClicked)="onUserSelected($event)"
@@ -77,7 +78,7 @@
 
         @if (showProfile) {
         <div class="outside-overlay outside-overlay-profile" (click)="showProfile = false">
-            <div class="profile-overlay" (click)="$event.stopPropagation()">
+            <div class="profile-overlay">
                 <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
                     [actualUserId]="shared.actualUserID" (close)="showProfile = false"
                     (sendMessage)="sendUserMessage($event)">

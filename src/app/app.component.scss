@@ -5,22 +5,23 @@
     height: 100vh;
     width: 100%;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     overflow: hidden;
     position: relative;
 }
 
 .fade-in {
-  animation: fadeIn 0.8s ease forwards;
+    animation: fadeIn 0.8s ease forwards;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .overlay {
@@ -61,7 +62,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap:16px;
+    gap: 16px;
 }
 
 .logo-image {
@@ -93,6 +94,7 @@
     padding: 10px 15px;
     border: 1px solid transparent;
     cursor: pointer;
+
     &:hover {
         color: #444DF2;
         border: 1px solid #444DF2;
@@ -101,7 +103,7 @@
 }
 
 @media (pointer: coarse) {
-      .create-account-link {
+    .create-account-link {
         @include fontNunito(18px, 400);
         color: #797EF3;
         text-decoration: none;
@@ -109,6 +111,7 @@
         border: 1px solid #797EF3;
         border-radius: 25px;
         cursor: pointer;
+
         &:hover {
             color: #444DF2;
             border: 1px solid #444DF2;
@@ -128,10 +131,11 @@
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
     border-bottom-left-radius: 30px;
+
     span {
-       @include fontNunito(36px, 700); 
-       color: white;
-       
+        @include fontNunito(36px, 700);
+        color: white;
+
     }
 }
 
@@ -146,14 +150,16 @@
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
     border-bottom-left-radius: 30px;
+
     img {
         width: 30px;
         height: auto;
     }
+
     span {
-       @include fontNunito(36px, 700); 
-       color: white;
-       
+        @include fontNunito(36px, 700);
+        color: white;
+
     }
 }
 
@@ -166,28 +172,28 @@
 }
 
 @keyframes slide-in {
-  from {
-    transform: translateX(100%);
-  }
-  
-  to {
-    transform: translateX(0);
-  }
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
 }
 
 .slide-out {
     animation: slide-out 0.3s forwards;
-    
+
 }
 
 @keyframes slide-out {
-  from {
-    transform: translateX(0);
-  }
-  
-  to {
-    transform: translateX(200%);
-  }
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(200%);
+    }
 }
 
 footer {
@@ -195,13 +201,14 @@ footer {
     position: absolute;
     bottom: 50px;
     @include dFlex(row, center, center, 0px);
-    
+
 }
 
 .footer-container {
     @include dFlex(row, center, center, 16px);
+
     a {
-        @include fontNunito(18px, 400);     
+        @include fontNunito(18px, 400);
         color: #797EF3;
     }
 }
@@ -212,18 +219,18 @@ footer {
     background-color: #FFFFFF;
     border-radius: 30px;
     @include dFlex(row, center, center, 0);
-    @include fontNunito(18px, 400);  
+    @include fontNunito(18px, 400);
     text-align: center;
     padding: 2%;
 }
 
-@media (max-width: 1200px ) and (orientation: landscape) {
+@media (max-width: 1200px) and (orientation: landscape) {
     .logo-name {
         display: none;
     }
 }
 
-@media (max-width: 1000px ) and (orientation: landscape) {
+@media (max-width: 1000px) and (orientation: landscape) {
     .logo-container {
         position: absolute;
         top: 25px;
@@ -237,8 +244,8 @@ footer {
 
     .create-account-container {
         position: absolute;
-        top: 25px;              
-        right: 25px; 
+        top: 25px;
+        right: 25px;
         gap: 10px;
         bottom: auto;
         left: auto;
@@ -257,6 +264,7 @@ footer {
         border: 1px solid #797EF3;
         border-radius: 25px;
         cursor: pointer;
+
         &:hover {
             color: #444DF2;
             border: 1px solid #444DF2;
@@ -277,8 +285,9 @@ footer {
         right: 10%;
         width: 300px;
         height: 80px;
+
         span {
-         @include fontNunito(24px, 700);         
+            @include fontNunito(24px, 700);
         }
     }
 
@@ -287,12 +296,14 @@ footer {
         right: 10%;
         width: 280px;
         height: 70px;
+
         img {
             width: 24px;
             height: auto;
         }
+
         span {
-        @include fontNunito(24px, 700);      
+            @include fontNunito(24px, 700);
         }
     }
 
@@ -308,14 +319,15 @@ footer {
         align-items: end;
         flex-direction: column;
         gap: 6px;
-        a{
+
+        a {
             font-size: 16px;
-        }        
+        }
     }
 }
 
 @media (orientation: portrait) {
-    
+
     .logo-container {
         position: absolute;
         top: 60px;
@@ -329,11 +341,11 @@ footer {
 
     .create-account-container {
         position: absolute;
-        bottom: 100px;              
-        left: 50%;                 
+        bottom: 100px;
+        left: 50%;
         transform: translateX(-50%);
-        top: auto;                 
-        right: auto;    
+        top: auto;
+        right: auto;
         gap: 10px;
     }
 
@@ -350,12 +362,14 @@ footer {
         border: 1px solid #797EF3;
         border-radius: 25px;
         cursor: pointer;
+
         &:hover {
             color: #444DF2;
             border: 1px solid #444DF2;
             border-radius: 30px;
         }
     }
+
     footer {
         width: 100%;
         position: absolute;
@@ -365,7 +379,6 @@ footer {
 }
 
 @media (orientation: portrait) and (max-height: 950px) {
-    
     .logo-container {
         position: absolute;
         top: 20px;
@@ -384,7 +397,7 @@ footer {
 
     .create-account-container {
         position: absolute;
-        bottom: 52px;              
+        bottom: 52px;
     }
 
     .create-account-text {
@@ -399,10 +412,10 @@ footer {
     footer {
         bottom: 15px;
     }
-    
+
     .footer-container {
         a {
-            @include fontNunito(16px, 400);     
+            @include fontNunito(16px, 400);
         }
     }
 }

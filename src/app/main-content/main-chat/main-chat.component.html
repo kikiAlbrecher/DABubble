@@ -1,4 +1,4 @@
-@if (selectedChannel || selectedUser || devspace) {
+@if (selectedChannel || selectedUser || devspace) { 
 <div class="main-blocks main-chat" [class.expanded]="!sideNavOpen">
     @if (!devspace) {
     <div class="chat-header">
@@ -60,7 +60,7 @@
     </div>
     }
     @if (devspace) {
-    <app-devspace class="main-content devspace" (selectUser)="onSelectUser($event)"
+    <app-devspace (click)="$event.stopPropagation()" class="main-content devspace" (selectUser)="onSelectUser($event)"
         (selectChannel)="onSelectChannel($event)">
     </app-devspace>
     }

@@ -1,6 +1,9 @@
-<app-intro *ngIf="showIntro" (animationDone)="onIntroDone()"></app-intro> 
-<div class="app-wrapper" *ngIf="!showIntro">
-  @if (sharedUser.userEditOverlay) {<div (click)="sharedUser.showUserEdit()" class="overlay"></div>}
+<app-intro *ngIf="showIntro" (animationDone)="onIntroDone()"></app-intro>
+
+<div *ngIf="!showIntro && router.url !== '/main-content'" class="app-wrapper">
+  @if (sharedUser.userEditOverlay) {
+  <div (click)="sharedUser.showUserEdit()" class="overlay"></div>
+  }
   @if (sharedUser.detailOverlay) {
   <div (click)="sharedUser.userDetailOverlay()" class="overlay-user-detail">
     <app-user-detail></app-user-detail>
@@ -13,48 +16,51 @@
     </div>
   </div>
   }
+
   <header>
-    <div *ngIf="router.url != '/main-content'" class="logo-container">
+    <div *ngIf="router.url !== '/main-content'" class="logo-container">
       <a routerLink="/"><img class="logo-image" src="assets/img/logo.svg" alt=""></a>
       <img class="logo-name" src="assets/img/logo-name.svg" alt="">
     </div>
+
     <div *ngIf="router.url === '/login'" class="create-account-container" [ngClass]="{'fade-in': !showIntro}">
       <span class="create-account-text">Neu bei DABubble</span>
       <a class="create-account-link" routerLink="/signup">Konto erstellen</a>
     </div>
   </header>
 
-  <main     [ngClass]="{
-      'main-content': router.url === '/main-content',
+  <main [ngClass]="{
       'center-content': router.url !== '/main-content',
       'fade-in': !showIntro && hasPlayedIntro
     }">
     <router-outlet></router-outlet>
   </main>
-  <footer [ngClass]="{'fade-in': !showIntro}">
-    <div *ngIf="router.url != '/main-content'" class="footer-container">
+
+  <footer [ngClass]="{ 'fade-in': !showIntro }">
+    <div *ngIf="router.url !== '/main-content'" class="footer-container">
       <a routerLink="/impressum">Impressum</a>
       <a routerLink="/datenschutz">Datenschutz</a>
     </div>
   </footer>
-  @if (this.sharedUser.accountSuccess) {<div class="account-success slide-in" [ngClass]="{
-    'slide-out': sharedUser.playSlideOut,
-    }">
+
+  @if (sharedUser.accountSuccess) {
+  <div class="account-success slide-in" [ngClass]="{ 'slide-out': sharedUser.playSlideOut }">
     <span>Konto erfolgreich erstellt!</span>
   </div>
   }
-  @if (this.sharedUser.resetMailSend) {<div class="mail-success slide-in" [ngClass]="{
-    'slide-out': sharedUser.playSlideOut,
-    }">
+  @if (sharedUser.resetMailSend) {
+  <div class="mail-success slide-in" [ngClass]="{ 'slide-out': sharedUser.playSlideOut }">
     <img src="assets/icons/mail-send-button.svg" alt="">
     <span>E-Mail gesendet</span>
   </div>
   }
-  @if (this.sharedUser.passwordChanged) {<div class="account-success slide-in" [ngClass]="{
-  'slide-out': sharedUser.playSlideOut,
-  }">
+  @if (sharedUser.passwordChanged) {
+  <div class="account-success slide-in" [ngClass]="{ 'slide-out': sharedUser.playSlideOut }">
     <span>Passwort geändert</span>
   </div>
   }
-  
 </div>
+
+<ng-template [ngIf]="!showIntro && router.url === '/main-content'">
+  <app-main-content></app-main-content>
+</ng-template>

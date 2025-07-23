@@ -1,4 +1,4 @@
-<div class="outside-overlay" (click)="closeEditChannel()">
+<div class="outside-overlay outside-overlay-individual" (click)="closeEditChannel()">
     <div (click)="$event.stopPropagation()" class="dialog-add-channel dialog-edit-channel" [style.top.px]="position.top"
         [style.left.px]="position.left">
         <div class="add-headline edit-add-headline">
@@ -14,7 +14,7 @@
             <div class="edit-object">
                 <div class="edit-object-header">
                     <span class="header-text">Channel-Name</span>
-                    <button type=“button“ class="edit-btn" (click)="isEditingName = true">Bearbeiten</button>
+                    <button type="button" class="edit-btn" (click)="isEditingName = true">Bearbeiten</button>
                     <svg class="svg-style edit-btn-mobile" (click)="isEditingName = true" width="30" height="30"
                         viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="30" height="30" rx="15" fill="#ECEEFE" />
@@ -38,7 +38,8 @@
 
             @if(isEditingName) {
             <app-channel-name [control]="channelNameControl" [channelExistsError]="channelExistsError"
-                [allowEditName]="true" [validationUntouched]="true" (saveName)="saveEditName()" class="components-width">
+                [allowEditName]="true" [validationUntouched]="true" (saveName)="saveEditName()"
+                class="components-width">
             </app-channel-name>
             }
 

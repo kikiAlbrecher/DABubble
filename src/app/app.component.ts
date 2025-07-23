@@ -60,8 +60,4 @@ export class AppComponent {
     this.showIntro = false;
     localStorage.setItem('introShown', 'true');
   }
-
-  
 }
-
-
