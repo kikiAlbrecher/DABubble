@@ -3,6 +3,14 @@
 .devspace-section {
     width: 100%;
     position: relative;
+
+    @media(max-width: 1000px) {
+        z-index: 9999;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+    }
 }
 
 .input-container {
@@ -15,30 +23,74 @@
         padding: 10px 16px;
     }
 
+    @media(max-height: 424px) {
+        gap: 8px;
+    }
+
     p {
         @include fontNunito($size: 24px, $weight: 700);
+
+        @media(max-height: 424px) {
+            @include fontNunito($size: 20px, $weight: 600);
+        }
     }
 }
 
 .input-field-container {
     position: relative;
     width: 100%;
+    @include dFlex();
 
     .input-field {
         width: 100%;
         height: 62px;
         border: 1px solid $light-purple;
-        padding: 15px 28px;
         border-radius: 30px;
-        background-color: white;
+        background-color: $white;
         @include fontNunito($size: 18px, $weight: 400);
-        @include dFlex($jc: flex-start);
         color: $grey;
 
         @media (max-width: 1000px) {
             @include fontNunito($size: 17px, $weight: 400);
-            // line-height: 32px;
-            padding: 0;
+        }
+
+        @media (max-width: 480px) {
+            height: 48px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        @media (max-height: 424px) {
+            height: 48px;
+            padding-top: 12px;
+            padding-bottom: 0;
+        }
+    }
+}
+
+.editable-input {
+    pointer-events: auto;
+    padding: 15px 28px;
+
+    &:empty:before {
+        position: absolute;
+        top: 15px;
+        left: 28px;
+        pointer-events: none;
+    }
+
+    @media (max-height: 424px) {
+        padding-top: 12px;
+        padding-bottom: 0;
+
+        &:empty:before {
+            top: 12px;
+        }
+    }
+
+    @media (max-width: 424px) {
+        &:empty:before {
+            top: 0;
         }
     }
 }

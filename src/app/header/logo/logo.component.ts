@@ -9,7 +9,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class LogoComponent {
   @Input() isMobile: boolean = false;
-  @Input() showMainChatMobile: boolean = false;
+  @Input() showMainChat: boolean = false;
   @Output() backToSideNavClick = new EventEmitter<void>();
 
   /**

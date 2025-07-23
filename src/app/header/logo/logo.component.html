@@ -1,11 +1,11 @@
-@if (!isMobile || !showMainChatMobile) {
+@if (!isMobile || !showMainChat) {
 <div class="logo-container">
     <img class="logo-image" src="assets/img/logo.svg" alt="DABubble Logo">
     <img class="logo-name" src="assets/img/logo-name.svg" alt="DABubble">
 </div>
 }
 
-@if (isMobile && showMainChatMobile) {
+@if (isMobile && showMainChat) {
 <div (click)="backToSideNav()" class="logo-container logo-container-devspace">
     <svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_141334_4513" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="25"

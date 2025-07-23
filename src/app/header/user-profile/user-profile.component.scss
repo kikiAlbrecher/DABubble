@@ -49,6 +49,16 @@
     border-top-right-radius: 30px;
 }
 
+.header-profile,
+.own-profile,
+.not-own-profile {
+    @media (max-width: 568px) {
+        width: 90vw;
+        position: relative;
+        border-radius: 30px;
+    }
+}
+
 .dropdown-container {
     @include dFlex($jc: space-between, $g: 15px);
     width: 100%;
@@ -120,6 +130,7 @@
     .mail-adress {
         @include fontNunito(18px, 500);
         color: #1381FF;
+        word-wrap: break-word;
     }
 }
 

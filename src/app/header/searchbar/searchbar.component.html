@@ -15,7 +15,7 @@
         </app-mention>
         <div *ngIf="showSuggestions" class="list-overlay list-suggestions">
             <div class="list">
-                <button type=“button“ class="suggestions-item" *ngFor="let r of results" (click)="pick(r)">
+                <button type="button" class="suggestions-item" *ngFor="let r of results" (click)="pick(r)">
                     <span>{{ r.message.text }}</span>
                     <!-- <span>…in {{ extractChatName(r.path) }} – {{ r.message.timeStamp | date:'short' }}</span> -->
                 </button>

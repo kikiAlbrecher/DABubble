@@ -25,6 +25,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
   @Output() toggleDevspace = new EventEmitter<void>();
+  @Output() toggleDevspaceM = new EventEmitter<void>();
 
   workspaceOpen: boolean = true;
   showChannels: boolean = true;
@@ -103,7 +104,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
       this.channels = channels;
 
       if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId && !this.isMobile) {
-        this.defaultChannel();
+        this.defaultChannel(true);
       }
     });
   }
@@ -128,30 +129,22 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.selectedChannelSub?.unsubscribe();
   }
 
-  defaultChannel() {
+  defaultChannel(visualOnly: boolean = false) {
     const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy') || this.channels[0];
 
     if (defaultChannel) {
-      setTimeout(() => {
-        this.selectedChannelId = defaultChannel.channelId;
-        this.selectChannel.emit(defaultChannel);
-      });
-    }
-  }
-
-  setDefaultChannelIfNoneSelected() {
-    const noSelection = !this.selectedChannelId && !this.selectedUserId;
-    if (noSelection && !this.isMobile && this.channels.length > 0) {
-      const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy');
-
-      if (defaultChannel) {
+      if (!visualOnly) {
         this.selectedChannelId = defaultChannel.channelId;
         this.selectChannel.emit(defaultChannel);
       } else {
-        this.selectedChannelId = this.channels[0].channelId;
-        this.selectChannel.emit(this.channels[0]);
+        this.selectedChannelId = '__no_selection__';
       }
     }
+  }
+
+  public clearSelection() {
+    this.selectedChannelId = null;
+    this.selectedUserId = null;
   }
 
   private markUserName(data: User, id: string, currentUserId: string): User {
@@ -175,6 +168,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.userService.toggleWorkspace();
   }
 
+
   toggleDropDownChannels() {
     this.showChannels = !this.showChannels;
   }
@@ -185,6 +179,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
   toggleDevspaceClicked() {
     this.toggleDevspace.emit();
+  }
+
+  toggleDevspaceMobile() {
+    this.toggleDevspaceM.emit();
   }
 
   onSelectUser(user: User) {

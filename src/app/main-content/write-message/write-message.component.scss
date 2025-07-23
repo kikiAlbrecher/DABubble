@@ -7,6 +7,10 @@
     border: 1px solid #ADB0D9;
     border-radius: 20px;
     padding: 10px 15px;
+
+    @media (max-height: 424px) {
+        height: 100px;
+    }
 }
 
 .buttons-container {

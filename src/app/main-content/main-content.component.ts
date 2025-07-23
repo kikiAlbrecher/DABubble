@@ -51,6 +51,7 @@ export class MainContentComponent implements OnInit {
   ) { }
 
   users: User[] = [];
+  channels: Channel[] = [];
   showAddChannelDialog: boolean = false;
   addChannelMember: boolean = false;
   editChannel: boolean = false;
@@ -66,17 +67,16 @@ export class MainContentComponent implements OnInit {
   selectedUser: User | null = null;
   showProfile: boolean = false;
   isMobile: boolean = false;
-  showMainChatMobile: boolean = false;
+  showMainChat: boolean = false;
   isInitializing: boolean = true;
   showDevspace: boolean = false;
+  private userHasMadeSelection: boolean = false;
 
   @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
   @ViewChild(MainChatComponent) mainChatComponent!: MainChatComponent;
 
   ngOnInit() {
-    this.isMobile = window.innerWidth <= 1000;
-
-    if (this.isMobile) this.showMainChatMobile = false;
+    this.startDisplay();
 
     this.shared.subscribeValidUsers();
 
@@ -84,7 +84,23 @@ export class MainContentComponent implements OnInit {
       this.users = users;
     });
 
-    setTimeout(() => this.isInitializing = false);
+    this.userHasMadeSelection = false;
+  }
+
+  startDisplay() {
+    this.isMobile = window.innerWidth <= 1000;
+
+    if (this.isMobile) {
+      this.showMainChat = false;
+      this.selectedChannel = null;
+      this.selectedUser = null;
+      this.isInitializing = false;
+    } else {
+      setTimeout(() => {
+        this.sideNavComponent?.defaultChannel(true);
+        this.isInitializing = false;
+      });
+    }
   }
 
   statusMessageAlternatives(event: { success: boolean; message: string }) {
@@ -95,21 +111,23 @@ export class MainContentComponent implements OnInit {
   }
 
   onChannelSelected(channel: Channel) {
+    this.userHasMadeSelection = true;
     this.selectedChannel = channel;
     this.selectedUser = null;
     this.messageService.setSelectedChannel(channel);
     this.messageService.setSelectedUser(null);
 
-    if (this.isMobile && !this.isInitializing) this.showMainChatMobile = true;
+    if (this.isMobile && !this.isInitializing) this.showMainChat = true;
   }
 
   onUserSelected(user: User) {
+    this.userHasMadeSelection = true;
     this.selectedUser = user;
     this.selectedChannel = null;
     this.messageService.setSelectedUser(user);
     this.messageService.setSelectedChannel(null);
 
-    if (this.isMobile && !this.isInitializing) this.showMainChatMobile = true;
+    if (this.isMobile && !this.isInitializing) this.showMainChat = true;
   }
 
   openDialogAddChannel() {
@@ -228,7 +246,7 @@ export class MainContentComponent implements OnInit {
     this.showProfile = false;
 
     if (this.isMobile && !this.isInitializing) {
-      this.showMainChatMobile = true;
+      this.showMainChat = true;
     }
 
     setTimeout(() => {
@@ -239,7 +257,7 @@ export class MainContentComponent implements OnInit {
   }
 
   onBackToSideNav() {
-    this.showMainChatMobile = false;
+    this.showMainChat = false;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -257,11 +275,21 @@ export class MainContentComponent implements OnInit {
 
   handleResponsiveChange() {
     if (!this.isMobile) {
-      this.showMainChatMobile = false;
-
-      setTimeout(() => {
-        // this.sideNavComponent?.setDefaultChannelIfNoneSelected();
-      });
+      if (this.selectedChannel || this.selectedUser) {
+        this.showMainChat = true;
+      }
+      else if (!this.userHasMadeSelection) {
+        this.sideNavComponent?.defaultChannel(true);
+        this.showMainChat = true;
+      }
+    } else {
+      if (!this.userHasMadeSelection) {
+        this.showMainChat = false;
+        this.sideNavComponent?.clearSelection();
+      }
+      else if (this.selectedChannel || this.selectedUser) {
+        this.showMainChat = true;
+      }
     }
   }
 
@@ -310,6 +338,18 @@ export class MainContentComponent implements OnInit {
 
   onToggleDevspace() {
     this.showDevspace = !this.showDevspace;
+  }
+
+  toggleDevspaceMobile() {
+    if (this.isMobile && !this.showMainChat) {
+      this.showMainChat = true;
+
+      setTimeout(() => {
+        this.showDevspace = true;
+      }, 0);
+    } else {
+      this.showDevspace = !this.showDevspace;
+    }
   }
 
   onSearchMail(event: { success: boolean; message: string }) {
