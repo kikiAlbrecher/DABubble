@@ -1,9 +1,9 @@
-<div class="outside-overlay" (click)="closeAddMember()">
+<div class="outside-overlay out-ov-for-below" (click)="closeAddMember()">
     <div class="overlay-content">
-        <form (click)="$event.stopPropagation()" (ngSubmit)="saveMember()" #addMemberForm="ngForm"
-            class="dialog-add-channel dialog-add-member">
+        <form (click)="$event.stopPropagation()" (ngSubmit)="saveMember()" #addMemberForm="ngForm" [ngClass]="{
+    'dialog-add-channel': true, 'dialog-add-member': true, 'slide-out': isClosing }">
 
-            <div class="closing-sign">
+            <div class="closing-sign" (click)="animateCloseAndExit()">
                 <span class="rectangle"></span>
             </div>
 
@@ -26,8 +26,8 @@
                         </label>
                     </div>
 
+                    @if (channelListVisible) {
                     <div class="channel-suggestions">
-                        @if (channelListVisible) {
                         <div class="list">
                             @for (channel of channelList; track channel.channelId) {
                             <div class="channel-entry" (click)="selectChannel(channel)">
@@ -35,8 +35,8 @@
                             </div>
                             }
                         </div>
-                        }
                     </div>
+                    }
                 </div>
 
                 <div class="option-block">

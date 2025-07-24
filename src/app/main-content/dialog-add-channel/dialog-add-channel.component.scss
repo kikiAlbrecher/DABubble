@@ -61,6 +61,10 @@
 
     >h2 {
         @include fontNunito($size: 24px, $weight: 700);
+
+        @media(max-height: 400) and (max-width: 400px) {
+            @include fontNunito($size: 20px, $weight: 600);
+        }
     }
 }
 

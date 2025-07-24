@@ -11,7 +11,7 @@
         height: auto;
     }
 
-    @media (max-height: 424px) and (min-height: 1000px) {
+    @media (max-height: 480px) and (min-height: 1000px) {
         padding: 0;
     }
 }
@@ -33,7 +33,7 @@
         height: 80px;
     }
 
-    @media(max-height: 424px) {
+    @media(max-height: 480px) {
         height: 72px;
     }
 }
@@ -152,25 +152,3 @@
     height: 100vh;
     z-index: 8000;
 }
-
-// .dialog-wrapper {
-//     position: fixed;
-//     top: 0;
-//     left: 0;
-//     width: 100vw;
-//     height: 100vh;
-//     @include dFlex($ai: flex-start);
-//     z-index: 200;
-//     padding-top: 60px;
-//     overflow: hidden;
-// }
-
-// .mobile-wrapper {
-//     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start);
-//     width: 100vw;
-//     height: 100vh;
-//     background: $white;
-//     overflow: hidden;
-//     position: relative;
-//     z-index: 300;
-// }

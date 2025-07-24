@@ -33,6 +33,7 @@ export class DialogAddChannelMemberComponent implements OnInit {
   chosenChannelId?: string;
   chosenChannelName?: string;
   selectedUsers: User[] = [];
+  isClosing = false;
 
   private cdr = inject(ChangeDetectorRef);
   private firestore = inject(Firestore);
@@ -50,11 +51,8 @@ export class DialogAddChannelMemberComponent implements OnInit {
   }
 
   openChannelList() {
-    if (this.mode = 'allChannels') {
-      this.channelListVisible = true;
-    } else if (this.mode = 'selectedColleagues') {
-      this.channelListVisible = false;
-    }
+    if (this.mode = 'allChannels') this.channelListVisible = true;
+    else if (this.mode = 'selectedColleagues') this.channelListVisible = false;
   }
 
   selectChannel(channel: Channel) {
@@ -95,7 +93,7 @@ export class DialogAddChannelMemberComponent implements OnInit {
       await batch.commit();
       this.afterSave();
     } catch (e) {
-      console.error('Fehler beim Speichern der Mitglieder:', e);
+      throw new Error('Es ist leider ein Fehler aufgetreten.');
     }
   }
 
@@ -128,11 +126,16 @@ export class DialogAddChannelMemberComponent implements OnInit {
     this.sharedUser.channelMembersChanged$.next();
 
     const label = this.mode === 'selectedColleagues'
-      ? this.selectedUsers.map(u => u.displayName || u.name).join(', ')
-      : 'Alle Mitglieder';
+      ? this.selectedUsers.map(u => u.displayName || u.name).join(', ') : 'Alle Mitglieder';
 
     this.save.emit(label);
     this.closeAddMember();
+  }
+
+  animateCloseAndExit() {
+    this.isClosing = true;
+
+    setTimeout(() => this.closeAddMember(), 300);
   }
 
   closeAddMember() {

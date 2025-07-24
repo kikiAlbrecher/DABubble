@@ -96,7 +96,7 @@ input {
         height: 14px;
     }
 
-    @media (max-width: 424px) and (max-height: 424px) {
+    @media (max-width: 424px) and (max-height: 480px) {
         width: 10px;
         height: 10px;
     }
@@ -140,16 +140,17 @@ input {
 }
 
 .list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    width: 100%;
     padding-left: 25px;
     padding-bottom: 8px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
-    max-height: calc((100vh - 86px - 16px - 60px - 48px - 48px - 64px) / 2);
-    overflow-y: auto;
-    width: 100%;
+    // max-height: calc((100vh - 86px - 16px - 60px - 48px - 48px - 64px) / 2);
 
-    @media (max-width: 1000px) {
-        max-height: calc((100vh - 80px - 60px - 48px - 48px) / 2);
-    }
+    // @media (max-width: 1000px) {
+    //     max-height: calc((100vh - 80px - 60px - 48px - 48px) / 2);
+    // }
 
     @media (max-width: 1000px) {
         max-height: unset;

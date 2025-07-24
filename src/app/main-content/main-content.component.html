@@ -47,8 +47,6 @@
         }
 
         @if (editChannel) {
-        <!-- <div class="dialog-wrapper outside-overlay outside-overlay-individual"
-            [ngClass]="{ 'mobile-wrapper': isMobileEdit }" (click)="closeDialogEditChannel()"> -->
         <div class="dialog-add-channel dialog-edit-channel" (click)="$event.stopPropagation()"
             [ngStyle]="!isMobileEdit ? { top: editChannelPosition.top + 'px', left: editChannelPosition.left + 'px' } : {}">
             <app-dialog-edit-channel [selectedChannel]="selectedChannel" (close)="closeDialogEditChannel()"
@@ -58,7 +56,6 @@
                 style="position: fixed; z-index: 999;" [isMobileEdit]="isMobileEdit" (click)="$event.stopPropagation()">
             </app-dialog-edit-channel>
         </div>
-        <!-- </div> -->
         }
 
         @if (showMembers) {
