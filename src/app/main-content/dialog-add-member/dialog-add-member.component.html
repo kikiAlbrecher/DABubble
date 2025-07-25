@@ -24,6 +24,9 @@
             </div>
         </div>
 
+        <input type="text" name="selectedUsersValidation" [ngModel]="selectedUsers.length > 0 ? 'valid' : ''" required
+            hidden>
+
         <app-search-for-user [validUsers]="validUsers" [(selectedUsers)]="selectedUsers"></app-search-for-user>
 
         <div class="save-action">

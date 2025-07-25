@@ -7,7 +7,6 @@
     scroll-behavior: smooth;
     box-sizing: border-box;
     color: #000000;
-
 }
 
 .section-content {
@@ -33,6 +32,26 @@ button {
 
     &:hover {
         cursor: pointer;
+    }
+}
+
+.custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $background-purple;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $purple;
+        cursor: pointer;
+        border-radius: 16px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: $purple-hover;
     }
 }
 
@@ -142,37 +161,17 @@ input {
 .list {
     flex: 1 1 auto;
     overflow-y: auto;
-    width: 100%;
     padding-left: 25px;
     padding-bottom: 8px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
-    // max-height: calc((100vh - 86px - 16px - 60px - 48px - 48px - 64px) / 2);
-
-    // @media (max-width: 1000px) {
-    //     max-height: calc((100vh - 80px - 60px - 48px - 48px) / 2);
-    // }
+    z-index: 9000;
 
     @media (max-width: 1000px) {
         max-height: unset;
     }
 
-    &::-webkit-scrollbar {
-        width: 8px;
-        margin-right: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: $background-purple;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: $purple;
-        cursor: pointer;
-        border-radius: 16px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background: $purple-hover;
+    @media (max-height: 664px) {
+        gap: 8px;
     }
 
     .list-entry {
@@ -203,8 +202,7 @@ input {
             background: $background-purple;
 
             >svg {
-                height: 30px;
-                width: 30px;
+                transform: scale(1.25);
             }
 
             >svg path {
@@ -357,6 +355,10 @@ input {
     &.in-write-message {
         bottom: 134px;
         left: 15px;
+
+        @media(max-height: 480px) {
+            bottom: 92px;
+        }
     }
 
     &.in-search-bar {
@@ -364,6 +366,11 @@ input {
         left: 50px;
         border-top-left-radius: 0;
         border-bottom-left-radius: 20px;
+
+        @media(max-width: 1000px) {
+            top: 40px;
+            left: 0;
+        }
     }
 
     &.in-devspace {
@@ -371,6 +378,10 @@ input {
         left: 28px;
         border-top-left-radius: 0;
         border-bottom-left-radius: 20px;
+
+        @media(max-height: 480px) {
+            top: 38px;
+        }
     }
 }
 

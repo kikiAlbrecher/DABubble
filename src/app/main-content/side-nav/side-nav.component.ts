@@ -99,35 +99,40 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   subscribeToValidChannels() {
-    this.channelService.subscribeValidChannels();
+    if (!this.channelsSub) {
+      this.channelService.subscribeValidChannels();
 
-    this.channelsSub = this.channelService.allValidChannels$.subscribe(channels => {
-      this.channels = channels;
+      this.channelsSub = this.channelService.allValidChannels$.subscribe(channels => {
+        this.channels = channels;
 
-      if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId) {
-        if (!this.userHasMadeSelection) {
-          if (this.isMobile) {
-            this.clearSelection();
-          } else {
-            this.defaultChannel();
+        if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId) {
+          if (!this.userHasMadeSelection) {
+            if (this.isMobile) {
+              this.clearSelection();
+            } else {
+              this.defaultChannel();
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
 
   subscribeToValidUsers() {
-    this.userService.subscribeValidUsers();
+    if (!this.userSub) {
+      this.userService.subscribeValidUsers();
 
-    this.userSub = this.userService.allValidUsers$.subscribe(users => {
-      const currentUserId = this.userService.actualUserID;
-      const usersWithMarkedNames = users.map(user => this.markUserName(user, user.id!, currentUserId));
-      const sortedUsers = this.sortUsers(usersWithMarkedNames, currentUserId);
-      this.users = sortedUsers;
-    });
+      this.userSub = this.userService.allValidUsers$.subscribe(users => {
+        const currentUserId = this.userService.actualUserID;
+        const usersWithMarkedNames = users.map(user => this.markUserName(user, user.id!, currentUserId));
+        const sortedUsers = this.sortUsers(usersWithMarkedNames, currentUserId);
+        this.users = sortedUsers;
+      });
+    }
   }
 
   ngOnDestroy(): void {
+    this.channelService.unsubscribeChannels();
     this.userSub?.unsubscribe();
     this.channelsSub?.unsubscribe();
     this.loadUserSub?.unsubscribe();

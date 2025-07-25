@@ -9,19 +9,44 @@
     @media(max-width: 1000px) {
         width: 300px;
     }
+
+    @media(max-height: 664px) {
+        padding: 8px 8px 8px 20px;
+        gap: 8px;
+    }
 }
 
 .show-members-content {
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
 
-    app-users {
+    .members-list {
         padding-top: 20px;
+        max-height: 500px;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        @media (max-height: 904px) {
+            max-height: 40vh;
+        }
+
+        @media (max-height: 664px) {
+            max-height: 30vh;
+        }
+
+        @media (max-height: 528px) {
+            max-height: 100px;
+        }
     }
 
     .add-member-transfer {
         padding: 12px 29px;
         @include dFlex($jc: flex-start, $g: 15px);
         border-radius: 100px;
+
+        @media (max-height: 664px) {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
 
         >svg {
             height: 32px;
@@ -30,6 +55,7 @@
 
         >.title {
             @include fontNunito($size: 18px, $weight: 400);
+            text-align: left;
         }
 
         &:hover {

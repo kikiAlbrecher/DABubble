@@ -20,7 +20,7 @@
         </div>
         <input #userInput type="text"
             [placeholder]="userSearchTerm.length === 0 && selectedUsers.length === 0 ? 'Name(n) eingeben …' : ''"
-            [(ngModel)]="userSearchTerm" name="userSearchTerm" (ngModelChange)="onUserSearch(userSearchTerm)"
+            [(ngModel)]="userSearchTerm" name="userSearchTerm" (ngModelChange)="onUserSearch(userSearchTerm)" required
             autocomplete="off">
         <div class="suggestions" *ngIf="suggestedUsers.length">
             <app-users [users]="suggestedUsers" (userSelected)="addUser($event)"></app-users>

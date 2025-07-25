@@ -21,7 +21,7 @@ export class DialogAddMemberComponent {
   @Input() selectedChannel: Channel | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<string>();
+  @Output() save = new EventEmitter<{ success: boolean; message: string; userName: string }>();
 
   userId: string = '';
   selectedUsers: User[] = [];
@@ -31,23 +31,47 @@ export class DialogAddMemberComponent {
   public sharedUser = inject(UserSharedService);
 
   async saveMember() {
-    if (!this.selectedChannel?.channelId || this.selectedUsers.length === 0) return;
-    const channelId = this.selectedChannel.channelId;
+    const channelId = this.selectedChannel?.channelId;
+    const users = this.selectedUsers;
+
+    if (!channelId || users.length === 0) return;
 
     try {
-      for (const user of this.selectedUsers) {
-        if (!user.id) continue;
-        const userRef = doc(this.firestore, 'users', user.id);
-        await updateDoc(userRef, {
-          [`channelIds.${channelId}`]: true
-        });
-      }
-
+      const addedUserNames = await this.updateUsersFirestore(channelId, users);
       this.sharedUser.channelMembersChanged$.next();
+      this.emitSuccessMsg(addedUserNames);
       this.handleDialogCloseAddMember();
     } catch (error) {
-      console.error('Fehler beim Hinzufügen der Benutzer zum Channel:', error);
+      this.emitFailure();
     }
+  }
+
+  private async updateUsersFirestore(channelId: string, users: User[]): Promise<string[]> {
+    const addedNames: string[] = [];
+
+    for (const user of users) {
+      if (!user.id) continue;
+
+      const userRef = doc(this.firestore, 'users', user.id);
+      await updateDoc(userRef, { [`channelIds.${channelId}`]: true });
+      addedNames.push(user.name);
+    }
+
+    return addedNames;
+  }
+
+  private emitSuccessMsg(userNames: string[]) {
+    if (userNames.length === 0) return;
+
+    const nameList = userNames.join(', ');
+    const verb = userNames.length === 1 ? 'wurde' : 'wurden';
+    const message = `${nameList} ${verb} zum Channel hinzugefügt.`;
+
+    this.save.emit({ success: true, message, userName: nameList });
+  }
+
+  private emitFailure() {
+    this.save.emit({ success: false, message: 'Leider ist ein Fehler aufgetreten.', userName: '' });
   }
 
   handleDialogCloseAddMember() {

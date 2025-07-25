@@ -2,11 +2,10 @@
 
 .devspace-section {
     width: 100%;
-    position: relative;
+    position: absolute;
+    z-index: 999;
 
     @media(max-width: 1000px) {
-        z-index: 9999;
-        position: absolute;
         top: 0;
         left: 0;
         right: 0;
@@ -23,13 +22,14 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     }
 
-    @media(max-height: 480px) {
+    @media(max-height: 480px) and (max-width: 1000px) {
         gap: 8px;
         box-shadow: unset;
     }
 
     @media(max-height: 480px) and (min-width: 1000px) {
         padding: 0;
+        width: calc(100% - 32px);
     }
 
     p {

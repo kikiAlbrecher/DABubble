@@ -8,7 +8,7 @@
         </div>
         <div class="show-members-content">
             <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null" [stopClickPropagation]="true"
-                (userSelected)="onSelectUser($event)">
+                (userSelected)="onSelectUser($event)" class="custom-scrollbar members-list">
             </app-users>
             <button type="button" (click)="transferAddMember()" class="svg-title-style add-member-transfer">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">

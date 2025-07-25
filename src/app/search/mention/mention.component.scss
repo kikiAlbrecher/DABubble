@@ -1,0 +1,18 @@
+@import './../../../styles/shared';
+
+.list-wrapper {
+    max-height: 48vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+
+    @media(max-height: 432px) {
+        max-height: 30vh;
+    }
+
+    &.in-devspace {
+        @media(max-height: 600px) {
+            max-height: 30vh;
+        }
+    }
+}

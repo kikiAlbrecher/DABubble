@@ -236,13 +236,9 @@ export class MainContentComponent implements OnInit {
     }
   }
 
-
-  saveAddMember(userName: string) {
+  saveAddMember(event: { success: boolean; message: string; userName: string }) {
     this.showAddMemberDialog = false;
-    this.statusMessageAlternatives({
-      success: true,
-      message: `${userName} erfolgreich hinzugefügt.`
-    });
+    this.statusMessageAlternatives(event);
   }
 
   closeDialogAddMember() {

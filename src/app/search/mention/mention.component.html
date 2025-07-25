@@ -1,7 +1,9 @@
 <div *ngIf="showOverlay" [hidden]="listEmpty" [ngClass]="['list-overlay', contextClass]">
-  <app-users *ngIf="trigger === '@'" [users]="filteredUsers" (userSelected)="handleUserSelect($event)">
-  </app-users>
+  <div class="list-wrapper custom-scrollbar" [ngClass]="contextClass">
+    <app-users *ngIf="trigger === '@'" [users]="filteredUsers" (userSelected)="handleUserSelect($event)">
+    </app-users>
 
-  <app-channels *ngIf="trigger === '#'" [channels]="filteredChannels" (channelSelected)="handleChannelSelect($event)">
-  </app-channels>
+    <app-channels *ngIf="trigger === '#'" [channels]="filteredChannels" (channelSelected)="handleChannelSelect($event)">
+    </app-channels>
+  </div>
 </div>

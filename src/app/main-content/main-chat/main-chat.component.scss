@@ -10,7 +10,7 @@
 }
 
 .main-blocks {
-    @media (max-height: 480px) {
+    @media (max-height: 664px) {
         gap: 0;
     }
 }
@@ -27,7 +27,7 @@
         border-radius: 0;
     }
 
-    @media(max-height: 480px) {
+    @media(max-height: 664px) {
         padding: 10px 16px;
     }
 

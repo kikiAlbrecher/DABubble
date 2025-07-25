@@ -28,7 +28,7 @@
 
                     @if (channelListVisible) {
                     <div class="channel-suggestions">
-                        <div class="list">
+                        <div class="list custom-scrollbar">
                             @for (channel of channelList; track channel.channelId) {
                             <div class="channel-entry" (click)="selectChannel(channel)">
                                 {{ channel.channelName.slice(1) }}
