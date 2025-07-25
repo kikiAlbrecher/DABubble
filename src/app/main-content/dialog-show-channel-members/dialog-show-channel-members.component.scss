@@ -5,6 +5,10 @@
     border-top-right-radius: 0;
     width: 415px;
     z-index: 400;
+
+    @media(max-width: 1000px) {
+        width: 300px;
+    }
 }
 
 .show-members-content {

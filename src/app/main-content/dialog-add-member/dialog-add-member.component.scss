@@ -4,6 +4,10 @@
     position: fixed;
     border-top-right-radius: 0;
     width: 514px;
+
+    @media(max-width: 1000px) {
+        width: 300px;
+    }
 }
 
 .header {

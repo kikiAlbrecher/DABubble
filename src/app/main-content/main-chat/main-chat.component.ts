@@ -133,6 +133,7 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.openMembersOverlay = true;
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     let dialogWidth = 415;
+    if (this.isMobile) dialogWidth = 300;
 
     this.members.emit({
       users: this.channelMembers,
@@ -151,15 +152,40 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
    * 
    * @param event - The mouse event triggering the dialog.
    */
+  // openDialogAddMember(event: MouseEvent): void {
+  //   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  //   let dialogWidth = 514;
+
+  //   this.addMember.emit({
+  //     top: rect.bottom + window.scrollY + 8,
+  //     left: rect.right + window.scrollX - dialogWidth
+  //   });
+  // }
+
+
+
   openDialogAddMember(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    let dialogWidth = 514;
+    const dialogWidth = this.isMobile ? 300 : 514;
 
-    this.addMember.emit({
+    const position = {
       top: rect.bottom + window.scrollY + 8,
       left: rect.right + window.scrollX - dialogWidth
-    });
+    };
+
+    if (this.isMobile) {
+      this.members.emit({
+        users: this.channelMembers,
+        position
+      });
+    } else {
+      this.addMember.emit(position);
+    }
   }
+
+
+
+
 
   /**
    * Toggles the visibility of the main chat panel.

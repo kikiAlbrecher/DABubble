@@ -201,7 +201,6 @@ export class MainContentComponent implements OnInit {
 
   onOpenUserProfile(user: User) {
     if (this.sideNavComponent) this.sideNavComponent.onSelectUser(user);
-    console.log('[MainContent] User clicked in members dialog:', user.name);
 
     this.selectedUser = user;
     this.selectedChannel = null;
@@ -219,9 +218,21 @@ export class MainContentComponent implements OnInit {
       position = { top: event.clientY, left: event.clientX };
     }
 
-    this.addMemberPosition = position;
-    this.showAddMemberDialog = true;
+    if (this.isMobile) {
+      this.addMemberPosition = position;
+      this.showAddMemberDialog = false;
+      this.showMembers = true;
+
+      setTimeout(() => {
+        this.showMembers = false;
+        this.showAddMemberDialog = true;
+      }, 50);
+    } else {
+      this.addMemberPosition = position;
+      this.showAddMemberDialog = true;
+    }
   }
+
 
   saveAddMember(userName: string) {
     this.showAddMemberDialog = false;
@@ -259,6 +270,7 @@ export class MainContentComponent implements OnInit {
 
   onBackToSideNav() {
     this.showMainChat = false;
+    this.showDevspace = false;
   }
 
   @HostListener('window:resize', ['$event'])
@@ -322,15 +334,25 @@ export class MainContentComponent implements OnInit {
 
   dynamicPositionShowMembers() {
     if (this.showMembers) {
-      const trigger = document.querySelector('[data-show-members-btn]');
-      if (trigger) this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 415, 'right');
+      if (this.isMobile) {
+        const trigger = document.querySelector('[data-add-member-btn]');
+        if (trigger) {
+          this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 300, 'right');
+        }
+      } else {
+        const trigger = document.querySelector('[data-show-members-btn]');
+        if (trigger) this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 415, 'right');
+      }
     }
   }
 
   dynamicPositionAddMembers() {
     if (this.showAddMemberDialog) {
       const trigger = document.querySelector('[data-add-member-btn]');
-      if (trigger) this.addMemberPosition = this.calculatePosition(trigger as HTMLElement, 514, 'right');
+      if (trigger) {
+        const dialogWidth = this.isMobile ? 300 : 514;
+        this.addMemberPosition = this.calculatePosition(trigger as HTMLElement, dialogWidth, 'right');
+      }
     }
   }
 
