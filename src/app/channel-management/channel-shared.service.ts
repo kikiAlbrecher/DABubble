@@ -14,12 +14,15 @@ export class ChannelSharedService {
 
   allValidChannels$ = new BehaviorSubject<Channel[]>([]);
 
+  private unsub?: () => void;
+
   subscribeValidChannels(): void {
     const userId = this.userService.actualUserID;
     if (!userId) return;
+    if (this.unsub) return;
 
     const userDocRef = doc(this.firestore, 'users', userId);
-    onSnapshot(userDocRef, (userSnap) => this.handleUserSnapshot(userSnap));
+    this.unsub = onSnapshot(userDocRef, (userSnap) => this.handleUserSnapshot(userSnap));
   }
 
   private async handleUserSnapshot(userSnap: any): Promise<void> {
@@ -30,19 +33,13 @@ export class ChannelSharedService {
     }
 
     const channelIds = Object.keys(userData.channelIds);
-    const channels = await this.fetchChannels(channelIds);
-    this.allValidChannels$.next(channels);
-  }
+    const channels = await Promise.all(
+      channelIds.map(channelId => this.loadChannel(channelId))
+    );
 
-  private async fetchChannels(channelIds: string[]): Promise<Channel[]> {
-    const channels: Channel[] = [];
-
-    for (const channelId of channelIds) {
-      const channel = await this.loadChannel(channelId);
-      if (channel) channels.push(channel);
-    }
-
-    return channels;
+    this.allValidChannels$.next(
+      channels.filter((channel): channel is Channel => !!channel)
+    );
   }
 
   private async loadChannel(channelId: string): Promise<Channel | null> {

@@ -72,7 +72,7 @@ export class MainContentComponent implements OnInit {
   showMainChat: boolean = false;
   isInitializing: boolean = true;
   showDevspace: boolean = false;
-  private userHasMadeSelection: boolean = false;
+  userHasMadeSelection: boolean = false;
 
   @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
   @ViewChild(MainChatComponent) mainChatComponent!: MainChatComponent;
@@ -97,7 +97,10 @@ export class MainContentComponent implements OnInit {
       this.isInitializing = false;
     } else {
       setTimeout(() => {
-        this.sideNavComponent?.defaultChannel(true);
+        if (!this.userHasMadeSelection) {
+          this.sideNavComponent?.defaultChannel();
+          this.showMainChat = true;
+        }
         this.isInitializing = false;
       });
     }
@@ -291,17 +294,17 @@ export class MainContentComponent implements OnInit {
     if (!this.isMobile) {
       if (this.selectedChannel || this.selectedUser) {
         this.showMainChat = true;
-      }
-      else if (!this.userHasMadeSelection) {
-        this.sideNavComponent?.defaultChannel(true);
+      } else if (!this.userHasMadeSelection) {
+        this.sideNavComponent?.defaultChannel();
         this.showMainChat = true;
       }
     } else {
       if (!this.userHasMadeSelection) {
         this.showMainChat = false;
         this.sideNavComponent?.clearSelection();
-      }
-      else if (this.selectedChannel || this.selectedUser) {
+        this.selectedChannel = null;
+        this.selectedUser = null;
+      } else if (this.selectedChannel || this.selectedUser) {
         this.showMainChat = true;
       }
     }

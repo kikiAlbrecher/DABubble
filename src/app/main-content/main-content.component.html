@@ -12,10 +12,10 @@
             [class.threads-open]="(shared.threadsVisible$ | async)">
 
             @if (!isMobile || (isMobile && !showMainChat && !showAddChannelDialog)) {
-            <app-side-nav [isMobile]="isMobile" (selectChannel)="onChannelSelected($event)"
-                (selectUser)="onUserSelected($event)" (addChannel)="openDialogAddChannel()"
-                (toggleDevspace)="onToggleDevspace()" (toggleDevspaceM)="toggleDevspaceMobile()"
-                [showAddChannelDialog]="showAddChannelDialog">
+            <app-side-nav [isMobile]="isMobile" [userHasMadeSelection]="userHasMadeSelection"
+                (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
+                (addChannel)="openDialogAddChannel()" (toggleDevspace)="onToggleDevspace()"
+                (toggleDevspaceM)="toggleDevspaceMobile()" [showAddChannelDialog]="showAddChannelDialog">
             </app-side-nav>
             }
 

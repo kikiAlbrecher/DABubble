@@ -21,6 +21,7 @@ import { ChannelSharedService } from '../../channel-management/channel-shared.se
 export class SideNavComponent implements OnInit, OnDestroy {
   @Input() showAddChannelDialog = false;
   @Input() isMobile: boolean = false;
+  @Input() userHasMadeSelection: boolean = false;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
@@ -36,7 +37,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   selectedUserId: string | null = null;
 
   public userService = inject(UserSharedService);
-  private channelService = inject(ChannelSharedService);
+  public channelService = inject(ChannelSharedService);
   private messageSharedService = inject(MessageSharedService);
   private userSub?: Subscription;
   private channelsSub?: Subscription;
@@ -103,8 +104,14 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.channelsSub = this.channelService.allValidChannels$.subscribe(channels => {
       this.channels = channels;
 
-      if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId && !this.isMobile) {
-        this.defaultChannel(true);
+      if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId) {
+        if (!this.userHasMadeSelection) {
+          if (this.isMobile) {
+            this.clearSelection();
+          } else {
+            this.defaultChannel();
+          }
+        }
       }
     });
   }
@@ -129,16 +136,12 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.selectedChannelSub?.unsubscribe();
   }
 
-  defaultChannel(visualOnly: boolean = false) {
+  defaultChannel() {
     const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy') || this.channels[0];
 
     if (defaultChannel) {
-      if (!visualOnly) {
-        this.selectedChannelId = defaultChannel.channelId;
-        this.selectChannel.emit(defaultChannel);
-      } else {
-        this.selectedChannelId = '__no_selection__';
-      }
+      this.selectedChannelId = defaultChannel.channelId;
+      this.selectChannel.emit(defaultChannel);
     }
   }
 
