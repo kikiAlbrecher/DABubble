@@ -30,6 +30,12 @@ export class DialogAddMemberComponent {
   private cdr = inject(ChangeDetectorRef);
   public sharedUser = inject(UserSharedService);
 
+  isFormActuallyValid(): boolean {
+  if (this.selectedUsers.length > 0) return true;
+
+  return false;
+}
+
   async saveMember() {
     const channelId = this.selectedChannel?.channelId;
     const users = this.selectedUsers;

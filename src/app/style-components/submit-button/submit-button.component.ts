@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-submit-button',
@@ -10,6 +9,6 @@ import { NgForm } from '@angular/forms';
   styleUrl: './submit-button.component.scss'
 })
 export class SubmitButtonComponent {
-  @Input() form!: NgForm;
+  @Input() disabled: boolean = false;
   @Input() label: string = 'Save';
 }

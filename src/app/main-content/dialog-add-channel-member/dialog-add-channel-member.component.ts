@@ -45,6 +45,12 @@ export class DialogAddChannelMemberComponent implements OnInit {
     });
   }
 
+  isFormActuallyValid(): boolean {
+    if (this.mode === 'allChannels') return !!this.chosenChannelId;
+    if (this.mode === 'selectedColleagues') return this.selectedUsers.length > 0;
+    return false;
+  }
+
   async loadAllChannels() {
     const snap = await getDocs(collection(this.firestore, 'channels'));
     this.channelList = snap.docs.map(channelItem => ({ id: channelItem.id, ...(channelItem.data() as any) }));

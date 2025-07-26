@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, OnDestroy, OnInit, Input } from '@angular/core';
+import { Component, EventEmitter, Output, inject, OnDestroy, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Channel } from '../../../models/channel.class';
@@ -39,6 +39,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   public userService = inject(UserSharedService);
   public channelService = inject(ChannelSharedService);
   private messageSharedService = inject(MessageSharedService);
+  private cdr = inject(ChangeDetectorRef);
   private userSub?: Subscription;
   private channelsSub?: Subscription;
   private loadUserSub?: Subscription;
@@ -72,9 +73,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
   refreshChannelListAfterAddingChannel() {
     this.lastAddedSub = this.userService.lastAddedChannel$.subscribe(channel => {
       if (channel) {
-        setTimeout(() => {
+        Promise.resolve().then(() => {
           this.selectedChannelId = channel.channelId;
           this.selectChannel.emit(channel);
+          this.cdr.detectChanges();
         });
       }
     });

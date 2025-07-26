@@ -4,6 +4,10 @@ import { CloseButtonComponent } from '../../style-components/close-button/close-
 import { UsersComponent } from '../../style-components/users/users.component';
 import { User } from '../../userManagement/user.interface';
 
+/**
+ * Component for displaying the members of a channel.
+ * Supports selecting a member, closing the dialog, and transferring to a member-adding dialog.
+ */
 @Component({
   selector: 'app-dialog-show-channel-members',
   standalone: true,
@@ -22,6 +26,10 @@ export class DialogShowChannelMembersComponent implements OnChanges {
 
   selectedUser: User | null = null;
 
+  /**
+   * Lifecycle hook called when input properties change.
+   * Updates the selected user if a matching ID is found.
+   */
   ngOnChanges(): void {
     if (this.selectedUserId) {
       const user = this.users.find(u => u.id === this.selectedUserId);
@@ -31,15 +39,27 @@ export class DialogShowChannelMembersComponent implements OnChanges {
     }
   }
 
+  /**
+   * Handles when a user is selected from the list.
+   * 
+   * @param user The user that was selected
+   */
   onSelectUser(user: User) {
     this.selectedUser = user;
     this.userClicked.emit(user);
   }
 
+  /**
+   * Emits an event to close the dialog.
+   */
   closeShowMembers() {
     this.close.emit();
   }
 
+  /**
+   * Closes the current dialog and emits an event to open the "add members" dialog,
+   * passing the current dialog position.
+   */
   transferAddMember() {
     this.closeShowMembers();
     this.openAddMembers.emit(this.position);

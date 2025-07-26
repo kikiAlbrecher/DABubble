@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../userManagement/user.interface';
@@ -13,7 +13,7 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
   templateUrl: './search-for-user.component.html',
   styleUrl: './search-for-user.component.scss'
 })
-export class SearchForUserComponent {
+export class SearchForUserComponent implements OnInit, OnChanges {
   @Input() validUsers: User[] = [];
   @Input() selectedUsers: User[] = [];
   @Output() selectedUsersChange = new EventEmitter<User[]>();
@@ -22,28 +22,34 @@ export class SearchForUserComponent {
   userSearchTerm = '';
   suggestedUsers: User[] = [];
 
-  userManagement = inject(UserSharedService);
+  public userManagement = inject(UserSharedService);
+  private cdr = inject(ChangeDetectorRef);
+
+  ngOnInit() {
+    this.userSearchTerm = '';
+    this.suggestedUsers = [];
+  }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['validUsers'] && this.userSearchTerm.length > 0) {
+    if (changes['validUsers']) {
       this.onUserSearch(this.userSearchTerm);
     }
   }
 
   onUserSearch(term: string) {
-    this.userSearchTerm = term;
+    this.userSearchTerm = term.trim();
 
-    if (term.length < 1) {
+    if (this.userSearchTerm.length < 1) {
       this.suggestedUsers = [];
       return;
     }
 
-    const lowerTerm = term.toLowerCase();
+    const lowerTerm = this.userSearchTerm.toLowerCase();
 
     this.suggestedUsers = this.validUsers
       .filter(user =>
-        user.displayName?.toLowerCase().startsWith(lowerTerm) ||
-        user.name?.toLowerCase().startsWith(lowerTerm)
+      (user.displayName?.toLowerCase().startsWith(lowerTerm) ||
+        user.name?.toLowerCase().startsWith(lowerTerm))
       )
       .filter(u => !this.selectedUsers.find(su => su.id === u.id));
   }
@@ -55,6 +61,7 @@ export class SearchForUserComponent {
     }
     this.userSearchTerm = '';
     this.suggestedUsers = [];
+    this.cdr.detectChanges();
     this.focusInput();
   }
 
@@ -65,6 +72,10 @@ export class SearchForUserComponent {
   }
 
   focusInput() {
-    setTimeout(() => this.userInputRef?.nativeElement.focus(), 0);
+    setTimeout(() => {
+      if (this.userInputRef?.nativeElement) {
+        this.userInputRef.nativeElement.focus();
+      }
+    }, 50);
   }
 }

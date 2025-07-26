@@ -12,6 +12,10 @@ import { ChannelDescriptionComponent } from '../../style-components/channel-desc
 import { FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DialogShowChannelMembersComponent } from '../dialog-show-channel-members/dialog-show-channel-members.component';
 
+/**
+ * Component for editing the details of an existing channel.
+ * Supports editing the name and description, viewing members, and leaving the channel.
+ */
 @Component({
   selector: 'app-dialog-edit-channel',
   standalone: true,
@@ -49,6 +53,10 @@ export class DialogEditChannelComponent implements OnInit {
   private channelUsersService = inject(ChannelUsersService);
   public sharedUser = inject(UserSharedService);
 
+  /**
+  * Lifecycle hook that runs when the component is initialized.
+  * Initializes form values and loads channel data.
+  */
   ngOnInit(): void {
     if (!this.selectedChannel) return;
 
@@ -63,6 +71,9 @@ export class DialogEditChannelComponent implements OnInit {
     this.loadChannelMembers();
   }
 
+  /**
+   * Loads the name of the user who created the selected channel.
+   */
   private async loadCreatorName() {
     if (!this.selectedChannel) return;
 
@@ -74,6 +85,9 @@ export class DialogEditChannelComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the new channel name if valid and not duplicate.
+   */
   async saveEditName() {
     if (!this.selectedChannel) return;
 
@@ -92,28 +106,43 @@ export class DialogEditChannelComponent implements OnInit {
     await this.updateChannelName(updatedName);
   }
 
+  /**
+   * Emits an error if the name is invalid.
+   */
   invalidName() {
     this.saveName.emit({ success: false, message: 'Der Channel-Name ist ungültig.' });
-    return;
   }
 
+  /**
+   * Emits a success message when no name change occurred.
+   */
   noNameChanges() {
     this.saveName.emit({ success: true, message: 'Keine Änderungen.' });
     this.isEditingName = false;
-    return;
   }
 
+  /**
+   * Sets the duplicate name error flag.
+   */
   duplicateName() {
     this.channelExistsError = true;
-    return;
   }
 
+  /**
+   * Checks whether the updated channel name already exists.
+   * @param updatedName The new channel name to check
+   * @returns A promise resolving to true if a duplicate exists
+   */
   private async checkForNameDuplicates(updatedName: string): Promise<boolean> {
     if (updatedName === this.selectedChannel?.channelName) return false;
-
     return await this.queryNameDuplicates(updatedName);
   }
 
+  /**
+   * Queries Firestore to find any channels with the same name.
+   * @param updatedName The new name to check
+   * @returns A promise resolving to true if duplicate is found
+   */
   private async queryNameDuplicates(updatedName: string): Promise<boolean> {
     const channelsCollection = collection(this.firestore, 'channels');
     const q = query(channelsCollection, where('channelName', '==', updatedName));
@@ -121,6 +150,10 @@ export class DialogEditChannelComponent implements OnInit {
     return !result.empty;
   }
 
+  /**
+   * Updates the channel name in Firestore.
+   * @param name The new channel name
+   */
   private async updateChannelName(name: string): Promise<void> {
     try {
       const docRef = doc(this.firestore, 'channels', this.selectedChannel!.channelId);
@@ -135,12 +168,19 @@ export class DialogEditChannelComponent implements OnInit {
     }
   }
 
+  /**
+   * Adds a "#" prefix to the channel name if it's missing.
+   * @param name The raw input name
+   * @returns The formatted channel name
+   */
   private formatChannelName(name: string): string {
     name = name.trim();
-
     return name.startsWith('#') ? name : `#${name}`;
   }
 
+  /**
+   * Saves the updated channel description if it has changed.
+   */
   async saveEditDescription() {
     if (!this.selectedChannel) return;
 
@@ -151,16 +191,26 @@ export class DialogEditChannelComponent implements OnInit {
     await this.updateChannelDescription(updatedDescription);
   }
 
+  /**
+   * Emits success message if description has not changed.
+   */
   noDescriptionChanges() {
     this.saveDescription.emit({ success: true, message: 'Keine Änderungen.' });
     this.isEditingDescription = false;
-    return;
   }
 
+  /**
+   * Trims whitespace from the channel description input.
+   * @returns The trimmed description string
+   */
   private getTrimmedDescription(): string {
     return this.channelDescriptionControl.value.trim();
   }
 
+  /**
+   * Updates the channel description in Firestore.
+   * @param description The new channel description
+   */
   private async updateChannelDescription(description: string): Promise<void> {
     try {
       const docRef = doc(this.firestore, 'channels', this.selectedChannel!.channelId);
@@ -174,6 +224,9 @@ export class DialogEditChannelComponent implements OnInit {
     }
   }
 
+  /**
+   * Loads the list of users who are members of the channel.
+   */
   private async loadChannelMembers(): Promise<void> {
     if (!this.selectedChannel) return;
 
@@ -181,6 +234,10 @@ export class DialogEditChannelComponent implements OnInit {
     this.channelMembers = users;
   }
 
+  /**
+   * Removes the current user from the selected channel.
+   * Emits the result of the operation.
+   */
   leaveChannel() {
     if (!this.selectedChannel) return;
 
@@ -190,14 +247,16 @@ export class DialogEditChannelComponent implements OnInit {
     this.sharedUser.removeChannelUser(userId, channelId)
       .then(() => {
         this.sharedUser.channelMembersChanged$.next();
-        // this.sharedUser.channelListRefresh$.next();
         this.userLeftChannel.emit({ success: true, message: 'Du wurdest ausgetragen.' });
       })
-      .catch(error => {
-        this.userLeftChannel.emit({ success: false, message: 'Du konntest nicht ausgetragen werden, weil ' + error });
+      .catch(() => {
+        this.userLeftChannel.emit({ success: false, message: 'Du konntest nicht ausgetragen werden.' });
       });
   }
 
+  /**
+   * Emits an event to close the dialog.
+   */
   closeEditChannel() {
     this.close.emit();
   }
