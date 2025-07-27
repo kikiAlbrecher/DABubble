@@ -15,11 +15,13 @@
             <app-side-nav [isMobile]="isMobile" [userHasMadeSelection]="userHasMadeSelection"
                 (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
                 (addChannel)="openDialogAddChannel()" (toggleDevspace)="onToggleDevspace()"
-                (toggleDevspaceM)="toggleDevspaceMobile()" [showAddChannelDialog]="showAddChannelDialog">
+                (toggleDevspaceM)="toggleDevspaceMobile()" [showAddChannelDialog]="showAddChannelDialog"
+                [selectedUser]="selectedUser" [selectedChannel]="selectedChannel" (searchMobile)="onSearchStarted()"
+                (mainChatOpened)="showMainChat = true">
             </app-side-nav>
             }
 
-            @if (!isMobile || (isMobile && showMainChat && !editChannel)) {
+            @if (!isMobile || (isMobile && showMainChat && (selectedChannel || selectedUser) && !editChannel)) {
             <app-main-chat (addMember)="openDialogAddMember($event)" (showUserProfile)="openProfile()"
                 (editChannel)="openDialogEditChannel($event)" (members)="openMembers($event)"
                 (selectedUserChange)="onSelectedUserChanged($event)" (userClicked)="onUserSelected($event)"

@@ -26,19 +26,20 @@ export class MessageSharedService {
     messages: ChatMessage[] = [];
     groupedMessages: any = {};
     groupedMessageDates: any;
-    writeMessageComponentOverlay:boolean = false;
-    showChannels: boolean = false;    
+    writeMessageComponentOverlay: boolean = false;
+    showChannels: boolean = false;
     selectedMessage: ChatMessage | undefined;
     //answerMessages: ChatMessage[] = [];
-    threadChannelOrUserName:string = "";
-    alreadyExisitingReactionId:string = "";
+    threadChannelOrUserName: string = "";
+    alreadyExisitingReactionId: string = "";
     public answerMessages: ChatMessage[] = [];
     public answerMessages$ = new BehaviorSubject<ChatMessage[]>([]);
-    answerId:string = ""
+    answerId: string = ""
+    public targetMessageText: string | null = null;
+    public highlightedMessageId: string | null = null;
 
-    
     constructor(
-        public shared: UserSharedService) {}
+        public shared: UserSharedService) { }
 
     private selectedUserSubject = new BehaviorSubject<User | null>(null);
     private selectedChannelSubject = new BehaviorSubject<Channel | null>(null);
@@ -72,7 +73,7 @@ export class MessageSharedService {
      */
     async getChannelMessages() {
         if (this.channelMessagesUnsubscribe) {
-            this.channelMessagesUnsubscribe(); 
+            this.channelMessagesUnsubscribe();
         }
         const selectedId = this.selectedChannel?.channelId!;
         const chatDocRef = doc(this.firestore, 'channels', selectedId);
@@ -94,6 +95,16 @@ export class MessageSharedService {
         const groups = this.groupMessagesByDate(this.messages);
         this.groupedMessages = groups;
         this.groupedMessageDates = Object.keys(groups);
+
+        if (this.targetMessageText) {
+            setTimeout(() => {
+                const el = document.querySelector('.messages-container');
+                if (el && el.textContent?.includes(this.targetMessageText!)) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    this.targetMessageText = null;
+                }
+            }, 200);
+        }
     }
 
     /**
@@ -107,11 +118,11 @@ export class MessageSharedService {
         return snapshot.docs.map(doc => {
             const data = doc.data() as ChatMessage;
             return {
-            ...data,
-            id: doc.id,
-            timeStamp: data.timeStamp instanceof Timestamp
-                ? data.timeStamp.toDate()
-                : data.timeStamp
+                ...data,
+                id: doc.id,
+                timeStamp: data.timeStamp instanceof Timestamp
+                    ? data.timeStamp.toDate()
+                    : data.timeStamp
             };
         });
     }
@@ -126,7 +137,7 @@ export class MessageSharedService {
         return messages.reduce((groups: any, message: any) => {
             const date = formatDate(message.timeStamp, 'dd. MMMM yyyy', 'de-DE');
             if (!groups[date]) {
-            groups[date] = [];
+                groups[date] = [];
             }
             groups[date].push(message);
             return groups;
@@ -139,28 +150,24 @@ export class MessageSharedService {
      * It resets local state, sets up a Firestore listener, and processes incoming message data.
      */
     async getUserMessages() {
-    // Remove previous snapshot listener if present
-    if (this.channelMessagesUnsubscribe) {
-        this.channelMessagesUnsubscribe();
-        this.channelMessagesUnsubscribe = null;
-    }
+        if (this.channelMessagesUnsubscribe) {
+            this.channelMessagesUnsubscribe();
+            this.channelMessagesUnsubscribe = null;
+        }
 
-    // Reset local state
-    this.messages = [];
-    this.groupedMessages = {};
-    this.groupedMessageDates = [];
+        this.messages = [];
+        this.groupedMessages = {};
+        this.groupedMessageDates = [];
 
-    // Construct chat ID from sorted user IDs
-    const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort(); 
-    const chatId = sortedIds.join('_');         
-    const chatDocRef = doc(this.firestore, 'directMessages', chatId);
-    const messagesRef = collection(chatDocRef, 'messages');
-    const q = query(messagesRef, orderBy('timeStamp'));
+        const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
+        const chatId = sortedIds.join('_');
+        const chatDocRef = doc(this.firestore, 'directMessages', chatId);
+        const messagesRef = collection(chatDocRef, 'messages');
+        const q = query(messagesRef, orderBy('timeStamp'));
 
-    // Subscribe to real-time updates from Firestore
-    this.channelMessagesUnsubscribe = onSnapshot(q, snapshot => {
-        this.handleUserMessageSnapshot(snapshot);
-    });
+        this.channelMessagesUnsubscribe = onSnapshot(q, snapshot => {
+            this.handleUserMessageSnapshot(snapshot);
+        });
     }
 
     /**
@@ -170,10 +177,20 @@ export class MessageSharedService {
      * @param snapshot - Firestore snapshot containing message documents.
      */
     private handleUserMessageSnapshot(snapshot: QuerySnapshot<DocumentData>) {
-    this.messages = this.mapSnapshotToUserMessages(snapshot);
-    const groups = this.groupUserMessagesByDate(this.messages);
-    this.groupedMessages = groups;
-    this.groupedMessageDates = Object.keys(groups);
+        this.messages = this.mapSnapshotToUserMessages(snapshot);
+        const groups = this.groupUserMessagesByDate(this.messages);
+        this.groupedMessages = groups;
+        this.groupedMessageDates = Object.keys(groups);
+
+        if (this.targetMessageText) {
+            setTimeout(() => {
+                const el = document.querySelector('.messages-container');
+                if (el && el.textContent?.includes(this.targetMessageText!)) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    this.targetMessageText = null;
+                }
+            }, 200);
+        }
     }
 
     /**
@@ -183,16 +200,16 @@ export class MessageSharedService {
      * @returns Array of ChatMessage objects.
      */
     private mapSnapshotToUserMessages(snapshot: QuerySnapshot<DocumentData>): ChatMessage[] {
-    return snapshot.docs.map(doc => {
-        const data = doc.data() as ChatMessage;
-        return {
-        ...data,
-        id: doc.id,
-        timeStamp: data.timeStamp instanceof Timestamp 
-            ? data.timeStamp.toDate() 
-            : data.timeStamp
-        };
-    });
+        return snapshot.docs.map(doc => {
+            const data = doc.data() as ChatMessage;
+            return {
+                ...data,
+                id: doc.id,
+                timeStamp: data.timeStamp instanceof Timestamp
+                    ? data.timeStamp.toDate()
+                    : data.timeStamp
+            };
+        });
     }
 
     /**
@@ -202,30 +219,30 @@ export class MessageSharedService {
      * @returns Object containing grouped messages by date.
      */
     private groupUserMessagesByDate(messages: ChatMessage[]): { [date: string]: ChatMessage[] } {
-    return messages.reduce((groups: any, message: any) => {
-        const date = formatDate(message.timeStamp, 'dd. MMMM yyyy', 'de-DE');
-        if (!groups[date]) {
-        groups[date] = [];
-        }
-        groups[date].push(message);
-        return groups;
-    }, {});
+        return messages.reduce((groups: any, message: any) => {
+            const date = formatDate(message.timeStamp, 'dd. MMMM yyyy', 'de-DE');
+            if (!groups[date]) {
+                groups[date] = [];
+            }
+            groups[date].push(message);
+            return groups;
+        }, {});
     }
 
-/**
- * Retrieves the display name of a user based on their user ID.
- * 
- * This method queries the "users" collection in Firestore and
- * returns the value stored in the 'name' field of the user document.
- * 
- * @param writerId - The ID of the user whose name should be fetched.
- * @returns A promise resolving to the user's name or undefined if not found.
- */
-async getUserName(writerId: string): Promise<string | undefined> {
-    const docRef = doc(this.firestore, "users", writerId);
-    const messageWriter = await getDoc(docRef);
-    return messageWriter.data()?.['name'];
-}
+    /**
+     * Retrieves the display name of a user based on their user ID.
+     * 
+     * This method queries the "users" collection in Firestore and
+     * returns the value stored in the 'name' field of the user document.
+     * 
+     * @param writerId - The ID of the user whose name should be fetched.
+     * @returns A promise resolving to the user's name or undefined if not found.
+     */
+    async getUserName(writerId: string): Promise<string | undefined> {
+        const docRef = doc(this.firestore, "users", writerId);
+        const messageWriter = await getDoc(docRef);
+        return messageWriter.data()?.['name'];
+    }
 
     /**
      * Retrieves the profile picture URL of a user based on their user ID.
@@ -283,7 +300,7 @@ async getUserName(writerId: string): Promise<string | undefined> {
         parentId: string,
         messageId: string,
         newText: string
-        ) {
+    ) {
         const messageRef = doc(this.firestore, collectionType, parentId, 'messages', messageId);
         await updateDoc(messageRef, { text: newText });
     }
@@ -297,10 +314,10 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * 
      * @param message - The message object for which the thread should be opened.
      */
-    async getAnswerMessage(message:any) {
+    async getAnswerMessage(message: any) {
         this.answerMessages = [];
         this.selectedMessage = message;
-        this.shared.threadsVisible$.next(true);    
+        this.shared.threadsVisible$.next(true);
     }
 
     /**
@@ -412,16 +429,16 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * The resulting name is stored in the threadChannelOrUserName property.
      */
     async getChannelOrUserName() {
-        const actualChannelId = this.selectedMessage?.channelId ?? '';        
+        const actualChannelId = this.selectedMessage?.channelId ?? '';
         if (this.channelSelected) {
             const channelRef = doc(this.firestore, 'channels', actualChannelId);
             const docSnap = await getDoc(channelRef);
-            const data = docSnap.data() as Channel;        
-            this.threadChannelOrUserName = data.channelName   
-        } else if (this.userSelected) {  
-            const displayName = this.selectedUser?.displayName ?? '';    
-            this.threadChannelOrUserName = displayName;            
-        }       
+            const data = docSnap.data() as Channel;
+            this.threadChannelOrUserName = data.channelName
+        } else if (this.userSelected) {
+            const displayName = this.selectedUser?.displayName ?? '';
+            this.threadChannelOrUserName = displayName;
+        }
     }
 
     /**
@@ -435,20 +452,20 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * @param message - The ChatMessage object to react to.
      * @param emoji - The emoji reaction to add or remove.
      */
-    async pushEmojiReaction(message:ChatMessage, emoji:any) {
+    async pushEmojiReaction(message: ChatMessage, emoji: any) {
         const channelId = message.channelId ?? '';
         const messageId = message.id ?? '';
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
         const reactionsRef = collection(this.firestore, collectionType, channelId, 'messages', messageId, 'reactions');
         const alreadyReacted = await this.checkReactionDone(reactionsRef, message, emoji);
         if (alreadyReacted) {
-            this.deleteReaction(reactionsRef,message)
+            this.deleteReaction(reactionsRef, message)
         } else {
-        await addDoc (reactionsRef, {
-            user: this.shared.actualUserID,
-            emoji: emoji,
-            timeStamp: serverTimestamp()
-        });     
+            await addDoc(reactionsRef, {
+                user: this.shared.actualUserID,
+                emoji: emoji,
+                timeStamp: serverTimestamp()
+            });
         }
     }
 
@@ -463,11 +480,11 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * @param emoji - The emoji to check if already reacted.
      * @returns A boolean indicating whether the reaction by the user exists.
      */
-    async checkReactionDone(reactionsRef: any, message:ChatMessage, emoji:any) {        
+    async checkReactionDone(reactionsRef: any, message: ChatMessage, emoji: any) {
         const q = query(reactionsRef, where("emoji", "==", emoji), where("user", "==", this.shared.actualUser.uid));
-        const snapshot = await getDocs(q); 
+        const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
-        this.alreadyExisitingReactionId = doc.id;
+            this.alreadyExisitingReactionId = doc.id;
         });
         return !snapshot.empty;
     }
@@ -479,7 +496,7 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * @param reactionsRef - Firestore collection reference to the reactions subcollection.
      * @param message - The message for which the reaction should be deleted.
      */
-    async deleteReaction (reactionsRef: any, message:ChatMessage) {
+    async deleteReaction(reactionsRef: any, message: ChatMessage) {
         const channelId = message.channelId ?? '';
         const messageId = message.id ?? '';
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
@@ -494,14 +511,14 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * @returns Firestore collection reference for answer reactions.
      */
     private async prepareAnswerReactionsCollection() {
-    await this.getAnswerIds();
-    const answerId = this.answerId ?? '';
-    const channelId = this.selectedChannel?.channelId ?? '';
-    const chatId = this.selectedMessage?.channelId ?? '';
-    const channelTyp = this.channelSelected ? channelId : chatId;
-    const messageId = this.selectedMessage?.id ?? '';
-    const collectionType = this.channelSelected ? 'channels' : 'directMessages';    
-    return collection(this.firestore, collectionType, channelTyp, 'messages', messageId, 'answers', answerId, 'reactions');
+        await this.getAnswerIds();
+        const answerId = this.answerId ?? '';
+        const channelId = this.selectedChannel?.channelId ?? '';
+        const chatId = this.selectedMessage?.channelId ?? '';
+        const channelTyp = this.channelSelected ? channelId : chatId;
+        const messageId = this.selectedMessage?.id ?? '';
+        const collectionType = this.channelSelected ? 'channels' : 'directMessages';
+        return collection(this.firestore, collectionType, channelTyp, 'messages', messageId, 'answers', answerId, 'reactions');
     }
 
     /**
@@ -520,9 +537,9 @@ async getUserName(writerId: string): Promise<string | undefined> {
             this.deleteReaction(reactionsRef, message);
         } else {
             await addDoc(reactionsRef, {
-            user: this.shared.actualUserID,
-            emoji: emoji,
-            timeStamp: serverTimestamp()
+                user: this.shared.actualUserID,
+                emoji: emoji,
+                timeStamp: serverTimestamp()
             });
         }
     }
@@ -533,12 +550,12 @@ async getUserName(writerId: string): Promise<string | undefined> {
      * 
      * Note: This method sets `answerId` to the last message's ID in the list.
      */
-    getAnswerIds() {    
-      this.answerMessages.forEach(element => {
-        this.answerId = element.id        
-      });    
-    }         
-    
+    getAnswerIds() {
+        this.answerMessages.forEach(element => {
+            this.answerId = element.id
+        });
+    }
+
 
 
 }

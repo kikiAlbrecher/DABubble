@@ -252,20 +252,20 @@ export class UserSharedService {
         return true;
     }
 
-/**
- * Logs out the current user by updating their status and signing out from Firebase.
- * Handles UI state changes and navigation after logout.
- */
-async logOutUser() {
-    await this.updateOnlineStatusOffline();
-    this.performSignOut()
-        .then(() => {
-            this.handlePostSignOut();
-        })
-        .catch(() => {
-            this.handleSignOutError();
-        });
-}
+    /**
+     * Logs out the current user by updating their status and signing out from Firebase.
+     * Handles UI state changes and navigation after logout.
+     */
+    async logOutUser() {
+        await this.updateOnlineStatusOffline();
+        this.performSignOut()
+            .then(() => {
+                this.handlePostSignOut();
+            })
+            .catch(() => {
+                this.handleSignOutError();
+            });
+    }
 
     /**
      * Performs the Firebase sign-out operation.
@@ -431,7 +431,7 @@ async logOutUser() {
         }, 3000);
     }
 
-    
+
     /**
      * Sends a password reset email to the specified email address.
      * 
@@ -497,7 +497,7 @@ async logOutUser() {
         }, 3000);
     }
 
-    
+
     /**
      * Subscribes to real-time updates of the current user's Firestore document.
      * Updates the local actualUser property with the latest data.
@@ -557,22 +557,42 @@ async logOutUser() {
         this.detailOverlay = !this.detailOverlay
     }
 
+    /**
+     * Toggles the workspace open/close state.
+     * Emits the opposite of the current value.
+     */
     toggleWorkspace() {
         this._workspaceOpen.next(!this._workspaceOpen.value);
     }
 
+    /**
+     * Returns the current state of the workspace (open or closed).
+     */
     get workspaceOpen(): boolean {
         return this._workspaceOpen.value;
     }
 
+    /**
+     * Makes the threads section visible by emitting `true`.
+     */
     openThreads() {
         this.threadsVisible$.next(true);
     }
 
+    /**
+     * Hides the threads section by emitting `false`.
+     */
     closeThreads() {
         this.threadsVisible$.next(false);
     }
 
+    /**
+     * Subscribes to the users collection in Firestore and filters out invalid users.
+     * 
+     * - Includes all users whose name is not 'Gast'.
+     * - Includes guest users only if their `status` is `true`.
+     * - Emits the list of valid users via `allValidUsers$`.
+     */
     subscribeValidUsers(): void {
         const usersCollection = collection(this.firestore, 'users');
 
@@ -592,32 +612,26 @@ async logOutUser() {
         });
     }
 
+    /**
+     * Removes a specific channel ID from a user's list of channel memberships in Firestore.
+     * 
+     * @param userId - The ID of the user whose channel membership is to be removed.
+     * @param channelId - The ID of the channel to remove from the user's list.
+     * @throws If the user does not exist in Firestore.
+     */
     async removeChannelUser(userId: string, channelId: string): Promise<void> {
         const userDocRef = doc(this.firestore, 'users', userId);
         const userSnap = await getDoc(userDocRef);
 
-        if (!userSnap.exists()) {
-            throw new Error('Benutzer existiert nicht.');
-        }
+        if (!userSnap.exists()) throw new Error('Der Nutzer existiert nicht.');
 
         const userData = userSnap.data();
         const channelIds: { [channelId: string]: true } = userData['channelIds'] || {};
 
-        if (channelIds.hasOwnProperty(channelId)) {
-            delete channelIds[channelId];
-        }
+        if (channelIds.hasOwnProperty(channelId)) delete channelIds[channelId];
 
         await updateDoc(userDocRef, {
             channelIds: channelIds
         });
     }
-
-
-    // async removeChannelUser(userId: string, channelId: string): Promise<void> {
-    //     const userDocRef = doc(this.firestore, 'users', userId);
-    //     const updateData: any = {};
-
-    //     updateData[`channelIds.${channelId}`] = deleteField();
-    //     await updateDoc(userDocRef, updateData);
-    // }
 }

@@ -1,4 +1,7 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output,
+  SimpleChanges, ViewChild
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -152,18 +155,6 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
    * 
    * @param event - The mouse event triggering the dialog.
    */
-  // openDialogAddMember(event: MouseEvent): void {
-  //   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-  //   let dialogWidth = 514;
-
-  //   this.addMember.emit({
-  //     top: rect.bottom + window.scrollY + 8,
-  //     left: rect.right + window.scrollX - dialogWidth
-  //   });
-  // }
-
-
-
   openDialogAddMember(event: MouseEvent): void {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const dialogWidth = this.isMobile ? 300 : 514;
@@ -174,18 +165,9 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     if (this.isMobile) {
-      this.members.emit({
-        users: this.channelMembers,
-        position
-      });
-    } else {
-      this.addMember.emit(position);
-    }
+      this.members.emit({ users: this.channelMembers, position });
+    } else this.addMember.emit(position);
   }
-
-
-
-
 
   /**
    * Toggles the visibility of the main chat panel.
@@ -255,11 +237,22 @@ export class MainChatComponent implements OnInit, OnChanges, OnDestroy {
     this.channelClicked.emit(channel);
   }
 
+  /**
+   * Handles the result of a search operation by assigning the results to a local variable.
+   * 
+   * @param results - An array of search result items.
+   */
   handleSearchResults(results: any[]) {
     this.searchResults = results;
-    console.log('Suchergebnisse in MainChat angekommen:', results);
   }
 
+  /**
+   * Emits a search event result (e.g., for email search) with success status and message.
+   * 
+   * @param event - The search result event containing:
+   *   - `success`: Whether the search was successful.
+   *   - `message`: A descriptive message about the search result.
+   */
   onSearchMail(event: { success: boolean; message: string }) {
     this.searchMail.emit(event);
   }

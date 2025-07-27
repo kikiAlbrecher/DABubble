@@ -55,9 +55,14 @@
     left: 48px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
 .suggestions-item {
+    width: 100%;
+    text-align: left;
+
     &:hover {
         background: $light-purple;
     }

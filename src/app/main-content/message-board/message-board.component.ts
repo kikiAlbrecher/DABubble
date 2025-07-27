@@ -1,4 +1,4 @@
-import { Component, inject, AfterViewChecked, ElementRef, ViewChild, Input } from '@angular/core';
+import { Component, inject, AfterViewChecked, ElementRef, ViewChild, Input, OnChanges, Output, EventEmitter } from '@angular/core';
 import { OwnMessageComponent } from "../own-message/own-message.component";
 import { UserMessageComponent } from "../user-message/user-message.component";
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -21,10 +21,12 @@ import { Channel } from '../../../models/channel.class';
   templateUrl: './message-board.component.html',
   styleUrl: './message-board.component.scss'
 })
-export class MessageBoardComponent {
+export class MessageBoardComponent implements OnChanges {
   @Input() message!: ChatMessage;
   @Input() selectedUser: User | null = null;
   @Input() selectedChannel: Channel | null = null;
+  @Output() selectUser = new EventEmitter<User>();
+  @Output() selectChannel = new EventEmitter<Channel>();
 
   constructor(
     public sharedUser: UserSharedService,
@@ -45,9 +47,47 @@ export class MessageBoardComponent {
   ngAfterViewChecked() {
     if (this.sharedMessages.messages.length !== this.messagesLength) {
       this.messagesLength = this.sharedMessages.messages.length;
-      this.scrollToBottom();
+
+      // Wenn ein Zieltext gespeichert ist, suche danach im DOM
+      if (this.sharedMessages.targetMessageText) {
+        const containers = this.messageContainer.nativeElement.querySelectorAll('.messages-container');
+
+        for (let container of containers) {
+          const text = container.textContent || '';
+          if (text.includes(this.sharedMessages.targetMessageText)) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            break;
+          }
+        }
+
+        // Nur einmal scrollen, dann zurücksetzen
+        this.sharedMessages.targetMessageText = null;
+      } else {
+        // Standardverhalten: ans Ende scrollen
+        this.scrollToBottom();
+      }
     }
   }
+
+  ngOnChanges() {
+    if (this.sharedMessages.targetMessageText) {
+      setTimeout(() => this.scrollToTargetMessage(), 200);
+    }
+  }
+
+  private scrollToTargetMessage() {
+    const containers = this.messageContainer.nativeElement.querySelectorAll('.messages-container');
+    for (let container of containers) {
+      const text = container.textContent || '';
+      if (text.includes(this.sharedMessages.targetMessageText)) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        this.sharedMessages.targetMessageText = null;
+        return;
+      }
+    }
+  }
+
+
 
   /**
    * Scrolls the message container element to the bottom.
@@ -55,7 +95,7 @@ export class MessageBoardComponent {
    */
   scrollToBottom() {
     setTimeout(() => {
-      this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+      this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight + 24;
     }, 100);
   }
 
@@ -100,6 +140,7 @@ export class MessageBoardComponent {
     this.sharedMessages.channelSelected = false;
     this.sharedMessages.userSelected = true;
     this.sharedMessages.getUserMessages();
+    this.selectUser.emit(user);
   }
 
   /**
@@ -116,6 +157,7 @@ export class MessageBoardComponent {
     this.sharedMessages.userSelected = false;
     this.sharedMessages.getChannelMessages();
     this.getChannelCreator();
+    this.selectChannel.emit(channel);
   }
 
   /**

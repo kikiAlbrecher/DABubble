@@ -17,6 +17,10 @@ export class ChannelSharedService {
   private unsub?: () => void;
   private userSub?: Subscription;
 
+  /**
+   * Subscribes to the currently logged-in user and listens for changes
+   * to their associated channel list in Firestore.
+   */
   subscribeValidChannels(): void {
     this.userSub?.unsubscribe();
     this.userSub = this.userService.actualUser$.subscribe(userId => {
@@ -30,13 +34,19 @@ export class ChannelSharedService {
     });
   }
 
+  /**
+   * Handles Firestore snapshot updates for the current user document,
+   * retrieves the list of channel IDs, and loads the corresponding channels.
+   * 
+   * @param userSnap - The Firestore snapshot of the user document.
+   */
   private async handleUserSnapshot(userSnap: any): Promise<void> {
     const userData = userSnap.data() as User;
+
     if (!userData?.channelIds) {
       this.allValidChannels$.next([]);
       return;
     }
-
     const channelIds = Object.keys(userData.channelIds);
     const channels = await Promise.all(
       channelIds.map(channelId => this.loadChannel(channelId))
@@ -47,6 +57,12 @@ export class ChannelSharedService {
     );
   }
 
+  /**
+   * Loads a single channel from Firestore based on its ID.
+   * 
+   * @param channelId - The ID of the channel to load.
+   * @returns A `Channel` instance if found, otherwise `null`.
+   */
   private async loadChannel(channelId: string): Promise<Channel | null> {
     try {
       const channelDocRef = doc(this.firestore, 'channels', channelId);
@@ -62,6 +78,10 @@ export class ChannelSharedService {
     return null;
   }
 
+  /**
+   * Unsubscribes from the Firestore snapshot listener and the user observable
+   * to prevent memory leaks.
+   */
   unsubscribeChannels() {
     if (this.unsub) {
       this.unsub();

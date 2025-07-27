@@ -105,7 +105,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * - Delays execution using `setTimeout` to ensure view is stable.
    * - Initializes `editorNativeElement` with the reference to the editor DOM element.
    * - Clears the editor content.
-   */  
+   */
   ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.editor?.nativeElement) {
@@ -143,11 +143,11 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-/**
- * Lifecycle hook that is called when the component is about to be destroyed.
- * 
- * - Cleans up active subscriptions to prevent memory leaks.
- */  
+  /**
+   * Lifecycle hook that is called when the component is about to be destroyed.
+   * 
+   * - Cleans up active subscriptions to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
     this.channelSub?.unsubscribe();
@@ -170,11 +170,14 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.putPlaceHolderText();
   }
 
+  /**
+ * Handles the selection of a mention (user or channel) from the mention dropdown.
+ * Delegates processing to the MentionHandlerService and updates component state accordingly.
+ * 
+ * @param name - The mention text or identifier selected by the user.
+ */
   onMentionSelected(name: string): void {
-    this.mentionHandler.handleMentionSelected(
-      name,
-      this.users,
-      this.channels,
+    this.mentionHandler.handleMentionSelected(name, this.users, this.channels,
       mention => this.mentionComponent?.insertMention(mention),
       user => {
         this.selectedUser = user;
@@ -226,7 +229,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * is not empty, it sets `channelMessagesExist` to `true`; otherwise, it is set to `false`.
    *
    * This check helps determine whether a channel already contains messages.
-   */  
+   */
   async checkChannelMessagesExist() {
     const selectedId = this.selectedChannel?.channelId ?? '';
     const chatDocRef = doc(this.firestore, 'channels', selectedId);
@@ -235,6 +238,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.channelMessagesExist = !snapshot.empty;
   }
 
+  /**
+   * Processes the current content of the devspace editor by extracting mentions such as emails,
+   * user mentions, and channel mentions. Clears the editor afterwards.
+   * 
+   * @returns A promise resolving to `true` if any mentions were found, otherwise `false`.
+   */
   async handleDevspaceEntry(): Promise<boolean> {
     const input = this.devspaceService.getEditorTextContent();
     if (!input) return false;
@@ -242,13 +251,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     const mentions: string[] = [];
 
     try {
-    mentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
+      mentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
     } catch (error: any) {
-    this.searchMail.emit({ success: false, message: 'Es gibt keinen registrierten User mit dieser E-Mail-Adresse.' });
+      this.searchMail.emit({ success: false, message: 'Es gibt keinen registrierten User mit dieser E-Mail-Adresse.' });
       return false;
     }
 
-    mentions.push(...await MentionUtilsService.findEmails(input, this.firestore));
     mentions.push(...MentionUtilsService.findUserMentions(input, this.users));
     mentions.push(...MentionUtilsService.findChannelMentions(input, this.channels));
 
@@ -258,10 +266,16 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     return mentions.length > 0;
   }
 
+  /**
+   * Handles the submission process for the devspace message.
+   * If the devspace is open, it processes the current entry to extract mentions.
+   * Then removes mentions from the editor DOM, retrieves mentioned users and channels,
+   * sends the message along with the mentions, and clears the editor afterwards.
+   *
+   * @returns A Promise that resolves when the submission process is complete.
+   */
   async onSubmit() {
-    if (this.devspaceOpen) {
-      await this.handleDevspaceEntry();
-    }
+    if (this.devspaceOpen) await this.handleDevspaceEntry();
 
     const message = this.removeMentionsFromDOM();
     if (!message) return;

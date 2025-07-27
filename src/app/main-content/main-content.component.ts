@@ -120,7 +120,7 @@ export class MainContentComponent implements OnInit {
     this.messageService.setSelectedChannel(channel);
     this.messageService.setSelectedUser(null);
 
-    if (this.isMobile && !this.isInitializing) this.showMainChat = true;
+    if (this.isMobile && !this.isInitializing) setTimeout(() => this.showMainChat = true);
   }
 
   onUserSelected(user: User) {
@@ -130,7 +130,7 @@ export class MainContentComponent implements OnInit {
     this.messageService.setSelectedUser(user);
     this.messageService.setSelectedChannel(null);
 
-    if (this.isMobile && !this.isInitializing) this.showMainChat = true;
+    if (this.isMobile && !this.isInitializing) setTimeout(() => this.showMainChat = true);
   }
 
   openDialogAddChannel() {
@@ -370,12 +370,21 @@ export class MainContentComponent implements OnInit {
   }
 
   toggleDevspaceMobile() {
-    if (this.isMobile && !this.showMainChat) {
-      this.showMainChat = true;
+    if (this.isMobile) {
+      if (!this.showMainChat) {
+        this.showMainChat = true;
 
-      setTimeout(() => {
-        this.showDevspace = true;
-      }, 0);
+        setTimeout(() => {
+          this.showDevspace = true;
+        }, 0);
+      } else {
+        this.showMainChat = false;
+        this.selectedUser = null;
+        this.selectedChannel = null;
+        setTimeout(() => {
+          this.showDevspace = false;
+        }, 0);
+      }
     } else {
       this.showDevspace = !this.showDevspace;
     }
@@ -383,5 +392,13 @@ export class MainContentComponent implements OnInit {
 
   onSearchMail(event: { success: boolean; message: string }) {
     this.statusMessageAlternatives(event);
+  }
+
+  onSearchStarted() {
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.showMainChat = true;
+      }, 30);
+    }
   }
 }

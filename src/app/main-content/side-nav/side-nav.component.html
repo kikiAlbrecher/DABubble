@@ -17,7 +17,8 @@
             </g>
         </svg>
     </div>
-    <app-searchbar class="searchbar"></app-searchbar>
+    <app-searchbar class="searchbar" (searchMobile)="onSearchStart()"
+        (mainChatOpened)="mainChatOpened.emit()"></app-searchbar>
     <div class="menu">
         <div class="menu-part">
             <div class="menu-category">

@@ -16,10 +16,6 @@
     position: relative;
 }
 
-.d-none {
-    display: none;
-}
-
 a {
     text-decoration: none;
 }
@@ -177,7 +173,6 @@ input {
     .list-entry {
         padding: 4px 20px;
         @include dFlex($jc: flex-start, $ai: center, $g: 10px);
-        margin-right: 8px;
 
         @media (max-width: 1000px) {
             gap: 13px;

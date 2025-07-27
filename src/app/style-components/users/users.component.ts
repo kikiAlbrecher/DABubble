@@ -16,6 +16,12 @@ export class UsersComponent {
   @Input() stopClickPropagation: boolean = false;
   @Output() userSelected = new EventEmitter<User>();
 
+  /**
+   * Handles user selection. Optionally stops event propagation if configured.
+   *
+   * @param user - The selected user.
+   * @param event - The optional mouse event triggered on click.
+   */
   onSelectUser(user: User, event?: MouseEvent) {
     if (this.stopClickPropagation && event) {
       event.stopPropagation();

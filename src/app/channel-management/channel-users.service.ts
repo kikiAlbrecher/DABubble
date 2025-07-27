@@ -8,6 +8,15 @@ import { User } from '../userManagement/user.interface';
 export class ChannelUsersService {
   private firestore = inject(Firestore);
 
+  /**
+   * Retrieves all users who are members of the specified channel.
+   * 
+   * - A user is considered a member if their `channelIds` object contains the given channelId.
+   * - Guest users (with name 'Gast') are only included if their `status` is `true`.
+   * 
+   * @param channelId - The ID of the channel to check membership for.
+   * @returns A promise that resolves to an array of `User` objects who are members of the channel.
+   */
   async getUsersForChannel(channelId: string): Promise<User[]> {
     const usersCollection = collection(this.firestore, 'users');
     const snapshot = await getDocs(usersCollection);

@@ -14,6 +14,12 @@ export class ChannelsComponent {
   @Input() selectedChannelId: string | null = null;
   @Output() channelSelected = new EventEmitter<Channel>();
 
+
+  /**
+   * Emits the channel that was selected.
+   * 
+   * @param channel The channel selected by the user.
+   */
   onSelectChannel(channel: Channel) {
     this.channelSelected.emit(channel);
   }

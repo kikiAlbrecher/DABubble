@@ -7,17 +7,17 @@
                 (keydown)="onEditorKeyDown($event)" [attr.placeholder]="placeholderQuote">
                 <span class="placeholder" *ngIf="isEditorEmpty">{{ placeholderQuote }}</span>
             </div>
-            <img plac class="input-field-image" src="assets/icons/search-loupe.svg" alt="search loupe icon">
+            <img plac class="input-field-image" (click)="onSearchIconClick()" src="assets/icons/search-loupe.svg"
+                alt="search loupe icon">
         </div>
         <app-mention *ngIf="editorNativeElement" [users]="users" [channels]="channels"
             [targetInputElement]="editorNativeElement" contextClass="in-search-bar"
             (mentionSelected)="onMentionSelected($event)">
         </app-mention>
-        <div *ngIf="showSuggestions" class="list-overlay list-suggestions">
+        <div *ngIf="showSuggestions" class="custom-scrollbar list-overlay list-suggestions">
             <div class="list">
                 <button type="button" class="suggestions-item" *ngFor="let r of results" (click)="pick(r)">
                     <span>{{ r.message.text }}</span>
-                    <!-- <span>…in {{ extractChatName(r.path) }} – {{ r.message.timeStamp | date:'short' }}</span> -->
                 </button>
             </div>
         </div>

@@ -12,6 +12,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DevspaceService } from './devspace.service';
 import { MentionHandlerService } from '../../search/mention-handler.service';
 
+/**
+ * Component for the devspace editor that supports rich text input and mentions
+ * of users and channels. Handles syncing editor content to a reactive form,
+ * detecting mentions, and triggering mention overlays.
+ */
 @Component({
   selector: 'app-devspace',
   standalone: true,
@@ -41,8 +46,11 @@ export class DevspaceComponent implements AfterViewInit {
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
 
+  /**
+   * Initializes user subscription and loads all available channels.
+   */
   ngOnInit() {
-    this.loadChannels();
+    this.loadAllChannels();
 
     this.sharedUsers.subscribeValidUsers();
 
@@ -51,6 +59,10 @@ export class DevspaceComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * Called after the view is initialized. Sets editor references and
+   * clears previous content.
+   */
   ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.editor?.nativeElement) {
@@ -61,11 +73,17 @@ export class DevspaceComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * Cleans up subscriptions when the component is destroyed.
+   */
   ngOnDestroy() {
     this.usersSub?.unsubscribe();
   }
 
-  loadChannels(): void {
+  /**
+   * Loads all channels from Firestore and stores them in the local state.
+   */
+  loadAllChannels(): void {
     const channelsCollection = collection(this.firestore, 'channels');
 
     onSnapshot(channelsCollection, (snapshot) => {
@@ -73,11 +91,14 @@ export class DevspaceComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * Handles selection of a mention suggestion and routes it to the
+   * appropriate handler depending on type.
+   * 
+   * @param name - The string name or ID of the selected mention.
+   */
   onMentionSelected(name: string): void {
-    this.mentionHandler.handleMentionSelected(
-      name,
-      this.users,
-      this.channels,
+    this.mentionHandler.handleMentionSelected(name, this.users, this.channels,
       mention => this.mentionComponent?.insertMention(mention),
       user => this.selectUser.emit(user),
       channel => this.selectChannel.emit(channel),
@@ -89,6 +110,12 @@ export class DevspaceComponent implements AfterViewInit {
     );
   }
 
+  /**
+   * Detects the type of mention in the given text.
+   * 
+   * @param text - The editor text to evaluate.
+   * @returns The mention type: 'user', 'channel', 'email', or null.
+   */
   private detectMentionType(text: string): 'user' | 'channel' | 'email' | null {
     const hasUser = /@\w{1,30}/.test(text);
     const hasChannel = /#\w{1,16}/.test(text);
@@ -101,29 +128,71 @@ export class DevspaceComponent implements AfterViewInit {
     return null;
   }
 
+  /**
+   * Triggered when the content of the editor changes. Detects mentions and
+   * updates the form control with editor content.
+   */
   onContentInput() {
     const sel = window.getSelection();
     const pre = MentionUtilsService.getTextBeforeCursor(this.editor.nativeElement, sel);
-    const textContent = this.editor.nativeElement.textContent?.trim() ?? '';
+    const textContent = this.getTrimmedTextContent();
+
     this.isEditorEmpty = textContent.length === 0;
-    const currentMentionType = this.detectMentionType(textContent);
+    const mentionType = this.detectMentionType(textContent);
 
-    if (currentMentionType) {
-      this.mentionComponent?.mentionService.reset();
-    } else {
-      const match = pre.match(/(?:^|\s)([@#])(\w*)$/);
-      if (match) {
-        this.mentionComponent?.mentionService.trigger$.next(match[1] as '@' | '#');
-        this.mentionComponent?.mentionService.query$.next(match[2]);
-        this.mentionComponent?.mentionService.showOverlay$.next(true);
-      } else {
-        this.mentionComponent?.mentionService.reset();
-      }
-    }
-
-    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
+    mentionType ? this.foundNoMatch() : this.foundMatch(pre);
+    this.syncEditorContent();
   }
 
+  /**
+   * Returns the trimmed text content of the editor.
+   * 
+   * @returns The trimmed plain text from the editor.
+   */
+  private getTrimmedTextContent(): string {
+    return this.editor.nativeElement.textContent?.trim() ?? '';
+  }
+
+  /**
+   * Resets the mention service state if no valid trigger is found.
+   */
+  private foundNoMatch() {
+    this.mentionComponent?.mentionService.reset();
+  }
+
+  /**
+   * Checks the text before cursor for valid mention patterns and triggers
+   * the overlay if a match is found.
+   * 
+   * @param pre - The text before the cursor in the editor.
+   */
+  private foundMatch(pre: string) {
+    const match = pre.match(/(?:^|\s)([@#])(\w*)$/);
+
+    if (match) {
+      const [_, trigger, query] = match;
+      this.mentionComponent?.mentionService.trigger$.next(trigger as '@' | '#');
+      this.mentionComponent?.mentionService.query$.next(query);
+      this.mentionComponent?.mentionService.showOverlay$.next(true);
+    } else this.foundNoMatch();
+  }
+
+  /**
+   * Syncs the editor's inner HTML content to the reactive form control.
+   */
+  private syncEditorContent() {
+    MentionUtilsService.syncEditorToForm(
+      this.editor.nativeElement,
+      this.messageForm.controls['message']
+    );
+  }
+
+  /**
+   * Handles key down events inside the editor, including preventing
+   * invalid mention characters and syncing content.
+   * 
+   * @param event - The keyboard event triggered in the editor.
+   */
   onEditorKeyDown(event: KeyboardEvent) {
     const textContent = this.editor.nativeElement.textContent?.trim() ?? '';
     const hasMention = this.detectMentionType(textContent);

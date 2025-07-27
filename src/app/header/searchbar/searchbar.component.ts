@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MentionComponent } from '../../search/mention/mention.component';
-import { Firestore, collection, onSnapshot } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { User } from '../../userManagement/user.interface';
 import { Subscription } from 'rxjs';
@@ -13,6 +13,7 @@ import { ChatMessage } from '../../main-content/message.model';
 import { SearchResult } from '../../../models/search.class';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
 import { MentionHandlerService } from '../../search/mention-handler.service';
+import { MessageSharedService } from '../../main-content/message-service';
 
 @Component({
     selector: 'app-searchbar',
@@ -37,6 +38,7 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     public sharedUsers = inject(UserSharedService);
     public channelService = inject(ChannelSharedService);
     private mentionHandler = inject(MentionHandlerService);
+    public sharedMessages = inject(MessageSharedService);
     private usersSub?: Subscription;
     private channelsSub?: Subscription;
     private eRef = inject(ElementRef);
@@ -44,12 +46,15 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     public editorNativeElement?: HTMLElement;
     public placeholderQuote: string = 'Devspace durchsuchen';
     public isEditorEmpty = true;
+    selectedResult: SearchResult | null = null;
 
     @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
     @ViewChild(MentionComponent) mentionComponent?: MentionComponent;
     @Output() selectUser = new EventEmitter<User>();
     @Output() selectChannel = new EventEmitter<Channel>();
     @Output() resultSelected = new EventEmitter<SearchResult>();
+    @Output() searchMobile = new EventEmitter<void>();
+    @Output() mainChatOpened = new EventEmitter<void>();
 
     ngOnInit() {
         this.channelService.subscribeValidChannels();
@@ -93,6 +98,11 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
             }
         );
+        if (window.innerWidth < 1000) {
+            setTimeout(() => {
+                this.mainChatOpened.emit();
+            });
+        }
     }
 
     onEditorKeyDown(event: KeyboardEvent) {
@@ -109,7 +119,6 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isEditorEmpty = textContent.length === 0;
 
         if (this.handleSingleTrigger(textContent)) return;
-        if (this.handleOngoingTrigger(match)) return;
         if (await this.handleMentionedSearch(editorEl)) return;
 
         await this.handleGlobalSearch(textContent);
@@ -119,17 +128,6 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
         if (text.length === 1 && ['@', '#'].includes(text)) {
             this.mentionComponent?.mentionService.trigger$.next(text as '@' | '#');
             this.mentionComponent?.mentionService.query$.next('');
-            this.mentionComponent?.mentionService.showOverlay$.next(true);
-            this.resetMentionState();
-            return true;
-        }
-        return false;
-    }
-
-    private handleOngoingTrigger(match: RegExpMatchArray | null): boolean {
-        if (match) {
-            this.mentionComponent?.mentionService.trigger$.next(match[1] as '@' | '#');
-            this.mentionComponent?.mentionService.query$.next(match[2]);
             this.mentionComponent?.mentionService.showOverlay$.next(true);
             this.resetMentionState();
             return true;
@@ -189,24 +187,63 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     pick(res: SearchResult) {
+        this.selectedResult = res;
         this.editor.nativeElement.textContent = res.message.text;
         this.showSuggestions = false;
         this.resultSelected.emit(res);
     }
 
+    async onSearchIconClick() {
+        const selected = this.selectedResult ?? this.results[0];
+        if (!selected) return;
 
+        this.searchMobile.emit();
+        const msg = selected.message;
+        this.sharedMessages.highlightedMessageId = msg.id;
+        setTimeout(() => (this.sharedMessages.highlightedMessageId = null), 2000);
 
+        if (msg.channelId?.includes('_')) return this.handleDirectMessage(msg);
 
+        if (msg.channelId) return this.handleChannelMessage(msg);
+        console.log('Editor:', this.editor);
+        this.clearEditor();
+    }
 
+    private async handleChannelMessage(msg: ChatMessage) {
+        const channel = this.channels.find(c => c.channelId === msg.channelId);
+        if (!channel) return;
 
+        this.selectChannel.emit(channel);
+        Object.assign(this.sharedMessages, {
+            selectedChannel: channel,
+            channelSelected: true,
+            userSelected: false
+        });
 
+        await this.sharedMessages.getChannelMessages();
+        setTimeout(() => (this.sharedMessages.targetMessageText = msg.text), 300);
+    }
 
-    // async onSearchClick() {
-    //     const rawText = this.editor.nativeElement;
-    //     const plainText = MentionUtilsService.extractCleanText(rawText);
-    //     const { query, users, channels } = MentionUtilsService.extractMentions(plainText);
+    private async handleDirectMessage(msg: ChatMessage) {
+        const user = this.users.find(u => u.id === msg.user);
+        if (!user) return;
 
-    //     const results = await this.searchService.search(query, users, channels);
-    //     this.search.emit(results);
-    // }
+        this.selectUser.emit(user);
+        Object.assign(this.sharedMessages, {
+            selectedUser: user,
+            userSelected: true,
+            channelSelected: false
+        });
+
+        await this.sharedMessages.getUserMessages();
+        setTimeout(() => (this.sharedMessages.targetMessageText = msg.text), 300);
+    }
+
+    clearEditor() {
+        this.editor.nativeElement.innerText = '';
+        this.isEditorEmpty = true;
+        this.selectedResult = null;
+        this.results = [];
+        this.showSuggestions = false;
+    }
 }

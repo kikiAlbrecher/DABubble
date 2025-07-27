@@ -11,6 +11,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class CloseButtonComponent {
   @Output() close = new EventEmitter<void>();
 
+  /**
+   * Emits the close event to signalize the parent component that the close action was triggered.
+   */
   onCloseClick() {
     this.close.emit();
   }

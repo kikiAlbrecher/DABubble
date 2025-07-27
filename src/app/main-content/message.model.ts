@@ -5,5 +5,5 @@ export interface ChatMessage {
   timeStamp: Date;
   user: string;
   id: string;
-  channelId?: string
+  channelId?: string;
 }

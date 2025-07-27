@@ -10,6 +10,7 @@ import { ChannelsComponent } from '../../style-components/channels/channels.comp
 import { UsersComponent } from '../../style-components/users/users.component';
 import { SearchbarComponent } from '../../header/searchbar/searchbar.component';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
+import { SearchService } from '../../header/searchbar/search.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -22,11 +23,15 @@ export class SideNavComponent implements OnInit, OnDestroy {
   @Input() showAddChannelDialog = false;
   @Input() isMobile: boolean = false;
   @Input() userHasMadeSelection: boolean = false;
+  @Input() selectedChannel: Channel | null = null;
+  @Input() selectedUser: User | null = null;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
   @Output() toggleDevspace = new EventEmitter<void>();
   @Output() toggleDevspaceM = new EventEmitter<void>();
+  @Output() searchMobile = new EventEmitter<void>();
+  @Output() mainChatOpened = new EventEmitter<void>();
 
   workspaceOpen: boolean = true;
   showChannels: boolean = true;
@@ -46,6 +51,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private lastAddedSub?: Subscription;
   private selectedUserSub?: Subscription;
   private selectedChannelSub?: Subscription;
+  private searchService = inject(SearchService);
 
   ngOnInit() {
     this.loadValidUsers();
@@ -178,7 +184,6 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.userService.toggleWorkspace();
   }
 
-
   toggleDropDownChannels() {
     this.showChannels = !this.showChannels;
   }
@@ -211,5 +216,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
       this.selectChannel.emit(channel);
       this.userService.threadsVisible$.next(false);
     }
+  }
+
+  onSearchStart() {
+    this.searchMobile.emit();
   }
 }
