@@ -224,3 +224,13 @@
         }
     }
 }
+
+.avatar-images-container {
+    @include dFlex(row, space-between, center, 0px);
+    width: 100%;
+    padding: 0;
+    img{
+        width: 55px;
+        height: 55px;
+    }
+}  

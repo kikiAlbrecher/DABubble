@@ -524,6 +524,18 @@ export class UserSharedService {
     }
 
     /**
+     * Updates the current user's picture in Firestore.
+     * 
+     * @param picture - The new picture to set for the user.
+     */
+    async changeAvatar(picture:string) {
+        const currentUser = doc(this.firestore, "users", this.actualUserID);
+        await updateDoc(currentUser, {
+            picture: picture
+        });
+    }
+
+    /**
      * Sets the current user's online status to true in Firestore.
      */
     async updateOnlineStatusOnline() {

@@ -32,6 +32,17 @@ export class UserProfileComponent implements OnInit {
   ) { }
 
   newName: string = "";
+  
+  images = [
+    'assets/img/avatar1.svg',
+    'assets/img/avatar2.svg',
+    'assets/img/avatar3.svg',
+    'assets/img/avatar4.svg',
+    'assets/img/avatar5.svg',
+    'assets/img/avatar6.svg',
+  ]
+
+  avatarImg:string = 'assets/img/avatar-placeholder.svg';
 
   updateName = new FormGroup<{ name: FormControl<string> }>({
     name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
@@ -55,6 +66,8 @@ export class UserProfileComponent implements OnInit {
     this.newName = this.updateName.value.name ?? '';
     this.sharedUser.updateName(this.newName);
     this.sharedHeader.editName = !this.sharedHeader.editName;   
+    this.sharedUser.userDetails.picture = this.avatarImg ?? '';  
+    this.sharedUser.changeAvatar(this.avatarImg);
   }
 
   /**
@@ -69,5 +82,17 @@ export class UserProfileComponent implements OnInit {
    */
   onClose() {
     this.close.emit();
+    this.sharedHeader.newPicture = false;
   }
+
+  /**
+   * Sets the selected image as the user's avatar.
+   * Also toggles the picturePicked flag for UI feedback.
+   * @param item - Path to the selected avatar image
+   */
+  setImage(item:string) {
+    this.avatarImg = item;
+    this.sharedHeader.newPicture = true;
+  }
+
 }

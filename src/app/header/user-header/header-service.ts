@@ -8,7 +8,7 @@ export class HeaderSharedService {
     editName: boolean = false;
     newName: string = "";
     dropdownProfile: boolean = false;
-
+    newPicture: boolean = false;
     public shared = inject(UserSharedService);
 
     /**
@@ -30,6 +30,7 @@ export class HeaderSharedService {
      */
     editNameMask() {
         this.editName = !this.editName;
+        this.newPicture = false;
     }
 
     /**
@@ -38,4 +39,5 @@ export class HeaderSharedService {
     changeDropdown() {
         this.dropdownProfile = !this.dropdownProfile;
     }
+
 }
