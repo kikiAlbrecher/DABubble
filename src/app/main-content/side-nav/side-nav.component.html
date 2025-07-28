@@ -17,8 +17,9 @@
             </g>
         </svg>
     </div>
-    <app-searchbar class="searchbar" (searchMobile)="onSearchStart()"
-        (mainChatOpened)="mainChatOpened.emit()"></app-searchbar>
+    <app-searchbar class="searchbar" (searchMobile)="onSearchStart()" (mainChatOpened)="mainChatOpened.emit()"
+        (selectUser)="onSelectUser($event)" (selectChannel)="onSelectChannel($event)">
+    </app-searchbar>
     <div class="menu">
         <div class="menu-part">
             <div class="menu-category">

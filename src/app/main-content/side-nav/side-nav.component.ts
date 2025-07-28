@@ -10,8 +10,11 @@ import { ChannelsComponent } from '../../style-components/channels/channels.comp
 import { UsersComponent } from '../../style-components/users/users.component';
 import { SearchbarComponent } from '../../header/searchbar/searchbar.component';
 import { ChannelSharedService } from '../../channel-management/channel-shared.service';
-import { SearchService } from '../../header/searchbar/search.service';
 
+/**
+ * Component responsible for rendering the side navigation.
+ * Displays available channels and users, and manages selection behavior.
+ */
 @Component({
   selector: 'app-side-nav',
   standalone: true,
@@ -51,8 +54,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
   private lastAddedSub?: Subscription;
   private selectedUserSub?: Subscription;
   private selectedChannelSub?: Subscription;
-  private searchService = inject(SearchService);
 
+  /**
+   * Lifecycle hook: Initializes subscriptions and loads data.
+   */
   ngOnInit() {
     this.loadValidUsers();
     this.refreshChannelList();
@@ -61,6 +66,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.refreshChannelsForMessage();
   }
 
+  /**
+   * Subscribes to the currently logged-in user and loads channels and users.
+   */
   loadValidUsers() {
     this.loadUserSub = this.userService.actualUser$.subscribe(userId => {
       if (userId) {
@@ -70,12 +78,18 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Subscribes to channel refresh events to reload valid channels.
+   */
   refreshChannelList() {
     this.userService.channelListRefresh$.subscribe(() => {
       this.subscribeToValidChannels();
     });
   }
 
+  /**
+   * Subscribes to the last added channel and selects it automatically.
+   */
   refreshChannelListAfterAddingChannel() {
     this.lastAddedSub = this.userService.lastAddedChannel$.subscribe(channel => {
       if (channel) {
@@ -88,6 +102,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Subscribes to selected user updates from message service.
+   */
   refreshUsersForMessage() {
     this.selectedUserSub = this.messageSharedService.selectedUser$.subscribe(user => {
       if (user) {
@@ -97,6 +114,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Subscribes to selected channel updates from message service.
+   */
   refreshChannelsForMessage() {
     this.selectedChannelSub = this.messageSharedService.selectedChannel$.subscribe(channel => {
       if (channel) {
@@ -106,6 +126,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Subscribes to valid channels from the channel service.
+   */
   subscribeToValidChannels() {
     if (!this.channelsSub) {
       this.channelService.subscribeValidChannels();
@@ -115,17 +138,16 @@ export class SideNavComponent implements OnInit, OnDestroy {
 
         if (channels.length > 0 && !this.selectedChannelId && !this.selectedUserId) {
           if (!this.userHasMadeSelection) {
-            if (this.isMobile) {
-              this.clearSelection();
-            } else {
-              this.defaultChannel();
-            }
+            this.isMobile ? this.clearSelection() : this.defaultChannel();
           }
         }
       });
     }
   }
 
+  /**
+   * Subscribes to valid users from the user service.
+   */
   subscribeToValidUsers() {
     if (!this.userSub) {
       this.userService.subscribeValidUsers();
@@ -139,6 +161,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Lifecycle hook: Cleans up subscriptions.
+   */
   ngOnDestroy(): void {
     this.channelService.unsubscribeChannels();
     this.userSub?.unsubscribe();
@@ -149,6 +174,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     this.selectedChannelSub?.unsubscribe();
   }
 
+  /**
+   * Selects and emits the default channel.
+   */
   defaultChannel() {
     const defaultChannel = this.channels.find(c => c.channelId === 'ClExENSKqKRsmjb17kGy') || this.channels[0];
 
@@ -158,16 +186,32 @@ export class SideNavComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Clears the current channel and user selection.
+   */
   public clearSelection() {
     this.selectedChannelId = null;
     this.selectedUserId = null;
   }
 
+  /**
+   * Appends display name modifications to the user (e.g., marks "(You)").
+   * @param data - The user object.
+   * @param id - The user ID.
+   * @param currentUserId - The current logged-in user ID.
+   * @returns Modified user with displayName.
+   */
   private markUserName(data: User, id: string, currentUserId: string): User {
     const displayName = id === currentUserId ? `${data.name} (Du)` : data.name;
     return { ...data, id, displayName };
   }
 
+  /**
+   * Sorts users so the current user appears first, followed by others alphabetically.
+   * @param users - Array of users.
+   * @param currentUserId - Current user's ID.
+   * @returns Sorted array of users.
+   */
   private sortUsers(users: User[], currentUserId: string): User[] {
     return users.sort((a, b) => {
       if (a.id === currentUserId) return -1;
@@ -176,30 +220,52 @@ export class SideNavComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Emits event to open the Add Channel dialog.
+   */
   openDialogAddChannel() {
     this.addChannel.emit();
   }
 
+  /**
+   * Toggles the workspace open/closed.
+   */
   toggleWorkspace() {
     this.userService.toggleWorkspace();
   }
 
+  /**
+   * Toggles visibility of the channels dropdown.
+   */
   toggleDropDownChannels() {
     this.showChannels = !this.showChannels;
   }
 
+  /**
+   * Toggles visibility of the users dropdown.
+   */
   toggleDropDownUsers() {
     this.showUsers = !this.showUsers;
   }
 
+  /**
+   * Emits event to toggle devspace (desktop).
+   */
   toggleDevspaceClicked() {
     this.toggleDevspace.emit();
   }
 
+  /**
+   * Emits event to toggle devspace (mobile).
+   */
   toggleDevspaceMobile() {
     this.toggleDevspaceM.emit();
   }
 
+  /**
+   * Handles user selection.
+   * @param user - The selected user.
+   */
   onSelectUser(user: User) {
     if (this.selectedUserId !== user.id) {
       this.selectedUserId = user.id ?? null;
@@ -209,6 +275,10 @@ export class SideNavComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Handles channel selection.
+   * @param channel - The selected channel.
+   */
   onSelectChannel(channel: Channel) {
     if (this.selectedChannelId !== channel.channelId) {
       this.selectedChannelId = channel.channelId;
@@ -218,6 +288,9 @@ export class SideNavComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Emits event to notify mobile search has started.
+   */
   onSearchStart() {
     this.searchMobile.emit();
   }
