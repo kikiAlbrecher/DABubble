@@ -33,9 +33,6 @@ export class IntroComponent implements AfterViewInit {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const isPortrait = window.matchMedia('(orientation: portrait)').matches;
-    console.log('width:', width);
-    console.log('height:', height);
-    console.log('isPortrait:', isPortrait);
     if (!isPortrait && width > 1200) {
       this.animationDesktop();
     } else if (!isPortrait && width > 1000 && width <= 1200) {
