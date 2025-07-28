@@ -77,6 +77,10 @@ export class MainContentComponent implements OnInit {
   @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
   @ViewChild(MainChatComponent) mainChatComponent!: MainChatComponent;
 
+  /**
+   * Lifecycle hook that runs on component initialization.
+   * Starts the display logic and subscribes to valid users.
+   */
   ngOnInit() {
     this.startDisplay();
 
@@ -89,6 +93,9 @@ export class MainContentComponent implements OnInit {
     this.userHasMadeSelection = false;
   }
 
+  /**
+   * Handles initial display state depending on whether the app runs on mobile or desktop.
+   */
   startDisplay() {
     if (this.isMobile) {
       this.showMainChat = false;
@@ -106,6 +113,12 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Displays a status message based on operation success.
+   * Clears the message after a delay.
+   * 
+   * @param event - Object containing success flag and message text
+   */
   statusMessageAlternatives(event: { success: boolean; message: string }) {
     this.statusMessageType = event.success ? 'success' : 'error';
     this.statusMessage = event.message;
@@ -113,6 +126,11 @@ export class MainContentComponent implements OnInit {
     setTimeout(() => this.statusMessage = '', 2500);
   }
 
+  /**
+   * Handles selection of a channel by the user.
+   * 
+   * @param channel - The selected channel
+   */
   onChannelSelected(channel: Channel) {
     this.userHasMadeSelection = true;
     this.selectedChannel = channel;
@@ -123,6 +141,11 @@ export class MainContentComponent implements OnInit {
     if (this.isMobile && !this.isInitializing) setTimeout(() => this.showMainChat = true);
   }
 
+  /**
+   * Handles selection of a user (for direct messaging).
+   * 
+   * @param user - The selected user
+   */
   onUserSelected(user: User) {
     this.userHasMadeSelection = true;
     this.selectedUser = user;
@@ -133,14 +156,26 @@ export class MainContentComponent implements OnInit {
     if (this.isMobile && !this.isInitializing) setTimeout(() => this.showMainChat = true);
   }
 
+  /**
+   * Opens the dialog to create a new channel.
+   */
   openDialogAddChannel() {
     this.showAddChannelDialog = true;
   }
 
+  /**
+   * Closes the add-channel dialog.
+   */
   closeDialogAddChannel() {
     this.showAddChannelDialog = false;
   }
 
+  /**
+   * Handles the result of a channel creation.
+   * If successful, opens member add flow.
+   * 
+   * @param event - Result event containing success flag, message, and optional channel
+   */
   createChannel(event: { success: boolean; message: string; channel?: Channel }) {
     this.statusMessageAlternatives(event);
 
@@ -156,10 +191,18 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the member-add dialog after channel creation.
+   */
   closeAddChannelMember() {
     this.addChannelMember = false;
   }
 
+  /**
+   * Saves a newly added member to the channel.
+   * 
+   * @param userName - The name of the user added to the channel
+   */
   saveAddChannelMember(userName: string) {
     this.addChannelMember = false;
 
@@ -169,39 +212,76 @@ export class MainContentComponent implements OnInit {
     });
   }
 
+  /**
+   * Opens the channel editing dialog with a specific position (desktop or mobile).
+   * 
+   * @param param0 - Contains position of the dialog and a mobile view flag
+   */
   openDialogEditChannel({ position, isMobileEdit }: { position: { top: number; left: number }, isMobileEdit: boolean }) {
     this.editChannelPosition = position;
     this.isMobileEdit = isMobileEdit;
     this.editChannel = true;
   }
 
+  /**
+   * Saves the edited channel settings.
+   * 
+   * @param event - Result object with success flag and message
+   */
   saveEditChannel(event: { success: boolean; message: string }) {
     this.statusMessageAlternatives(event);
   }
 
+  /**
+   * Handles result of a channel member update (e.g. adding/removing users).
+   * 
+   * @param event - Event object with update result
+   */
   updateChannelMember(event: { success: boolean; message: string }) {
     this.editChannel = false;
     this.statusMessageAlternatives(event);
   }
 
+
+  /**
+   * Closes the channel editing dialog.
+   */
   closeDialogEditChannel() {
     this.editChannel = false;
   }
 
+  /**
+   * Opens a dialog showing members of a channel.
+   * 
+   * @param data - Contains list of users and position to display the member popup
+   */
   openMembers(data: { users: User[]; position: { top: number; left: number } }) {
     this.users = data.users;
     this.showMembers = true;
     this.showMembersPosition = data.position;
   }
 
+  /**
+   * Updates the selected user in the component state.
+   * 
+   * @param user - The selected user or null
+   */
   onSelectedUserChanged(user: User | null) {
     this.selectedUser = user;
   }
 
+  /**
+   * Closes the dialog that shows channel members.
+   */
   closeDialogShowMembers() {
     this.showMembers = false;
   }
 
+  /**
+   * Opens the selected user's profile and updates the state accordingly.
+   * 
+   * @param user - The user whose profile should be shown
+   */
   onOpenUserProfile(user: User) {
     if (this.sideNavComponent) this.sideNavComponent.onSelectUser(user);
 
@@ -236,19 +316,36 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles saving a newly added member.
+   * 
+   * @param event - Contains success flag, message, and the name of the added user
+   */
   saveAddMember(event: { success: boolean; message: string; userName: string }) {
     this.showAddMemberDialog = false;
     this.statusMessageAlternatives(event);
   }
 
+  /**
+   * Closes the add-member dialog.
+   */
   closeDialogAddMember() {
     this.showAddMemberDialog = false;
   }
 
+  /**
+   * Opens the user profile view.
+   */
   openProfile() {
     this.showProfile = true;
   }
 
+  /**
+   * Initiates sending a message to the given user.
+   * Sets up the chat context accordingly.
+   * 
+   * @param user - The user to send a message to
+   */
   sendUserMessage(user: User) {
     this.selectedUser = user;
     this.selectedChannel = null;
@@ -261,17 +358,24 @@ export class MainContentComponent implements OnInit {
     }
 
     setTimeout(() => {
-      if (this.mainChatComponent) {
-        this.mainChatComponent.focusWriteMessageInput();
-      }
+      if (this.mainChatComponent) this.mainChatComponent.focusWriteMessageInput();
     }, 30);
   }
 
+  /**
+   * Handles the navigation back from main chat to side nav (mobile only).
+   */
   onBackToSideNav() {
     this.showMainChat = false;
     this.showDevspace = false;
   }
 
+  /**
+   * Responds to window resize events.
+   * Updates mobile/desktop layout logic and overlay positions.
+   * 
+   * @param event - The resize event
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     const width = (event.target as Window).innerWidth;
@@ -286,6 +390,9 @@ export class MainContentComponent implements OnInit {
     this.updateOverlayPositions();
   }
 
+  /**
+   * Handles layout changes when switching between mobile and desktop views.
+   */
   handleResponsiveChange() {
     if (!this.isMobile) {
       if (this.selectedChannel || this.selectedUser) {
@@ -306,6 +413,9 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Ensures correct positioning of the edit-channel dialog on responsive changes.
+   */
   handleEditChannel() {
     if (!this.isMobile && this.editChannel) {
       this.ngZone.onStable.pipe().subscribe(() => {
@@ -314,12 +424,18 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates all floating element positions (edit, members, add-member).
+   */
   private updateOverlayPositions() {
     this.dynamicPositionEditChannel();
     this.dynamicPositionShowMembers();
     this.dynamicPositionAddMembers();
   }
 
+  /**
+   * Calculates and sets the position of the edit-channel dialog.
+   */
   dynamicPositionEditChannel() {
     const trigger = document.querySelector('[data-edit-channel-btn]');
     if (trigger) {
@@ -331,6 +447,9 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Calculates and sets the position for the members dialog.
+   */
   dynamicPositionShowMembers() {
     if (this.showMembers) {
       if (this.isMobile) {
@@ -345,6 +464,9 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Calculates and sets the position for the add-member dialog.
+   */
   dynamicPositionAddMembers() {
     if (this.showAddMemberDialog) {
       const trigger = document.querySelector('[data-add-member-btn]');
@@ -355,6 +477,14 @@ export class MainContentComponent implements OnInit {
     }
   }
 
+  /**
+   * Calculates the screen position for a floating UI element.
+   * 
+   * @param el - Triggering element
+   * @param dialogWidth - Width of the dialog
+   * @param align - Alignment (left or right)
+   * @returns Coordinates { top, left }
+   */
   private calculatePosition(el: HTMLElement, dialogWidth: number, align: 'left' | 'right' = 'right'): { top: number; left: number } {
     const rect = el.getBoundingClientRect();
     const top = rect.bottom + window.scrollY + 8;
@@ -365,6 +495,9 @@ export class MainContentComponent implements OnInit {
     return { top, left };
   }
 
+  /**
+   * Toggles the visibility of the Devspace view.
+   */
   onToggleDevspace() {
     this.showDevspace = !this.showDevspace;
   }
@@ -386,19 +519,25 @@ export class MainContentComponent implements OnInit {
         this.showMainChat = false;
         this.selectedUser = null;
         this.selectedChannel = null;
-        setTimeout(() => {
-          this.showDevspace = false;
-        }, 0);
+        setTimeout(() => this.showDevspace = false, 0);
       }
     } else {
       this.showDevspace = !this.showDevspace;
     }
   }
 
+  /**
+   * Handles result feedback from a mail search operation.
+   * 
+   * @param event - Result event with success flag and message
+   */
   onSearchMail(event: { success: boolean; message: string }) {
     this.statusMessageAlternatives(event);
   }
 
+  /**
+ * Ensures main chat is visible when search is initiated (especially on mobile).
+ */
   onSearchStarted() {
     if (this.isMobile) {
       setTimeout(() => {
