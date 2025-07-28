@@ -8,6 +8,10 @@ export class MentionService {
   showOverlay$ = new BehaviorSubject<boolean>(false);
   position$ = new BehaviorSubject<DOMRect | null>(null);
 
+  /**
+   * Resets all mention state observables to their default values.
+   * This is typically called when the user clears or cancels a mention input.
+   */
   reset() {
     this.trigger$.next(null);
     this.query$.next('');

@@ -15,6 +15,10 @@
         flex-wrap: wrap;
         width: 100%;
 
+        @media (max-width: 1000px) {
+            width: 260px;
+        }
+
         &:focus-within {
             border-color: $purple;
         }
@@ -25,13 +29,23 @@
             left: 20px;
             border-radius: 0 20px 20px 20px;
             border: 1px solid $light-purple;
-            padding: 20px 21px;
+            padding: 20px 21px 20px 0;
             @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             z-index: 9999;
             background: $white;
             max-height: 250px;
             overflow-y: auto;
+
+            @media (max-width: 1000px) {
+                left: unset;
+                right: 0;
+                border-top-left-radius: 20px;
+            }
+
+            // @media (max-height: 600px) {
+            //     position
+            // }
         }
     }
 }

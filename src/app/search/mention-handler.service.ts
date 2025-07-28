@@ -6,15 +6,25 @@ import { Channel } from '../../models/channel.class';
   providedIn: 'root'
 })
 export class MentionHandlerService {
-  handleMentionSelected(
-    mention: string,
-    users: User[],
-    channels: Channel[],
+   /**
+   * Handles a selected mention (e.g., @user or #channel) by:
+   * - Inserting the mention into the editor
+   * - Emitting the matched user or channel if found
+   * - Triggering optional form synchronization
+   *
+   * @param mention - The selected mention string (e.g., "@alice", "#devs")
+   * @param users - Array of all valid users
+   * @param channels - Array of all valid channels
+   * @param insertMentionFn - Callback to insert the mention into the editor
+   * @param emitUserFn - Callback to emit the corresponding user (if found)
+   * @param emitChannelFn - Callback to emit the corresponding channel (if found)
+   * @param syncFn - Optional callback to sync the editor content to the form
+   */
+  handleMentionSelected(mention: string, users: User[], channels: Channel[],
     insertMentionFn: (mention: string) => void,
     emitUserFn: (user: User) => void,
     emitChannelFn: (channel: Channel) => void,
-    syncFn?: () => void
-  ): void {
+    syncFn?: () => void): void {
     insertMentionFn(mention);
     syncFn?.();
 

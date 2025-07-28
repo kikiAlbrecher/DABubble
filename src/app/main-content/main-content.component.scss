@@ -4,15 +4,21 @@
     background: $background-purple;
     width: 100%;
     height: 100vh;
-    padding: 0 32px 16px 32px;
 
     @media(max-width: 1000px) {
-        padding: 0;
         height: auto;
     }
 
-    @media (max-height: 480px) and (min-height: 1000px) {
-        padding: 0;
+    >.main-section {
+        padding: 0 32px 16px 32px;
+
+        @media(max-width: 1000px) {
+            padding: 0;
+        }
+
+        @media (max-height: 480px) and (min-height: 1000px) {
+            padding: 0;
+        }
     }
 }
 
@@ -144,15 +150,4 @@
     z-index: 7000;
     position: fixed;
     inset: 0;
-}
-
-.profile-overlay {
-    @include dFlex();
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    max-width: 1920px;
-    height: 100vh;
-    z-index: 8000;
 }

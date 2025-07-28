@@ -1,6 +1,7 @@
 @import './../../../styles/shared';
 
 .dialog-members {
+    @include dFlex($fd: column, $jc: flex-start);
     position: fixed;
     border-top-right-radius: 0;
     width: 415px;
@@ -42,6 +43,10 @@
         padding: 12px 29px;
         @include dFlex($jc: flex-start, $g: 15px);
         border-radius: 100px;
+
+        @media (max-width: 1000px) {
+            padding: 12px;
+        }
 
         @media (max-height: 664px) {
             padding-top: 0;

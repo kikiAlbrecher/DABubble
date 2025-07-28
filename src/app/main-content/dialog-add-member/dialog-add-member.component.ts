@@ -30,12 +30,20 @@ export class DialogAddMemberComponent {
   private cdr = inject(ChangeDetectorRef);
   public sharedUser = inject(UserSharedService);
 
+  /**
+   * Checks if the form is valid (at least one user selected).
+   * @returns `true` if there are selected users.
+   */
   isFormActuallyValid(): boolean {
-  if (this.selectedUsers.length > 0) return true;
+    if (this.selectedUsers.length > 0) return true;
 
-  return false;
-}
+    return false;
+  }
 
+  /**
+  * Saves selected users to the Firestore channel by updating their documents.
+   * Also emits success or failure events and closes the dialog.
+   */
   async saveMember() {
     const channelId = this.selectedChannel?.channelId;
     const users = this.selectedUsers;
@@ -52,6 +60,12 @@ export class DialogAddMemberComponent {
     }
   }
 
+  /**
+   * Adds the selected users to the given channel in Firestore.
+   * @param channelId The ID of the channel to update.
+   * @param users List of users to be added.
+   * @returns Array of user names that were successfully added.
+   */
   private async updateUsersFirestore(channelId: string, users: User[]): Promise<string[]> {
     const addedNames: string[] = [];
 
@@ -66,6 +80,10 @@ export class DialogAddMemberComponent {
     return addedNames;
   }
 
+  /**
+   * Emits a success message with the names of the added users.
+   * @param userNames Array of added user names.
+   */
   private emitSuccessMsg(userNames: string[]) {
     if (userNames.length === 0) return;
 
@@ -76,10 +94,16 @@ export class DialogAddMemberComponent {
     this.save.emit({ success: true, message, userName: nameList });
   }
 
+  /**
+   * Emits a generic failure message when an error occurs during saving.
+   */
   private emitFailure() {
     this.save.emit({ success: false, message: 'Leider ist ein Fehler aufgetreten.', userName: '' });
   }
 
+  /**
+   * Closes the dialog and emits the `close` event.
+   */
   handleDialogCloseAddMember() {
     this.close.emit();
   }

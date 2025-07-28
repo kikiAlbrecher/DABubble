@@ -55,6 +55,7 @@ button {
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     width: 100%;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.3);
@@ -157,8 +158,7 @@ input {
 .list {
     flex: 1 1 auto;
     overflow-y: auto;
-    padding-left: 25px;
-    padding-bottom: 8px;
+    padding: 0 8px 8px 25px;
     @include dFlex($fd: column, $jc: flex-start, $ai: flex-start, $g: 15px);
     z-index: 9000;
 
@@ -385,4 +385,15 @@ input {
 .widescreen {
     max-width: 1920px;
     margin: auto;
+}
+
+.content-restriction {
+    @include dFlex();
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 1920px;
+    width: 100%;
+    height: 100vh;
+    z-index: 8000;
 }

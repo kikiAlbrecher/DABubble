@@ -212,6 +212,16 @@ export class MentionUtilsService {
     return false;
   }
 
+  /**
+   * Searches a given text for valid email addresses and tries to match them with users in Firestore.
+   * Returns a list of display names (formatted as mentions) for all matched users.
+   * Throws an error if a mentioned email does not match any user.
+   *
+   * @param text - The input text containing one or more email addresses.
+   * @param firestore - The Firestore instance to query the users collection.
+   * @returns A Promise that resolves to an array of mention strings (e.g. ['@alice']).
+   * @throws If any email address does not match a user in Firestore.
+   */
   static async findEmails(text: string, firestore: Firestore): Promise<string[]> {
     const matches = [...text.matchAll(/[\w.-]+@[\w.-]+\.\w{2,}/g)];
     const results: string[] = [];
@@ -219,20 +229,26 @@ export class MentionUtilsService {
     for (const match of matches) {
       const email = match[0].toLowerCase();
       const user = await this.getUserByEmail(email, firestore);
-      if (user) {
-        results.push(`@${user.displayName || user.name}`);
-      } else {
-        throw new Error(`Kein Benutzer mit E-Mail-Adresse "${email}" gefunden.`);
-      }
+
+      if (user) results.push(`@${user.displayName || user.name}`);
+      else throw new Error(`Kein Benutzer mit E-Mail-Adresse "${email}" gefunden.`);
     }
 
     return results;
   }
 
+  /**
+   * Queries Firestore to find a user document by the given email address.
+   *
+   * @param email - The email address to look for.
+   * @param firestore - The Firestore instance to use for querying.
+   * @returns A Promise resolving to the matched User object, or null if not found.
+   */
   private static async getUserByEmail(email: string, firestore: Firestore): Promise<User | null> {
     const usersRef = collection(firestore, 'users');
     const q = query(usersRef, where('email', '==', email));
     const snapshot = await getDocs(q);
+
     if (snapshot.empty) return null;
     return snapshot.docs[0].data() as User;
   }

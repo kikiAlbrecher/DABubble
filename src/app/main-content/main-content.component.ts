@@ -372,6 +372,11 @@ export class MainContentComponent implements OnInit {
   toggleDevspaceMobile() {
     if (this.isMobile) {
       if (!this.showMainChat) {
+        if (this.selectedChannel === null || this.selectedUser === null) {
+          this.sideNavComponent?.defaultChannel();
+
+          this.selectedChannel = this.sideNavComponent?.channels.find(c => c.channelId === this.sideNavComponent?.selectedChannelId) || null;
+        }
         this.showMainChat = true;
 
         setTimeout(() => {

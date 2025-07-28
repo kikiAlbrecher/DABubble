@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {
+    AfterViewInit, Component, ElementRef, EventEmitter, inject, OnDestroy, OnInit, Output,
+    ViewChild
+} from '@angular/core';
 import { MentionComponent } from '../../search/mention/mention.component';
-import { Firestore } from '@angular/fire/firestore';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { User } from '../../userManagement/user.interface';
 import { Subscription } from 'rxjs';
@@ -34,15 +36,12 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     mentionCompleted: boolean = false;
 
     public searchService = inject(SearchService);
-    private firestore = inject(Firestore);
     public sharedUsers = inject(UserSharedService);
     public channelService = inject(ChannelSharedService);
     private mentionHandler = inject(MentionHandlerService);
     public sharedMessages = inject(MessageSharedService);
     private usersSub?: Subscription;
     private channelsSub?: Subscription;
-    private eRef = inject(ElementRef);
-    private savedRange: Range | null = null;
     public editorNativeElement?: HTMLElement;
     public placeholderQuote: string = 'Devspace durchsuchen';
     public isEditorEmpty = true;
@@ -205,7 +204,7 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
         if (msg.channelId?.includes('_')) return this.handleDirectMessage(msg);
 
         if (msg.channelId) return this.handleChannelMessage(msg);
-        console.log('Editor:', this.editor);
+
         this.clearEditor();
     }
 
@@ -219,6 +218,11 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
             channelSelected: true,
             userSelected: false
         });
+        if (window.innerWidth < 1000) {
+            setTimeout(() => {
+                this.mainChatOpened.emit();
+            });
+        }
 
         await this.sharedMessages.getChannelMessages();
         setTimeout(() => (this.sharedMessages.targetMessageText = msg.text), 300);

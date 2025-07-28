@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit, inject, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, inject, Input } from '@angular/core';
 import { Firestore, collection, doc, query, where, getDocs, writeBatch } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
@@ -35,38 +35,59 @@ export class DialogAddChannelMemberComponent implements OnInit {
   selectedUsers: User[] = [];
   isClosing = false;
 
-  private cdr = inject(ChangeDetectorRef);
   private firestore = inject(Firestore);
   public sharedUser = inject(UserSharedService);
 
+  /**
+  * Lifecycle hook that runs on component initialization.
+  * Loads all channels and selects the default channel if available.
+  */
   ngOnInit(): void {
     this.loadAllChannels().then(() => {
       this.setDefaultChannelFromCurrent();
     });
   }
 
+  /**
+   * Checks if the form has a valid selection for saving.
+   * @returns True if a valid channel or user selection is made.
+   */
   isFormActuallyValid(): boolean {
     if (this.mode === 'allChannels') return !!this.chosenChannelId;
     if (this.mode === 'selectedColleagues') return this.selectedUsers.length > 0;
     return false;
   }
 
+  /**
+   * Loads all channels from Firestore and stores them locally.
+   */
   async loadAllChannels() {
     const snap = await getDocs(collection(this.firestore, 'channels'));
+
     this.channelList = snap.docs.map(channelItem => ({ id: channelItem.id, ...(channelItem.data() as any) }));
   }
 
+  /**
+   * Opens or closes the channel selection list based on current mode.
+   */
   openChannelList() {
     if (this.mode = 'allChannels') this.channelListVisible = true;
     else if (this.mode = 'selectedColleagues') this.channelListVisible = false;
   }
 
+  /**
+   * Sets the chosen channel from the selection list.
+   * @param channel The selected channel object.
+   */
   selectChannel(channel: Channel) {
     this.chosenChannelId = channel.channelId;
     this.chosenChannelName = channel.channelName.slice(1);
     this.channelListVisible = false;
   }
 
+  /**
+   * Sets the default selected channel if it matches the currentChannelId.
+   */
   setDefaultChannelFromCurrent() {
     if (!this.currentChannelId || this.channelList.length === 0) return;
 
@@ -79,6 +100,10 @@ export class DialogAddChannelMemberComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the current selection mode (all users or selected colleagues).
+   * @param newMode The selected mode.
+   */
   onModeChange(newMode: 'allChannels' | 'selectedColleagues') {
     this.mode = newMode;
 
@@ -87,6 +112,10 @@ export class DialogAddChannelMemberComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the members to the current channel based on the selected mode.
+   * Uses Firestore batch writes for performance and atomicity.
+   */
   async saveMember() {
     try {
       const batch = writeBatch(this.firestore);
@@ -103,6 +132,10 @@ export class DialogAddChannelMemberComponent implements OnInit {
     }
   }
 
+  /**
+   * Adds all users from the selected source channel to the current channel.
+   * @param batch Firestore batch write instance.
+   */
   private async addAllMembersFromChannel(batch: ReturnType<typeof writeBatch>) {
     const usersSnap = await getDocs(query(
       collection(this.firestore, 'users'),
@@ -117,6 +150,10 @@ export class DialogAddChannelMemberComponent implements OnInit {
     });
   }
 
+  /**
+   * Adds only the selected colleagues to the current channel.
+   * @param batch Firestore batch write instance.
+   */
   private async addSelectedColleagues(batch: ReturnType<typeof writeBatch>) {
     if (!this.currentChannelId) return;
 
@@ -128,6 +165,9 @@ export class DialogAddChannelMemberComponent implements OnInit {
     });
   }
 
+  /**
+   * Executes final actions after saving: notifies via observables and emits save event.
+   */
   private afterSave() {
     this.sharedUser.channelMembersChanged$.next();
 
@@ -138,12 +178,18 @@ export class DialogAddChannelMemberComponent implements OnInit {
     this.closeAddMember();
   }
 
+  /**
+   * Triggers the closing animation and delays the actual close.
+   */
   animateCloseAndExit() {
     this.isClosing = true;
 
     setTimeout(() => this.closeAddMember(), 300);
   }
 
+  /**
+   * Emits the close event to notify the parent component.
+   */
   closeAddMember() {
     this.close.emit();
   }
