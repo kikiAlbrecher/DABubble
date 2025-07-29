@@ -45,8 +45,9 @@ export class UserProfileComponent implements OnInit {
   avatarImg:string = 'assets/img/avatar-placeholder.svg';
 
   updateName = new FormGroup<{ name: FormControl<string> }>({
-    name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+    name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)] }),
   });
+  nameLength:boolean = false;
 
   
   /**
@@ -63,6 +64,11 @@ export class UserProfileComponent implements OnInit {
    * and toggle the edit state in the HeaderSharedService.
    */
   onSubmit() {
+    if (this.updateName.invalid) {
+      this.nameLength = true;
+      return;
+    }
+    this.nameLength = false;
     this.newName = this.updateName.value.name ?? '';
     this.sharedUser.updateName(this.newName);
     this.sharedHeader.editName = !this.sharedHeader.editName;   

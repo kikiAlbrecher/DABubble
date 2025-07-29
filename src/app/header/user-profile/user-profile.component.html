@@ -21,7 +21,7 @@
     <div class="name-status">
       <div class="dropdown-container">
         <span class="name">{{ user?.name }}</span>
-        @if (isOwnProfile && !sharedHeader.editName) {
+        @if (isOwnProfile && !sharedHeader.editName && !this.sharedUser.actualUser.guest) {
         <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
         }
       </div>
@@ -61,11 +61,19 @@
     <div class="input-container-profile">
       <input class="input-field" type="text" formControlName="name">
     </div>
-        <div class="avatar-images-container">
-            @for (item of images; track $index) {
-                <img (click)="setImage(item)" [src]=item alt="">
-            }
-        </div>
+    <div class="name-info-container">
+        <span
+        [ngClass]="{
+          'visible': nameLength,
+          'hidden': !nameLength
+        }"
+        >*Bitte min. 3 und max. 15 Buchstaben</span>
+    </div>   
+    <div class="avatar-images-container">
+        @for (item of images; track $index) {
+            <img (click)="setImage(item)" [src]=item alt="">
+        }
+    </div>
     <div class="login-button-container">
       <div (click)="sharedHeader.editNameMask()" type="button" class="login-button button-guest">Abbrechen</div>
       <button type="submit" class="login-button button-log-in">Speichern</button>

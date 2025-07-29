@@ -7,7 +7,7 @@
             <div class="input-field-container">
                 <input (input)="nameError = false" placeholder="Name und Nachname" type="text" formControlName="name" class="input-field mail" type="text">
                 <img class="input-field-image" src="assets/img/person_filled.svg" alt="">
-                @if (nameError){<span class="error-message">* Bitte Namen angeben</span>}
+                @if (nameError){<span class="error-message">* Bitte Namen mit min 3 Buchstaben angeben</span>}
             </div>
             <div class="input-field-container">
                 <input (input)="mailError = false" placeholder="beispielname@email.com" type="email" formControlName="email" class="input-field password" type="text">

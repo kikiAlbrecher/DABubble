@@ -172,7 +172,7 @@
 
 .login-button-container {
     @include dFlex(row, center, center, 30px);
-    margin: 35px 0;
+    margin: 20px 0;
 
     .login-button {
         @include fontNunito(18px, 700);
@@ -234,3 +234,19 @@
         height: 55px;
     }
 }  
+
+.name-info-container {
+    width: 100%;
+    @include dFlex(row, baseline, center, 0px);
+    span{
+        @include fontNunito($size: 16px, $weight: 400);
+        color: red;
+    }
+}
+
+.hidden {
+  visibility: hidden;
+}
+.visible {
+  visibility: visible;
+}

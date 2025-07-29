@@ -386,6 +386,10 @@ footer {
 }
 
 @media (orientation: portrait) and (max-height: 950px) {
+    .header {
+        position:static;
+    }
+
     .logo-container {
         position: absolute;
         top: 20px;

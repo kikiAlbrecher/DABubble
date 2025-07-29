@@ -47,7 +47,7 @@ export class SignUpComponent {
    * - privacy: must be checked (true)
    */
   signUpForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(15)]),
     email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/)]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     privacy: new FormControl(false, Validators.requiredTrue)
