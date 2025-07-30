@@ -1,4 +1,4 @@
-import { Component, inject, AfterViewChecked, ElementRef, ViewChild, Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Component, inject, ElementRef, ViewChild, Input, OnChanges, Output, EventEmitter } from '@angular/core';
 import { OwnMessageComponent } from "../own-message/own-message.component";
 import { UserMessageComponent } from "../user-message/user-message.component";
 import { UserSharedService } from '../../userManagement/userManagement-service';
@@ -48,7 +48,6 @@ export class MessageBoardComponent implements OnChanges {
     if (this.sharedMessages.messages.length !== this.messagesLength) {
       this.messagesLength = this.sharedMessages.messages.length;
 
-      // Wenn ein Zieltext gespeichert ist, suche danach im DOM
       if (this.sharedMessages.targetMessageText) {
         const containers = this.messageContainer.nativeElement.querySelectorAll('.messages-container');
 
@@ -60,12 +59,8 @@ export class MessageBoardComponent implements OnChanges {
           }
         }
 
-        // Nur einmal scrollen, dann zurücksetzen
         this.sharedMessages.targetMessageText = null;
-      } else {
-        // Standardverhalten: ans Ende scrollen
-        this.scrollToBottom();
-      }
+      } else this.scrollToBottom();
     }
   }
 
@@ -86,8 +81,6 @@ export class MessageBoardComponent implements OnChanges {
       }
     }
   }
-
-
 
   /**
    * Scrolls the message container element to the bottom.
@@ -118,13 +111,9 @@ export class MessageBoardComponent implements OnChanges {
       this.sharedMessages.selectedUser$,
       this.sharedMessages.selectedChannel$
     ]).subscribe(([user, channel]) => {
-      if (user) {
-        this.handleUserSelection(user);
-      } else if (channel) {
-        this.handleChannelSelection(channel);
-      } else {
-        this.clearSelections();
-      }
+      if (user) this.handleUserSelection(user);
+      else if (channel) this.handleChannelSelection(channel);
+      else this.clearSelections();
     });
   }
 
@@ -190,8 +179,4 @@ export class MessageBoardComponent implements OnChanges {
       this.creatorName = user['displayName'];
     }
   }
-
 }
-
-
-

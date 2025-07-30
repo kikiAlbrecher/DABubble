@@ -69,7 +69,7 @@
         >.menu-part {
             @include dFlex($fd: column, $jc: flex-start, $ai: flex-start);
             width: 100%;
-            min-height: 140px;
+            min-height: 94px;
             overflow: hidden;
 
             @media(max-width: 1000px) {
@@ -125,7 +125,7 @@
 }
 
 .menu-item-add {
-    padding: 12px 0 20px 45px;
+    padding: 12px 0 12px 45px;
 
     @media (max-width: 1000px) {
         padding-left: 65px;
@@ -156,7 +156,7 @@
 .scrollable-list {
     overflow-x: hidden;
     overflow-y: auto;
-    min-height: 100px;
+    min-height: 41px;
     max-height: 100%;
     flex-shrink: 1;
     flex-grow: 1;
@@ -205,7 +205,7 @@ app-users {
 .toggle-workspace {
     z-index: 99;
     position: absolute;
-    left: 0;
+    left: 32px;
     top: 80vh;
     transform: translateX(-4px) rotate(-90deg);
     transform-origin: left center;
@@ -216,6 +216,10 @@ app-users {
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
     background: $white;
+
+    @media (max-width: 1368px) {
+        left: 0;
+    }
 
     @media (max-width: 1000px) {
         display: none;
