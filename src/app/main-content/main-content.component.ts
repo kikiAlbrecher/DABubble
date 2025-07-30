@@ -496,10 +496,17 @@ export class MainContentComponent implements OnInit {
   }
 
   /**
-   * Toggles the visibility of the Devspace view.
+   * Opens the devspace (desktop).
    */
-  onToggleDevspace() {
-    this.showDevspace = !this.showDevspace;
+  onOpenDevspace() {
+    this.showDevspace = true;
+  }
+
+  /**
+   * Closes the devspace (desktop).
+   */
+  onCloseDevspace() {
+    this.showDevspace = false;
   }
 
   toggleDevspaceMobile() {

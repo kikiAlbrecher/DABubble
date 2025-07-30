@@ -28,10 +28,12 @@ export class SideNavComponent implements OnInit, OnDestroy {
   @Input() userHasMadeSelection: boolean = false;
   @Input() selectedChannel: Channel | null = null;
   @Input() selectedUser: User | null = null;
+  @Input() devspaceOpen: boolean = false;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
-  @Output() toggleDevspace = new EventEmitter<void>();
+  @Output() openDevspace = new EventEmitter<void>();
+  @Output() closeDevspace = new EventEmitter<void>();
   @Output() toggleDevspaceM = new EventEmitter<void>();
   @Output() searchMobile = new EventEmitter<void>();
   @Output() mainChatOpened = new EventEmitter<void>();
@@ -252,7 +254,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
    * Emits event to toggle devspace (desktop).
    */
   toggleDevspaceClicked() {
-    this.toggleDevspace.emit();
+    this.devspaceOpen ? this.closeDevspace.emit() : this.openDevspace.emit();
   }
 
   /**
@@ -272,6 +274,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
       this.selectedChannelId = null;
       this.selectUser.emit(user);
       this.userService.threadsVisible$.next(false);
+      if (this.devspaceOpen) this.closeDevspace.emit();
     }
   }
 
@@ -285,6 +288,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
       this.selectedUserId = null;
       this.selectChannel.emit(channel);
       this.userService.threadsVisible$.next(false);
+      if (this.devspaceOpen) this.closeDevspace.emit();
     }
   }
 

@@ -14,9 +14,10 @@
             @if (!isMobile || (isMobile && !showMainChat && !showAddChannelDialog)) {
             <app-side-nav [isMobile]="isMobile" [userHasMadeSelection]="userHasMadeSelection"
                 (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
-                (addChannel)="openDialogAddChannel()" (toggleDevspace)="onToggleDevspace()"
-                (toggleDevspaceM)="toggleDevspaceMobile()" [showAddChannelDialog]="showAddChannelDialog"
-                [selectedUser]="selectedUser" [selectedChannel]="selectedChannel" (searchMobile)="onSearchStarted()"
+                (addChannel)="openDialogAddChannel()" [devspaceOpen]="showDevspace" (openDevspace)="onOpenDevspace()"
+                (closeDevspace)="onCloseDevspace()" (toggleDevspaceM)="toggleDevspaceMobile()"
+                [showAddChannelDialog]="showAddChannelDialog" [selectedUser]="selectedUser"
+                [selectedChannel]="selectedChannel" (searchMobile)="onSearchStarted()"
                 (mainChatOpened)="showMainChat = true">
             </app-side-nav>
             }
