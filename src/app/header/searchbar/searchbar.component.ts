@@ -176,6 +176,9 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
             this.results = results;
             this.showSuggestions = results.length > 0;
             return true;
+        } else {
+            this.results = [];
+            this.showSuggestions = false;
         }
 
         return false;
@@ -195,6 +198,7 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
             this.results = results;
             this.showSuggestions = results.length > 0;
         } else {
+            this.results = [];
             this.showSuggestions = false;
         }
     }

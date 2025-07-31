@@ -47,6 +47,10 @@
         &:hover {
             cursor: pointer;
         }
+
+        &:hover g path {
+            fill: black;
+        }
     }
 }
 
