@@ -57,6 +57,7 @@ export class UserProfileComponent implements OnInit {
     if (this.user?.name) {
       this.updateName.patchValue({ name: this.user.name });
     }
+    this.avatarImg = this.sharedUser.userDetails.picture ?? "";
   }
 
   /**

@@ -97,6 +97,9 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.editor?.nativeElement) {
       this.editor.nativeElement.innerHTML = '';
     }
+    setTimeout(() => {
+      this.editor.nativeElement.focus();
+    }, 0);
   }
 
   /**
@@ -168,6 +171,11 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
       this.checkChannelMessagesExist();
     }
     this.putPlaceHolderText();
+    if (changes['selectedChannel'] && this.editor?.nativeElement) {
+      setTimeout(() => {
+        this.editor.nativeElement.focus();
+      }, 0);
+    }
   }
 
   /**
@@ -672,20 +680,32 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * Main method to add an emoji to the contenteditable editor at the current cursor position.
    * @param selected - The selected emoji object.
    */
-  addEmoji(selected: any): void {
-    const emoji: string = selected.emoji.native;
-    const div = this.editor.nativeElement;
+addEmoji(selected: any): void {
+  const emoji: string = selected.emoji.native;
+  const el = this.editor.nativeElement;
 
+  if (el.tagName.toLowerCase() === 'textarea') {
+    const textarea = el as unknown as HTMLTextAreaElement;  // <-- hier doppelte Typumwandlung
+    const start = textarea.selectionStart ?? 0;
+    const end = textarea.selectionEnd ?? 0;
+    const value = textarea.value;
+
+    textarea.value = value.slice(0, start) + emoji + value.slice(end);
+    textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+    textarea.focus();
+  } else {
+    // contenteditable div-Fall
     this.mentionComponent?.restoreCursorPosition();
     const range = this.getCurrentSelectionRange();
     if (!range) return;
 
     this.insertEmojiAtCursor(range, emoji);
     this.updateCursorAfterEmoji(range);
-    this.syncEditorContentToForm();
-
-    this.closeEmojiOverlay();
   }
+
+  this.syncEditorContentToForm();
+  this.closeEmojiOverlay();
+}
 
   /**
    * Gets the current text selection range in the editor.

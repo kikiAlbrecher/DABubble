@@ -41,6 +41,14 @@ export class LoginComponent {
   })
 
   /**
+   * Resets the input-datafields on pageload
+   */
+  ngOnInit() {
+   this.logInForm.reset();  
+   this.shared.inputData = false;
+  }
+
+  /**
    * Handles form submission for login.
    * If the form is valid, attempts to log the user in via the shared service.
    * On success, navigates to the main content page.

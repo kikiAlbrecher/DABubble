@@ -5,17 +5,17 @@
         <span class="login-text">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</span>
         <div class="input-container">
             <div class="input-field-container">
-                <input (input)="nameError = false" placeholder="Name und Nachname" type="text" formControlName="name" class="input-field mail" type="text">
+                <input (input)="nameError = false" placeholder="Name und Nachname" type="text" formControlName="name" class="input-field mail">
                 <img class="input-field-image" src="assets/img/person_filled.svg" alt="">
                 @if (nameError){<span class="error-message">* Bitte Namen mit min 3 Buchstaben angeben</span>}
             </div>
             <div class="input-field-container">
-                <input (input)="mailError = false" placeholder="beispielname@email.com" type="email" formControlName="email" class="input-field password" type="text">
+                <input (input)="mailError = false" placeholder="beispielname@email.com" type="email" formControlName="email" class="input-field password">
                 <img class="input-field-image" src="assets/img/mail.svg" alt="">
                 @if (mailError){<span class="error-message">* Bitte E-Mail angeben.</span>}
             </div>
             <div class="input-field-container">
-                <input (input)="passwordError = false" placeholder="Passwort" type="password" formControlName="password" class="input-field password" type="text">
+                <input (input)="passwordError = false" placeholder="Passwort" type="password" formControlName="password" class="input-field password">
                 <img class="input-field-image" src="assets/img/lock.svg" alt="">
                 @if (passwordError) {<span class="error-message">* Bitte Passwort mit mind. 6 Zeichen angeben.</span>}
             </div>

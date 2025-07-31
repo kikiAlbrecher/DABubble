@@ -30,9 +30,7 @@ export class HeaderSharedService {
      */
     editNameMask() {
         this.editName = !this.editName;
-        this.newPicture = false;
-        console.log(this.shared.actualUser);
-        
+        this.newPicture = false;        
     }
 
     /**

@@ -55,6 +55,14 @@ export class SignUpComponent {
 
   
   /**
+   * Resets the input-datafields on pageload
+   */
+  ngOnInit() {
+   this.signUpForm.reset();  
+  }
+
+
+  /**
    * Returns true if all inputs pass validation.
    * Used to control form submission.
    */
