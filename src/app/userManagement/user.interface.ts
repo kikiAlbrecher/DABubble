@@ -14,7 +14,6 @@
  * - `channelIds`: A dictionary of channel IDs the user is a member of. Each entry has a value of `true`.
  * - `picture`: Path or URL to the user's avatar/profile picture.
  * - `displayName` (optional): A user-friendly display name, if different from `name`.
- * - `displayNameLowercase` (optional): Lowercase version of `displayName`, useful for case-insensitive search.
  */
 
 export interface User {
@@ -26,5 +25,4 @@ export interface User {
     channelIds: { [channelId: string]: true },
     picture: string,
     displayName?: string;
-    displayNameLowercase?: string;
 }

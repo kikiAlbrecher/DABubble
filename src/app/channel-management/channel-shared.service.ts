@@ -72,7 +72,7 @@ export class ChannelSharedService {
         return new Channel({ ...channelDoc.data(), channelId });
       }
     } catch (error) {
-      console.error(`Fehler beim Laden von Channel ${channelId}:`, error);
+      throw new Error(`Fehler beim Laden von Channel ${channelId}.`);
     }
 
     return null;

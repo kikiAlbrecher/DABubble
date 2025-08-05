@@ -1,7 +1,3 @@
-/**
- * 
- */
-
 import {
   Component, ViewChild, OnInit, ElementRef, HostListener, Input, Output, EventEmitter, inject, OnChanges,
   SimpleChanges, AfterViewInit
@@ -283,7 +279,10 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * @returns A Promise that resolves when the submission process is complete.
    */
   async onSubmit() {
-    if (this.devspaceOpen) await this.handleDevspaceEntry();
+    if (this.devspaceOpen) {
+      const valid = await this.handleDevspaceEntry();
+      if (!valid) return;
+    }
 
     const message = this.removeMentionsFromDOM();
     if (!message) return;
@@ -680,32 +679,31 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * Main method to add an emoji to the contenteditable editor at the current cursor position.
    * @param selected - The selected emoji object.
    */
-addEmoji(selected: any): void {
-  const emoji: string = selected.emoji.native;
-  const el = this.editor.nativeElement;
+  addEmoji(selected: any): void {
+    const emoji: string = selected.emoji.native;
+    const el = this.editor.nativeElement;
 
-  if (el.tagName.toLowerCase() === 'textarea') {
-    const textarea = el as unknown as HTMLTextAreaElement;  // <-- hier doppelte Typumwandlung
-    const start = textarea.selectionStart ?? 0;
-    const end = textarea.selectionEnd ?? 0;
-    const value = textarea.value;
+    if (el.tagName.toLowerCase() === 'textarea') {
+      const textarea = el as unknown as HTMLTextAreaElement;
+      const start = textarea.selectionStart ?? 0;
+      const end = textarea.selectionEnd ?? 0;
+      const value = textarea.value;
 
-    textarea.value = value.slice(0, start) + emoji + value.slice(end);
-    textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
-    textarea.focus();
-  } else {
-    // contenteditable div-Fall
-    this.mentionComponent?.restoreCursorPosition();
-    const range = this.getCurrentSelectionRange();
-    if (!range) return;
+      textarea.value = value.slice(0, start) + emoji + value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
+      textarea.focus();
+    } else {
+      this.mentionComponent?.restoreCursorPosition();
+      const range = this.getCurrentSelectionRange();
+      if (!range) return;
 
-    this.insertEmojiAtCursor(range, emoji);
-    this.updateCursorAfterEmoji(range);
+      this.insertEmojiAtCursor(range, emoji);
+      this.updateCursorAfterEmoji(range);
+    }
+
+    this.syncEditorContentToForm();
+    this.closeEmojiOverlay();
   }
-
-  this.syncEditorContentToForm();
-  this.closeEmojiOverlay();
-}
 
   /**
    * Gets the current text selection range in the editor.

@@ -32,7 +32,6 @@ export class SignUpComponent {
     public shared: UserSharedService,
     private router: Router) { }
 
-  // Flags used to control visibility of error messages in the UI
   nameError: boolean = false;
   mailError: boolean = false;
   passwordError: boolean = false;

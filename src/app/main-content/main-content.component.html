@@ -83,7 +83,7 @@
         }
 
         @if (showProfile) {
-        <div class="outside-overlay outside-overlay-profile" (click)="showProfile = false">
+        <div class="outside-overlay" (click)="showProfile = false">
             <div class="content-restriction">
                 <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
                     [actualUserId]="shared.actualUserID" (close)="showProfile = false"

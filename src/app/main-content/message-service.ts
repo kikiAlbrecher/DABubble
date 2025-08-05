@@ -7,12 +7,10 @@ import { BehaviorSubject } from 'rxjs';
 import { Firestore, deleteDoc, Timestamp, Query, QuerySnapshot, DocumentData, orderBy, serverTimestamp, updateDoc, collection, getDoc, getDocs, setDoc, addDoc, query, where, onSnapshot } from '@angular/fire/firestore';
 import { doc } from 'firebase/firestore';
 import { ChatMessage } from './message.model';
-import { Reaction } from "./../../models/reaction.model"
 
 @Injectable({
     providedIn: 'root'
 })
-
 export class MessageSharedService {
 
     private firestore = inject(Firestore);
@@ -29,7 +27,6 @@ export class MessageSharedService {
     writeMessageComponentOverlay: boolean = false;
     showChannels: boolean = false;
     selectedMessage: ChatMessage | undefined;
-    //answerMessages: ChatMessage[] = [];
     threadChannelOrUserName: string = "";
     alreadyExisitingReactionId: string = "";
     public answerMessages: ChatMessage[] = [];
@@ -143,7 +140,6 @@ export class MessageSharedService {
             return groups;
         }, {});
     }
-
 
     /**
      * Fetches and subscribes to direct messages between the current user and the selected user.
@@ -533,7 +529,6 @@ export class MessageSharedService {
         const reactionsRef = await this.prepareAnswerReactionsCollection();
         const alreadyReacted = await this.checkReactionDone(reactionsRef, message, emoji);
         if (alreadyReacted) {
-            console.log('User already reacted!');
             this.deleteReaction(reactionsRef, message);
         } else {
             await addDoc(reactionsRef, {
@@ -555,7 +550,4 @@ export class MessageSharedService {
             this.answerId = element.id
         });
     }
-
-
-
 }

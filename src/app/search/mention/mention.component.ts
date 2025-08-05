@@ -177,7 +177,7 @@ export class MentionComponent implements OnInit {
       this.savedRange.setStart(textNode, newOffset);
       this.savedRange.setEnd(textNode, newOffset);
     } catch (e) {
-      console.error('Failed to set cursor position:', e);
+      throw new Error('Failed to set cursor position.');
     }
   }
 

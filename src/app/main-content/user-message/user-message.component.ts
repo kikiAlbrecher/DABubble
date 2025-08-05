@@ -1,14 +1,13 @@
-import {Component, Input, HostListener, ElementRef, inject, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, Input, ElementRef, inject, ChangeDetectorRef, ViewContainerRef, ViewChild } from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../message-service';
 import { ChatMessage } from '../message.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Firestore, Timestamp, orderBy, collection, query, onSnapshot, doc } from '@angular/fire/firestore';
-import { CdkPortal, CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
+import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { Overlay, OverlayRef, OverlayPositionBuilder } from '@angular/cdk/overlay';
 import { EmojiPickerComponent } from "./../../style-components/emoji-picker/emoji-picker.component"
 import { Reaction } from "./../../../models/reaction.model";
-
 
 @Component({
   selector: 'app-user-message',
@@ -35,25 +34,25 @@ export class UserMessageComponent {
   newMessage: string = "";
   answerDetails: ChatMessage[] = [];
   editMessageOverlay: boolean = false;
-  showEditContainer:boolean = false;
-  emojiOverlay:boolean = false;
-  reactionDetails:Reaction[] = [];
-  groupedReactions:any = {};
+  showEditContainer: boolean = false;
+  emojiOverlay: boolean = false;
+  reactionDetails: Reaction[] = [];
+  groupedReactions: any = {};
   groupedReactionsEmoji: any;
   answerGroupedReactions: { [answerId: string]: { [emoji: string]: Reaction[] } } = {};
   answerGroupedReactionsEmoji: { [answerId: string]: string[] } = {};
   hoveredEmoji: string | null = null;
   reactionUserNames: string[] = [];
   reactionUsersLoaded: boolean = false;
-  answerReactionUser:string= "";
+  answerReactionUser: string = "";
   answerMessages: ChatMessage[] = [];
-  answerIds:string = "";
+  answerIds: string = "";
   reactionsLoaded = false;
-  maxItems:number = 8;
-  maxThreadsItems:number = 4; 
+  maxItems: number = 8;
+  maxThreadsItems: number = 4;
   maxItemsReached: boolean = false;
-  reactionLength:number = 0;
-  
+  reactionLength: number = 0;
+
   constructor(
     public sharedUser: UserSharedService,
     public sharedMessages: MessageSharedService,
@@ -62,64 +61,63 @@ export class UserMessageComponent {
     private cdr: ChangeDetectorRef,
     private overlay: Overlay,
     private overlayPositionBuilder: OverlayPositionBuilder,
-  ) {}   
- 
+  ) { }
 
-   /**
-   * Lifecycle-Hook, der nach der Initialisierung der Komponente aufgerufen wird.
-   * 
-   * Lädt den Benutzernamen und das Benutzerbild zur angezeigten Nachricht (falls vorhanden).
-   * Fallbacks sind "Unbekannt" bzw. ein Platzhalterbild.
-   * Danach wird die Methode `getAnswerIds()` aufgerufen, um Antwortnachrichten zu verfolgen.
-   */
+  /**
+  * Lifecycle-Hook, der nach der Initialisierung der Komponente aufgerufen wird.
+  * 
+  * Lädt den Benutzernamen und das Benutzerbild zur angezeigten Nachricht (falls vorhanden).
+  * Fallbacks sind "Unbekannt" bzw. ein Platzhalterbild.
+  * Danach wird die Methode `getAnswerIds()` aufgerufen, um Antwortnachrichten zu verfolgen.
+  */
   async ngOnInit() {
     if (this.message?.user) {
       this.userName = await this.sharedMessages.getUserName(this.message.user) ?? 'Unbekannt';
       this.userPicture = await this.sharedMessages.getUserPicture(this.message.user) ?? 'assets/img/avatar-placeholder.svg';
-      this.getAnswerIds();   
+      this.getAnswerIds();
     }
   }
 
- /**
- * Lifecycle-Hook, der aufgerufen wird, wenn sich Eingabewerte der Komponente ändern.
- * 
- * Wenn `message.id` und `message.channelId` gesetzt sind, werden:
- * - Die Details zu den Antwortnachrichten (`getAnswerDetails()`)
- * - sowie die Reaktionen zur Nachricht (`getChannelReactions()`) geladen.
- */
+  /**
+  * Lifecycle-Hook, der aufgerufen wird, wenn sich Eingabewerte der Komponente ändern.
+  * 
+  * Wenn `message.id` und `message.channelId` gesetzt sind, werden:
+  * - Die Details zu den Antwortnachrichten (`getAnswerDetails()`)
+  * - sowie die Reaktionen zur Nachricht (`getChannelReactions()`) geladen.
+  */
   ngOnChanges(): void {
     if (this.message?.id && this.message?.channelId) {
-      this.getAnswerDetails();    
-      this.getChannelReactions()  ;
+      this.getAnswerDetails();
+      this.getChannelReactions();
     }
   }
 
- /**
- * Öffnet die Thread-Ansicht zur aktuellen Nachricht.
- * 
- * - Schaltet `threadsVisible$` in `UserSharedService` auf `true`, um die Thread-Ansicht zu aktivieren.
- * - Lädt über `getAnswerMessage()` die Details zur Thread-Nachricht.
- * - Ruft `getChannelOrUserName()` auf, um Kontextinfos zu laden.
- * - Je nach Auswahl lädt entweder Kanal- oder Direktnachrichten-Antworten.
- */
+  /**
+  * Öffnet die Thread-Ansicht zur aktuellen Nachricht.
+  * 
+  * - Schaltet `threadsVisible$` in `UserSharedService` auf `true`, um die Thread-Ansicht zu aktivieren.
+  * - Lädt über `getAnswerMessage()` die Details zur Thread-Nachricht.
+  * - Ruft `getChannelOrUserName()` auf, um Kontextinfos zu laden.
+  * - Je nach Auswahl lädt entweder Kanal- oder Direktnachrichten-Antworten.
+  */
   async answerMessage() {
     this.sharedUser.threadsVisible$.next(true);
     await this.sharedMessages.getAnswerMessage(this.message);
     this.sharedMessages.getChannelOrUserName();
     if (this.sharedMessages.channelSelected) {
-      this.sharedMessages.getChannelAnswerMessages ();      
+      this.sharedMessages.getChannelAnswerMessages();
     } else if (this.sharedMessages.userSelected) {
-      this.sharedMessages.getUserAnswerMessages (); 
+      this.sharedMessages.getUserAnswerMessages();
     }
   }
 
- /**
- * Fetches all replies to the current message from Firestore in real-time.
- *
- * Determines the correct subcollection path (`answers`) based on whether the current context
- * is a channel or a direct message, and subscribes to live updates using `onSnapshot`.
- * The fetched replies are stored in the `answerDetails` array, with proper timestamp conversion.
- */
+  /**
+  * Fetches all replies to the current message from Firestore in real-time.
+  *
+  * Determines the correct subcollection path (`answers`) based on whether the current context
+  * is a channel or a direct message, and subscribes to live updates using `onSnapshot`.
+  * The fetched replies are stored in the `answerDetails` array, with proper timestamp conversion.
+  */
   async getAnswerDetails(): Promise<void> {
     const collectionType = this.getCollectionType();
     const channelId = this.message.channelId ?? '';
@@ -171,7 +169,7 @@ export class UserMessageComponent {
       this.editOverlay = true;
     }
   }
- 
+
   /**
   * Handles the event when an emoji is selected from the emoji picker.
   *
@@ -182,15 +180,15 @@ export class UserMessageComponent {
   *
   * @param emoji The selected emoji object or string (depending on picker library)
   */
-  addEmoji(emoji:any) {    
+  addEmoji(emoji: any) {
     this.closeOverlay();
     if (this.mode !== 'thread') {
       this.sharedMessages.pushEmojiReaction(this.message, emoji);
-    }else {
+    } else {
       this.sharedMessages.pushAnswerEmojiReaction(this.message, emoji)
-    }    
+    }
   }
- 
+
   /**
    * Loads and listens to emoji reactions for the current message from Firestore.
    * 
@@ -244,7 +242,7 @@ export class UserMessageComponent {
     this.groupedReactions = groups;
     this.groupedReactionsEmoji = Object.keys(groups);
   }
- 
+
   /**
    * Handles mouse hover on a specific emoji to show which users reacted with it.
    * 
@@ -284,7 +282,7 @@ export class UserMessageComponent {
       });
     }
   }
- 
+
   /**
    * Subscribes to the observable stream of answer messages (`answerMessages$`)
    * and triggers the loading of reactions for each individual answer message.
@@ -312,7 +310,7 @@ export class UserMessageComponent {
     this.reactionUsersLoaded = false;
     this.reactionUserNames = [];
   }
- 
+
   /**
    * Main method to fetch and group emoji reactions for a specific answer message.
    * 
@@ -389,7 +387,7 @@ export class UserMessageComponent {
       return groups;
     }, {});
   }
- 
+
   /**
    * Shows reaction information for a specific emoji on an answer message.
    * Loads the user names who reacted with this emoji if not already loaded.
@@ -480,12 +478,9 @@ export class UserMessageComponent {
   * Closes the emoji-overlay
   */
   closeOverlay() {
-    console.log('test');
-    
     if (this.overlayRef) {
       this.overlayRef.dispose();
       this.overlayRef = null;
     }
-  } 
-
+  }
 }

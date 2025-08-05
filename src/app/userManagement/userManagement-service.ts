@@ -136,7 +136,6 @@ export class UserSharedService {
     * Sends user data, sets accountSuccess flag for UI feedback.
     */
     sendData() {
-        console.log(this.userDetails);
         this.accountSuccess = true;
         setTimeout(() => {
             this.accountSuccess = false;
@@ -187,7 +186,6 @@ export class UserSharedService {
         const uid = user.uid;
         (this.userDetails as any).uid = uid;
         (this.userDetails as any).displayName = this.userDetails.name;
-        (this.userDetails as any).displayNameLowercase = (this.userDetails.name ?? '').toLowerCase();
     }
 
     /**
@@ -359,8 +357,7 @@ export class UserSharedService {
             name: user.displayName,
             picture: 'assets/img/avatar-placeholder.svg',
             status: false,
-            displayName: user.displayName,
-            displayNameLowercase: (user.displayName ?? '').toLowerCase()
+            displayName: user.displayName
         });
         this.channelMembersChanged$.next();
         this.router.navigate(['/main-content']);
@@ -416,8 +413,7 @@ export class UserSharedService {
             picture: 'assets/img/avatar-placeholder.svg',
             status: true,
             guest: true,
-            displayName: 'Gast',
-            displayNameLowercase: 'gast'
+            displayName: 'Gast'
         });
     }
 
@@ -467,7 +463,6 @@ export class UserSharedService {
      * On failure, displays an error message for 3 seconds.
      */
     updatePassword(actionCode: string, newPassword: any) {
-        console.log('hallo');
         const auth = this.auth;
         confirmPasswordReset(auth, actionCode, newPassword).then((resp) => {
             this.infoSlider('passwordChanged');
@@ -528,7 +523,7 @@ export class UserSharedService {
      * 
      * @param picture - The new picture to set for the user.
      */
-    async changeAvatar(picture:string) {
+    async changeAvatar(picture: string) {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
         await updateDoc(currentUser, {
             picture: picture
