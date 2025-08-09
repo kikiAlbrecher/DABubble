@@ -91,6 +91,11 @@ export class MainContentComponent implements OnInit {
     });
 
     this.userHasMadeSelection = false;
+
+    this.sharedHeader.profileOpen$.subscribe(() => {
+      this.selectedUser = this.shared.actualUser;
+      this.showProfile = true;
+    });
   }
 
   /**
@@ -148,7 +153,7 @@ export class MainContentComponent implements OnInit {
    */
   onUserSelected(user: User) {
     this.userHasMadeSelection = true;
-    this.selectedUser = user;
+    this.selectedUser = { ...user };
     this.selectedChannel = null;
     this.messageService.setSelectedUser(user);
     this.messageService.setSelectedChannel(null);

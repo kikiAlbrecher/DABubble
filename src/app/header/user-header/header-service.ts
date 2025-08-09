@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 
 @Injectable({
@@ -6,10 +7,22 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
 })
 export class HeaderSharedService {
     editName: boolean = false;
-    newName: string = "";
+    newName: string = '';
     dropdownProfile: boolean = false;
     newPicture: boolean = false;
+
     public shared = inject(UserSharedService);
+    private profileOpenSubject = new Subject<void>();
+    profileOpen$ = this.profileOpenSubject.asObservable();
+
+    requestProfileOpen(): void {
+        this.profileOpenSubject.next();
+    }
+
+    openProfileOverlay(): void {
+        this.dropdownProfile = false;
+        this.profileOpenSubject.next();
+    }
 
     /**
      * Toggles the user edit overlay in the header.
@@ -28,16 +41,9 @@ export class HeaderSharedService {
      * Toggles the visibility of the name editing input.
      * If the edit input is visible, it will be hidden, and vice versa.
      */
-    editNameMask() {
+    editNameMask(event: Event): void {
+        event.stopPropagation();
         this.editName = !this.editName;
-        this.newPicture = false;        
+        this.newPicture = false;
     }
-
-    /**
-     * Toggles the visibility of the profile dropdown menu in the header.
-     */
-    changeDropdown() {
-        this.dropdownProfile = !this.dropdownProfile;
-    }
-
 }

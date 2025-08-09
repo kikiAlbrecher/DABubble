@@ -22,10 +22,7 @@
         </svg>
         @if (shared.userEditOverlay) {
         <div class="edit-user-overlay" (click)="$event.stopPropagation()">
-            @if (!sharedHeader.dropdownProfile) {<app-dropdown></app-dropdown>}
-            @if (sharedHeader.dropdownProfile) {
-            <app-user-profile [isHeader]="true" [user]="shared.actualUser" [actualUserId]="shared.actualUserID">
-            </app-user-profile> }
+            @if (!sharedHeader.dropdownProfile) { <app-dropdown></app-dropdown> }
         </div>
         }
     </div>

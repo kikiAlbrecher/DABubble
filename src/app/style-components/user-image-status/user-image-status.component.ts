@@ -10,5 +10,25 @@ import { CommonModule } from '@angular/common';
   styleUrl: './user-image-status.component.scss'
 })
 export class UserImageStatusComponent {
-  @Input() user!: User;
+  public _user!: User;
+
+  /**
+   * Sets the user input for this component.
+   * Used to display user-related data (e.g. avatar, status).
+   *
+   * @param value - The user object to assign.
+   */
+  @Input()
+  set user(value: User) {
+    this._user = value;
+  }
+
+  /**
+   * Gets the current user object.
+   *
+   * @returns The assigned user.
+   */
+  get user(): User {
+    return this._user;
+  }
 }

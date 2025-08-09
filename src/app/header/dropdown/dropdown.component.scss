@@ -12,6 +12,7 @@
     position: absolute;
     top: 86px;
     right: 32px;
+    cursor: default;
 
     @media (max-width: 1000px) {
         top: 80px;
@@ -20,18 +21,18 @@
 
     span {
         @include fontNunito(24px, 600);
-        cursor: pointer;
     }
 }
 
 .dropdown-element {
     width: 222px;
     height: 53px;
-    @include dFlex(row, center, center, );
+    @include dFlex();
     border-radius: 100px;
 
     &:hover {
         background-color: #ECEEFE;
         color: #535AF1;
+        cursor: pointer;
     }
 }

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../userManagement/user.interface';
 import { CommonModule } from '@angular/common';
+import { MessageSharedService } from '../../main-content/message-service';
 
 @Component({
   selector: 'app-user-profile',
@@ -20,7 +21,6 @@ import { CommonModule } from '@angular/common';
 export class UserProfileComponent implements OnInit {
   @Input() user: User | null = null;
   @Input() actualUserId: string = '';
-  @Input() isHeader: boolean = false;
   @Input() allowEdit: boolean = true;
   @Input() showUser: boolean = false;
   @Output() close = new EventEmitter<void>();
@@ -29,10 +29,11 @@ export class UserProfileComponent implements OnInit {
   constructor(
     public sharedUser: UserSharedService,
     public sharedHeader: HeaderSharedService,
+    public sharedMessages: MessageSharedService
   ) { }
 
   newName: string = "";
-  
+
   images = [
     'assets/img/avatar1.svg',
     'assets/img/avatar2.svg',
@@ -42,39 +43,76 @@ export class UserProfileComponent implements OnInit {
     'assets/img/avatar6.svg',
   ]
 
-  avatarImg:string = 'assets/img/avatar-placeholder.svg';
+  avatarImg: string = 'assets/img/avatar-placeholder.svg';
 
   updateName = new FormGroup<{ name: FormControl<string> }>({
     name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)] }),
   });
-  nameLength:boolean = false;
+  nameLength: boolean = false;
 
-  
+
   /**
    * On component initialization, populate the update form with the user's current name.
    */
   ngOnInit(): void {
-    if (this.user?.name) {
-      this.updateName.patchValue({ name: this.user.name });
-    }
-    this.avatarImg = this.sharedUser.userDetails.picture ?? "";
+    if (this.user?.name) this.updateName.patchValue({ name: this.user.name });
+
+    this.avatarImg = this.user?.picture || 'assets/img/avatar-placeholder.svg';
   }
 
   /**
-   * Submit the updated name, triggering the UserSharedService to update the user's name,
-   * and toggle the edit state in the HeaderSharedService.
+   * Handles form submission to update the user's name and avatar.
+   * Validates form input, updates local user data and shared services.
    */
   onSubmit() {
-    if (this.updateName.invalid) {
-      this.nameLength = true;
-      return;
-    }
+    if (this.updateName.invalid) return this.handleInvalidName();
+
     this.nameLength = false;
     this.newName = this.updateName.value.name ?? '';
+
     this.sharedUser.updateName(this.newName);
-    this.sharedHeader.editName = !this.sharedHeader.editName;   
-    this.sharedUser.userDetails.picture = this.avatarImg ?? '';  
+
+    this.updateLocalUser();
+    this.updateAvatarIfNeeded();
+    this.updateSelectedUserIfOwnProfile();
+
+    this.sharedHeader.editName = false;
+  }
+
+  /**
+   * Handles invalid name form input by showing the validation message.
+   */
+  private handleInvalidName() {
+    this.nameLength = true;
+  }
+
+  /**
+   * Updates the local user object with the new name and avatar.
+   */
+  private updateLocalUser() {
+    if (!this.user) return;
+    this.user.name = this.newName;
+    this.user.picture = this.avatarImg;
+  }
+
+  /**
+   * Updates the shared avatar if the user has selected a new one.
+   */
+  private updateAvatarIfNeeded() {
+    if (!this.sharedHeader.newPicture) return;
+    this.sharedUser.userDetails.picture = this.avatarImg;
     this.sharedUser.changeAvatar(this.avatarImg);
+  }
+
+  /**
+   * Updates the selected user in message view if it is the current user.
+   */
+  private updateSelectedUserIfOwnProfile() {
+    const selected = this.sharedMessages.selectedUser;
+    if (selected?.id !== this.sharedUser.actualUserID) return;
+
+    selected.name = this.newName;
+    selected.displayName = this.newName;
   }
 
   /**
@@ -85,7 +123,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   /**
-   * Emit the close event to notify parent components to close this profile view.
+   * Emits the close event to notify parent components to close this profile view.
    */
   onClose() {
     this.close.emit();
@@ -95,11 +133,21 @@ export class UserProfileComponent implements OnInit {
   /**
    * Sets the selected image as the user's avatar.
    * Also toggles the picturePicked flag for UI feedback.
+   * 
    * @param item - Path to the selected avatar image
    */
-  setImage(item:string) {
+  setImage(item: string) {
     this.avatarImg = item;
     this.sharedHeader.newPicture = true;
   }
 
+  /**
+   * TrackBy function to optimize avatar image rendering in ngFor.
+   * @param index - Index of the item in the list.
+   * @param item - The avatar image path.
+   * @returns The index to use for tracking.
+   */
+  trackByIndex(index: number, item: string): number {
+    return index;
+  }
 }

@@ -11,7 +11,7 @@
         <div class="main-components" [class.workspace-closed]="!(shared.workspaceOpen$ | async)"
             [class.threads-open]="(shared.threadsVisible$ | async)">
 
-            @if (!isMobile || (isMobile && !showMainChat && !showAddChannelDialog)) {
+            @if (!isMobile || (isMobile && !showMainChat && !showAddChannelDialog && !showProfile)) {
             <app-side-nav [isMobile]="isMobile" [userHasMadeSelection]="userHasMadeSelection"
                 (selectChannel)="onChannelSelected($event)" (selectUser)="onUserSelected($event)"
                 (addChannel)="openDialogAddChannel()" [devspaceOpen]="showDevspace" (openDevspace)="onOpenDevspace()"
@@ -85,7 +85,7 @@
         @if (showProfile) {
         <div class="outside-overlay" (click)="showProfile = false">
             <div class="content-restriction">
-                <app-user-profile (click)="$event.stopPropagation()" [isHeader]="false" [user]="selectedUser"
+                <app-user-profile (click)="$event.stopPropagation()" [user]="selectedUser"
                     [actualUserId]="shared.actualUserID" (close)="showProfile = false"
                     (sendMessage)="sendUserMessage($event)">
                 </app-user-profile>

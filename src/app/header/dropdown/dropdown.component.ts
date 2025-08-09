@@ -11,7 +11,16 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
 })
 export class DropdownComponent {
   constructor(
-    public sharedUser: UserSharedService,  
+    public sharedUser: UserSharedService,
     public sharedHeader: HeaderSharedService,
-    ) {}
+  ) { }
+
+  /**
+   * Opens the current user's profile by setting the selected user 
+   * and triggering the profile view through the shared header service.
+   */
+  openProfile() {
+    this.sharedUser.setSelectedUser(this.sharedUser.actualUser);
+    this.sharedHeader.requestProfileOpen();
+  }
 }

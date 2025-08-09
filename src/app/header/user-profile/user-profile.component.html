@@ -1,48 +1,58 @@
-<div *ngIf="isHeader" class="overlay" (click)="sharedHeader.toggleHeaderOverlay($event)"></div>
-
-@if (isHeader) {
-<div class="dopdown header-profile">
+<div class="custom-scrollbar dopdown" [ngClass]="{ 'own-profile': isOwnProfile, 'not-own-profile': !isOwnProfile }">
   <div class="dropdown-container">
-    @if (sharedHeader.editName && isOwnProfile) {
-    <span class="header">Dein Profil bearbeiten</span>
-    } @else {
-    <span class="header">Profil</span>
-    }
-    <img (click)="sharedHeader.changeDropdown()" src="assets/icons/close.svg" alt="">
+    <span class="header">
+      {{ sharedHeader.editName && isOwnProfile ? 'Dein Profil bearbeiten' : 'Profil' }}
+    </span>
+    <img (click)="onClose()" src="assets/icons/close.svg" alt="close icon">
   </div>
-  @if (this.sharedHeader.newPicture) {
-    <img class="profile-image" src="{{ avatarImg }}" alt="">
-  }@else {
-    <img class="profile-image" src="{{ user?.picture }}" alt="">
-  }  
+  <img class="profile-image"
+    [src]="sharedHeader.newPicture ? avatarImg : (user?.picture || 'assets/img/avatar-placeholder.svg')"
+    alt="profile image">
 
   @if (!sharedHeader.editName) {
-  <div class="change-container-info">
-    <div class="name-status">
-      <div class="dropdown-container">
-        <span class="name">{{ user?.name }}</span>
-        @if (isOwnProfile && !sharedHeader.editName && !this.sharedUser.actualUser.guest) {
-        <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
-        }
+  <ng-container>
+    <div class="change-container-info">
+      <div class="name-status">
+        <div class="dropdown-container">
+          <span class="name">{{ user?.name }}</span>
+          @if (isOwnProfile && !sharedUser.actualUser.guest) {
+          <span (click)="sharedHeader.editNameMask($event)" class="edit">
+            Bearbeiten
+          </span>
+          <svg (click)="sharedHeader.editNameMask($event)" class="svg-style edit-icon" width="30" height="30"
+            viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="30" height="30" rx="15" fill="#ECEEFE" />
+            <mask id="mask0_761_13577" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="24"
+              height="24">
+              <rect x="3" y="3" width="24" height="24" fill="#D9D9D9" />
+            </mask>
+            <g mask="url(#mask0_761_13577)">
+              <path
+                d="M8 22H9.4L18.025 13.375L16.625 11.975L8 20.6V22ZM22.3 11.925L18.05 7.725L19.45 6.325C19.8333 5.94167 20.3043 5.75 20.863 5.75C21.421 5.75 21.8917 5.94167 22.275 6.325L23.675 7.725C24.0583 8.10833 24.2583 8.571 24.275 9.113C24.2917 9.65433 24.1083 10.1167 23.725 10.5L22.3 11.925ZM7 24C6.71667 24 6.47933 23.904 6.288 23.712C6.096 23.5207 6 23.2833 6 23V20.175C6 20.0417 6.025 19.9127 6.075 19.788C6.125 19.6627 6.2 19.55 6.3 19.45L16.6 9.15L20.85 13.4L10.55 23.7C10.45 23.8 10.3377 23.875 10.213 23.925C10.0877 23.975 9.95833 24 9.825 24H7Z"
+                fill="#1C1B1F" />
+            </g>
+          </svg>
+          }
+        </div>
+
+        <div class="baseline-container">
+          <div class="check-status" [class.online]="user?.status" [class.offline]="!user?.status"></div>
+          <span [class.active]="user?.status" [class.inactive]="!user?.status">
+            {{ user?.status ? 'Aktiv' : 'Abwesend' }}
+          </span>
+        </div>
       </div>
-      <div class="baseline-container">
-        <div class="check-status" [class.online]="user?.status" [class.offline]="!user?.status"></div>
-        <span [class.active]="user?.status" [class.inactive]="!user?.status">
-          {{ user?.status ? 'Aktiv' : 'Abwesend' }}
-        </span> 
+
+      <div class="baseline-container-mail">
+        <img class="mail-icon" src="assets/icons/mail.svg" alt="email icon">
+        <div class="mail-container">
+          <span class="mailtext">E-Mail Adresse</span>
+          <span class="mail-adress">{{ user?.email }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="baseline-container-mail">
-      <img class="mail-icon" src="assets/icons/mail.svg" alt="">
-      <div class="mail-container">
-        <span class="mailtext">E-Mail Adresse</span>
-        <span class="mail-adress">{{ user?.email }}</span>
-      </div>
-    </div>
-  </div>
-
-  @if (!isOwnProfile) {
+    @if (!isOwnProfile) {
     <div class="message-container">
       <button type="button" class="submit-button message-btn" (click)="sendMessage.emit(user!)">
         <img src="assets/icons/message.svg" alt="message icon">
@@ -50,101 +60,37 @@
       </button>
     </div>
     }
+  </ng-container>
   }
 
   @if (sharedHeader.editName && isOwnProfile) {
   <form [formGroup]="updateName" (ngSubmit)="onSubmit()" class="change-container-change">
     <div class="full-name-container">
-      <img src="assets/icons/account_circle.svg" alt="">
+      <img src="assets/icons/account_circle.svg" alt="account icon">
       <span>Vollständiger Name</span>
     </div>
+
     <div class="input-container-profile">
       <input class="input-field" type="text" formControlName="name">
-    </div>
-    <div class="name-info-container">
-        <span
-        [ngClass]="{
-          'visible': nameLength,
-          'hidden': !nameLength
-        }"
-        >*Bitte min. 3 und max. 15 Buchstaben</span>
-    </div>   
-    <div class="avatar-images-container">
-        @for (item of images; track $index) {
-            <img (click)="setImage(item)" [src]=item alt="">
-        }
-    </div>
-    <div class="login-button-container">
-      <div (click)="sharedHeader.editNameMask()" type="button" class="login-button button-guest">Abbrechen</div>
-      <button type="submit" class="login-button button-log-in">Speichern</button>
-    </div>
-  </form>
-  }
-</div>
-}
-
-@if (!isHeader) {
-<div class="dopdown" [ngClass]="{ 'own-profile': isOwnProfile, 'not-own-profile': !isOwnProfile }">
-  <div class="dropdown-container">
-    @if (sharedHeader.editName && isOwnProfile) {
-    <span class="header">Dein Profil bearbeiten</span>
-    } @else {
-    <span class="header">Profil</span>
-    }
-    <img (click)="close.emit()" src="assets/icons/close.svg" alt="close icon">
-  </div>
-  <img class="profile-image" src="{{ user?.picture }}" alt="">
-
-  @if (!sharedHeader.editName) {
-  <div class="change-container-info">
-    <div class="name-status">
-      <div class="dropdown-container">
-        <span class="name">{{ user?.name }}</span>
-        @if (isOwnProfile && !sharedHeader.editName) {
-        <span (click)="sharedHeader.editNameMask()" class="edit">Bearbeiten</span>
-        }
-      </div>
-      <div class="baseline-container">
-        <div class="check-status" [class.online]="user?.status" [class.offline]="!user?.status"></div>
-        <span [class.active]="user?.status" [class.inactive]="!user?.status">
-          {{ user?.status ? 'Aktiv' : 'Abwesend' }}
+      <div class="name-info-container">
+        <span [ngClass]="{ visible: nameLength, hidden: !nameLength }">
+          *Bitte min. 3 und max. 15 Buchstaben.
         </span>
       </div>
     </div>
 
-    <div class="baseline-container-mail">
-      <img class="mail-icon" src="assets/icons/mail.svg" alt="">
-      <div class="mail-container">
-        <span class="mailtext">E-Mail Adresse</span>
-        <span class="mail-adress">{{ user?.email }}</span>
-      </div>
+    <div class="avatar-images-container">
+      <img *ngFor="let item of images; trackBy: trackByIndex" (click)="setImage(item)" [src]="item" alt="avatar">
     </div>
-  </div>
 
-  @if (!isOwnProfile) {
-  <div class="message-container">
-    <button type="button" class="submit-button message-btn" (click)="sendMessage.emit(user!)">
-      <img src="assets/icons/message.svg" alt="message icon">
-      <span>Nachricht</span>
-    </button>
-  </div>
-  }
-  }
-
-  @if (sharedHeader.editName && isOwnProfile) {
-  <form [formGroup]="updateName" (ngSubmit)="onSubmit()" class="change-container-change">
-    <div class="full-name-container">
-      <img src="assets/icons/account_circle.svg" alt="">
-      <span>Vollständiger Name</span>
-    </div>
-    <div class="input-container-profile">
-      <input class="input-field" type="text" formControlName="name">
-    </div>
     <div class="login-button-container">
-      <div (click)="sharedHeader.editNameMask()" type="button" class="login-button button-guest">Abbrechen</div>
-      <button type="button" class="login-button button-log-in">Speichern</button>
+      <div (click)="sharedHeader.editNameMask($event)" class="login-button button-guest" type="button">
+        Abbrechen
+      </div>
+      <button type="submit" class="login-button button-log-in">
+        Speichern
+      </button>
     </div>
   </form>
   }
 </div>
-}

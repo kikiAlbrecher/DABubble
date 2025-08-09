@@ -50,6 +50,7 @@ export class UserSharedService {
     actualUser: any = [];
     actualUser$ = new BehaviorSubject<string>('');
     allValidUsers$ = new BehaviorSubject<User[]>([]);
+    selectedUser: User | null = null;
     threadsVisible$ = new BehaviorSubject<boolean>(false);
     private _workspaceOpen = new BehaviorSubject<boolean>(true);
     workspaceOpen$ = this._workspaceOpen.asObservable();
@@ -62,6 +63,8 @@ export class UserSharedService {
     detailOverlay: boolean = false;
     firebaseFailure: boolean = false;
     isRegistering: boolean = false;
+    private _userDetails = new BehaviorSubject<User>({} as User);
+    public userDetails$ = this._userDetails.asObservable();
 
     constructor(private router: Router, private ngZone: NgZone) { }
 
@@ -513,9 +516,10 @@ export class UserSharedService {
      */
     async updateName(newName: string) {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
-        await updateDoc(currentUser, {
-            name: newName
-        });
+        await updateDoc(currentUser, { name: newName });
+
+        const updated = { ...this._userDetails.value, name: newName, displayName: newName };
+        this._userDetails.next(updated);
     }
 
     /**
@@ -554,14 +558,14 @@ export class UserSharedService {
      * Toggles the visibility of the user edit overlay.
      */
     showUserEdit() {
-        this.userEditOverlay = !this.userEditOverlay
+        this.userEditOverlay = !this.userEditOverlay;
     }
 
     /**
      * Toggles the visibility of the user detail overlay.
      */
     userDetailOverlay() {
-        this.detailOverlay = !this.detailOverlay
+        this.detailOverlay = !this.detailOverlay;
     }
 
     /**
@@ -640,5 +644,14 @@ export class UserSharedService {
         await updateDoc(userDocRef, {
             channelIds: channelIds
         });
+    }
+
+    /**
+     * Sets the user as the currently selected user.
+     * 
+     * @param user - The user marked as selected one.
+     */
+    setSelectedUser(user: User) {
+        this.selectedUser = user;
     }
 }
