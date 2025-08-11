@@ -32,7 +32,7 @@ export class UserProfileComponent implements OnInit {
     public sharedMessages: MessageSharedService
   ) { }
 
-  newName: string = "";
+  newName: string = '';
 
   images = [
     'assets/img/avatar1.svg',
@@ -91,6 +91,7 @@ export class UserProfileComponent implements OnInit {
    */
   private updateLocalUser() {
     if (!this.user) return;
+
     this.user.name = this.newName;
     this.user.picture = this.avatarImg;
   }
@@ -100,6 +101,7 @@ export class UserProfileComponent implements OnInit {
    */
   private updateAvatarIfNeeded() {
     if (!this.sharedHeader.newPicture) return;
+
     this.sharedUser.userDetails.picture = this.avatarImg;
     this.sharedUser.changeAvatar(this.avatarImg);
   }
@@ -109,6 +111,7 @@ export class UserProfileComponent implements OnInit {
    */
   private updateSelectedUserIfOwnProfile() {
     const selected = this.sharedMessages.selectedUser;
+
     if (selected?.id !== this.sharedUser.actualUserID) return;
 
     selected.name = this.newName;

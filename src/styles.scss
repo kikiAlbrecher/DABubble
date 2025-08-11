@@ -38,6 +38,7 @@ button {
 
     &::-webkit-scrollbar-track {
         background: $background-purple;
+        border-radius: 16px;
     }
 
     &::-webkit-scrollbar-thumb {

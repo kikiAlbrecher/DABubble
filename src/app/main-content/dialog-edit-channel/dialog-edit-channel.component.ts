@@ -48,6 +48,8 @@ export class DialogEditChannelComponent implements OnInit {
   @Output() userLeftChannel = new EventEmitter<{ success: boolean; message: string }>();
   @Output() saveName = new EventEmitter<{ success: boolean; message: string }>();
   @Output() saveDescription = new EventEmitter<{ success: boolean; message: string }>();
+  @Output() openUserProfile = new EventEmitter<User>();
+  @Output() openAddUser = new EventEmitter<void>();
 
   private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
@@ -233,6 +235,24 @@ export class DialogEditChannelComponent implements OnInit {
     const users = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
     this.channelMembers = users;
   }
+
+  /**
+   * Opens the user´s profile.
+   * 
+   * @param user - The selected user.
+   */
+  onUserClicked(user: User) {
+    this.openUserProfile.emit(user);
+  }
+
+  onAddUserMobile() {
+    this.openAddUser.emit();
+  }
+
+
+
+
+
 
   /**
    * Removes the current user from the selected channel.

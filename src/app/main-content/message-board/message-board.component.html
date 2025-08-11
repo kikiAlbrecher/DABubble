@@ -1,4 +1,4 @@
-<section #messageContainer class="message-board">
+<section #messageContainer class="custom-scrollbar message-board">
     @for (groupItem of sharedMessages.groupedMessageDates; track $index) {
     <div class="date-border">
         <div class="border-line"></div>
@@ -18,36 +18,29 @@
     }
     @if (this.sharedMessages.channelSelected && sharedMessages.groupedMessageDates?.length === 0) {
     <div class="empty-channel-info-container">
-        <span class="empty-channel-info-channel-name">{{sharedMessages.selectedChannel?.channelName}}</span>
+        <span class="empty-channel-info-channel-name">{{ sharedMessages.selectedChannel?.channelName }}</span>
         <div>
             @if (creatorId == sharedUser.actualUserID) {
             <span class="empty-channel-info-channel-text">Du hast </span>
             } @else {
-            <span class="empty-channel-info-channel-text">{{creatorName}} hat </span>
+            <span class="empty-channel-info-channel-text">{{ creatorName }} hat </span>
             }
             <span class="empty-channel-info-channel-text">diesen Channel </span>
-            <span class="empty-channel-info-channel-text">am {{sharedMessages.selectedChannel?.channelTimeStamp}}
+            <span class="empty-channel-info-channel-text">am {{ sharedMessages.selectedChannel?.channelTimeStamp }}
                 erstellt. </span>
             <span class="empty-channel-info-channel-text">Das ist der Anfang des Channels </span>
-            <span
-                class="empty-channel-info-channel-text-channel">{{sharedMessages.selectedChannel?.channelName}}.</span>
+            <span class="empty-channel-info-channel-text-channel">{{ sharedMessages.selectedChannel?.channelName
+                }}.</span>
         </div>
     </div>
     }
     @if (this.sharedMessages.userSelected && sharedMessages.groupedMessageDates.length == 0) {
     <div class="empty-channel-info-container">
-        @if (this.sharedMessages.selectedUser?.id == sharedUser.actualUserID){
-        <div class="empty-channel-user-container-own">
-            <img src="{{this.sharedMessages.selectedUser?.picture}}" alt="User-Bild">
-            <span class="empty-channel-info-own-name">{{sharedMessages.selectedUser?.displayName}}</span>
-        </div>
-        }@else {
         <div class="empty-channel-user-container">
-            <img (click)="openUserDetail()" src="{{this.sharedMessages.selectedUser?.picture}}" alt="User-Bild">
-            <span (click)="openUserDetail()"
+            <img (click)="openProfileMessage()" src="{{ this.sharedMessages.selectedUser?.picture }}" alt="user image">
+            <span (click)="openProfileMessage()"
                 class="empty-channel-info-user-name">{{sharedMessages.selectedUser?.displayName}}</span>
         </div>
-        }
         @if (this.sharedMessages.selectedUser?.id == sharedUser.actualUserID) {
         <div>
             <span class="empty-channel-info-channel-text">Dieser Raum ist nur für dich da. Mache dir Notizen, liste

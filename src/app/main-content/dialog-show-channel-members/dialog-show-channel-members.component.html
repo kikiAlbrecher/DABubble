@@ -35,9 +35,10 @@
     <h2 class="h2-responsive">Mitglieder</h2>
 </div>
 <div class="show-members-content">
-    <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null" (userSelected)="onSelectUser($event)">
+    <app-users [users]="users" [selectedUserId]="selectedUser?.id ?? null" [stopClickPropagation]="true"
+        (userSelected)="onSelectUser($event)">
     </app-users>
-    <button type="button" (click)="transferAddMember()" class="svg-title-style add-member-transfer">
+    <button type="button" (click)="addMemberEditMobile()" class="svg-title-style add-member-transfer">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="32" height="32" rx="16" fill="#ECEEFE" />
             <mask id="mask0_140209_3933" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="4" y="4" width="24"

@@ -92,7 +92,10 @@
 
             <div class="edit-object edit-object-mobile">
                 <app-dialog-show-channel-members [asOverlay]="false" [users]="channelMembers"
-                    [selectedUserId]="selectedUserId">
+                    [selectedUserId]="selectedUserId" (userClicked)="onUserClicked($event)"
+                    (openAddMembersMobile)="onAddUserMobile()" [asOverlay]="!isMobileEdit"
+                    [ngStyle]="!isMobileEdit ? {} : { left: '0', bottom: '0' }"
+                    [ngClass]="{ 'mobile-add-member': isMobileEdit }">
                 </app-dialog-show-channel-members>
             </div>
 

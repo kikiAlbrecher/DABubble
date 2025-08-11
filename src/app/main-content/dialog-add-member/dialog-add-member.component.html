@@ -1,7 +1,13 @@
 <div class="outside-overlay" (click)="handleDialogCloseAddMember()">
-    <form (click)="$event.stopPropagation()" #addMemberAfterwardsForm="ngForm" (ngSubmit)="saveMember()"
-        class="custom-scrollbar dialog-add-channel dialog-add-members" [style.top.px]="position.top"
-        [style.left.px]="position.left">
+    <form class="custom-scrollbar dialog-add-channel dialog-add-members" [class.bottom-drawer]="!asOverlay"
+        [ngClass]="{ 'slide-out': isClosing }" [style.top.px]=" asOverlay ? position.top : null"
+        [style.left.px]="asOverlay ? position.left : null" (click)="$event.stopPropagation()"
+        #addMemberAfterwardsForm="ngForm" (ngSubmit)="saveMember()">
+
+        <div class="closing-sign" (click)="animateCloseAndExit()">
+            <span class="rectangle"></span>
+        </div>
+
         <div class="header">
             <div class="add-headline">
                 <h2>Personen hinzufügen</h2>

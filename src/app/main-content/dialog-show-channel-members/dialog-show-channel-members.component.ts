@@ -22,6 +22,7 @@ export class DialogShowChannelMembersComponent implements OnChanges {
   @Input() asOverlay: boolean = true;
   @Output() close = new EventEmitter<void>();
   @Output() openAddMembers = new EventEmitter<{ top: number; left: number }>();
+  @Output() openAddMembersMobile = new EventEmitter<void>();
   @Output() userClicked = new EventEmitter<User>();
 
   selectedUser: User | null = null;
@@ -61,7 +62,13 @@ export class DialogShowChannelMembersComponent implements OnChanges {
    * passing the current dialog position.
    */
   transferAddMember() {
-    this.closeShowMembers();
-    this.openAddMembers.emit(this.position);
+    if (this.asOverlay) {
+      this.closeShowMembers();
+      this.openAddMembers.emit(this.position);
+    }
+  }
+
+  addMemberEditMobile() {
+    this.openAddMembersMobile.emit();
   }
 }

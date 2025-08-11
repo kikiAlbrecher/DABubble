@@ -173,3 +173,16 @@
     color: $white;
     @include fontNunito($size: 18px, $weight: 700);
 }
+
+:host-context(.mobile-add-member) {
+    position: fixed;
+    width: 100%;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: unset;
+    z-index: 800;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}

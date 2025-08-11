@@ -56,7 +56,8 @@
                 (saveName)="saveEditChannel($event)" (saveDescription)="saveEditChannel($event)"
                 (userLeftChannel)="updateChannelMember($event)" [position]="editChannelPosition"
                 [style.top.px]="editChannelPosition.top" [style.left.px]="editChannelPosition.left"
-                style="position: fixed; z-index: 999;" [isMobileEdit]="isMobileEdit" (click)="$event.stopPropagation()">
+                style="position: fixed; z-index: 999;" [isMobileEdit]="isMobileEdit" (click)="$event.stopPropagation()"
+                (openUserProfile)="onOpenUserProfile($event)" (openAddUser)="openDialogAddMemberMobile()">
             </app-dialog-edit-channel>
         </div>
         }
@@ -72,8 +73,10 @@
 
         @if (showAddMemberDialog) {
         <app-dialog-add-member [validUsers]="users" [selectedChannel]="selectedChannel" (close)="closeDialogAddMember()"
-            (save)="saveAddMember($event)" [position]="addMemberPosition" [style.top.px]="addMemberPosition.top"
-            [style.left.px]="addMemberPosition.left" style="position: fixed; z-index: 999;">
+            (save)="saveAddMember($event)" [asOverlay]="!isMobileEditContext"
+            [class.bottom-drawer]="isMobileEditContext" [position]="addMemberPosition"
+            [style.top.px]="addMemberPosition.top" [style.left.px]="addMemberPosition.left"
+            style="position: fixed; z-index: 999;">
         </app-dialog-add-member>
         }
 
@@ -83,7 +86,7 @@
         }
 
         @if (showProfile) {
-        <div class="outside-overlay" (click)="showProfile = false">
+        <div class="outside-overlay overlay-index" (click)="showProfile = false">
             <div class="content-restriction">
                 <app-user-profile (click)="$event.stopPropagation()" [user]="selectedUser"
                     [actualUserId]="shared.actualUserID" (close)="showProfile = false"

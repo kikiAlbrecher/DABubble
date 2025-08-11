@@ -3,7 +3,7 @@
     <span class="header">
       {{ sharedHeader.editName && isOwnProfile ? 'Dein Profil bearbeiten' : 'Profil' }}
     </span>
-    <img (click)="onClose()" src="assets/icons/close.svg" alt="close icon">
+    <img class="close-icon" (click)="onClose()" src="assets/icons/close.svg" alt="close icon">
   </div>
   <img class="profile-image"
     [src]="sharedHeader.newPicture ? avatarImg : (user?.picture || 'assets/img/avatar-placeholder.svg')"

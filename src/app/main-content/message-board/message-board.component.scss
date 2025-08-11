@@ -11,6 +11,12 @@
   position: relative;
 }
 
+.custom-scrollbar {
+  &::-webkit-scrollbar-track {
+    background: $light-purple;
+  }
+}
+
 .messages-container {
   width: 100%;
 }
@@ -70,28 +76,13 @@
 }
 
 .empty-channel-user-container {
-  @include dFlex(row, baseline, end, 25px);
+  @include dFlex(row, flex-start, flex-end, 25px);
   margin-bottom: 20px;
 
   img {
     width: 100px;
     height: auto;
     cursor: pointer;
-  }
-}
-
-.empty-channel-user-container-own {
-  @include dFlex(row, baseline, end, 25px);
-  margin-bottom: 20px;
-
-  img {
-    width: 100px;
-    height: auto;
-  }
-
-  .empty-channel-info-own-name {
-    @include fontNunito(24px, 700);
-    color: black;
   }
 }
 

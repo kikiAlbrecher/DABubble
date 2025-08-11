@@ -73,6 +73,7 @@ export class MainContentComponent implements OnInit {
   isInitializing: boolean = true;
   showDevspace: boolean = false;
   userHasMadeSelection: boolean = false;
+  public isMobileEditContext: boolean = false;
 
   @ViewChild(SideNavComponent) sideNavComponent!: SideNavComponent;
   @ViewChild(MainChatComponent) mainChatComponent!: MainChatComponent;
@@ -285,19 +286,19 @@ export class MainContentComponent implements OnInit {
   /**
    * Opens the selected user's profile and updates the state accordingly.
    * 
-   * @param user - The user whose profile should be shown
+   * @param user - The user whose profile should be shown.
    */
   onOpenUserProfile(user: User) {
     if (this.sideNavComponent) this.sideNavComponent.onSelectUser(user);
 
     this.selectedUser = user;
-    this.selectedChannel = null;
-    this.showMembers = false;
+    this.editChannel ? this.selectedChannel = this.selectedChannel : this.selectedChannel = null;
 
-    setTimeout(() => this.showProfile = true, 10);
+    setTimeout(() => this.openProfile(), 10);
   }
 
   openDialogAddMember(event?: MouseEvent | { top: number; left: number }) {
+    this.isMobileEditContext = false;
     let position = { top: 200, left: 0 };
 
     if (event && 'top' in event && 'left' in event) {
@@ -307,9 +308,11 @@ export class MainContentComponent implements OnInit {
     }
 
     if (this.isMobile) {
+      this.isMobileEditContext = false;
       this.addMemberPosition = position;
       this.showAddMemberDialog = false;
       this.showMembers = true;
+
 
       setTimeout(() => {
         this.showMembers = false;
@@ -319,6 +322,13 @@ export class MainContentComponent implements OnInit {
       this.addMemberPosition = position;
       this.showAddMemberDialog = true;
     }
+  }
+
+
+  openDialogAddMemberMobile() {
+    this.isMobileEdit = true;
+    this.isMobileEditContext = true;
+    this.showAddMemberDialog = true;
   }
 
   /**
@@ -357,6 +367,10 @@ export class MainContentComponent implements OnInit {
     this.messageService.setSelectedUser(user);
     this.messageService.setSelectedChannel(null);
     this.showProfile = false;
+
+    if (this.isMobile && this.editChannel) {
+      this.editChannel = false;
+    }
 
     if (this.isMobile && !this.isInitializing) {
       this.showMainChat = true;
@@ -475,6 +489,7 @@ export class MainContentComponent implements OnInit {
   dynamicPositionAddMembers() {
     if (this.showAddMemberDialog) {
       const trigger = document.querySelector('[data-add-member-btn]');
+
       if (trigger) {
         const dialogWidth = this.isMobile ? 300 : 514;
         this.addMemberPosition = this.calculatePosition(trigger as HTMLElement, dialogWidth, 'right');

@@ -14,17 +14,21 @@ import { UserSharedService } from '../../userManagement/userManagement-service';
   standalone: true,
   imports: [CommonModule, FormsModule, SubmitButtonComponent, CloseButtonComponent, SearchForUserComponent],
   templateUrl: './dialog-add-member.component.html',
-  styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-add-member.component.scss']
+  styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss',
+    './../dialog-add-channel-member/dialog-add-channel-member.component.scss',
+    './dialog-add-member.component.scss']
 })
 export class DialogAddMemberComponent {
   @Input() validUsers: User[] = [];
   @Input() selectedChannel: Channel | null = null;
   @Input() position: { top: number; left: number } = { top: 0, left: 0 };
+  @Input() asOverlay: boolean = true;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<{ success: boolean; message: string; userName: string }>();
 
   userId: string = '';
   selectedUsers: User[] = [];
+  isClosing: boolean = false;
 
   private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
@@ -99,6 +103,15 @@ export class DialogAddMemberComponent {
    */
   private emitFailure() {
     this.save.emit({ success: false, message: 'Leider ist ein Fehler aufgetreten.', userName: '' });
+  }
+
+  /**
+ * Triggers the closing animation and delays the actual close.
+ */
+  animateCloseAndExit() {
+    this.isClosing = true;
+
+    setTimeout(() => this.handleDialogCloseAddMember(), 300);
   }
 
   /**

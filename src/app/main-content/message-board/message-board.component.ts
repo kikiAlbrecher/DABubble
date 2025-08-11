@@ -27,6 +27,7 @@ export class MessageBoardComponent implements OnChanges {
   @Input() selectedChannel: Channel | null = null;
   @Output() selectUser = new EventEmitter<User>();
   @Output() selectChannel = new EventEmitter<Channel>();
+  @Output() showUserProfileMessage = new EventEmitter<void>();
 
   constructor(
     public sharedUser: UserSharedService,
@@ -158,11 +159,10 @@ export class MessageBoardComponent implements OnChanges {
   }
 
   /**
-   * Toggles the visibility of the user detail overlay.
-   * If the overlay is currently visible, it will be hidden, and vice versa.
+   * Emits an event to open the user profile view.
    */
-  openUserDetail() {
-    this.sharedUser.detailOverlay = !this.sharedUser.detailOverlay;
+  openProfileMessage() {
+    this.showUserProfileMessage.emit();
   }
 
   /**

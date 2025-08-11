@@ -29,11 +29,11 @@ export class DialogAddChannelMemberComponent implements OnInit {
   userId: string = '';
   mode: 'allChannels' | 'selectedColleagues' | null = null;
   channelList: Channel[] = [];
-  channelListVisible = false;
+  channelListVisible: boolean = false;
   chosenChannelId?: string;
   chosenChannelName?: string;
   selectedUsers: User[] = [];
-  isClosing = false;
+  isClosing: boolean = false;
 
   private firestore = inject(Firestore);
   public sharedUser = inject(UserSharedService);
