@@ -74,7 +74,7 @@
                 <div class="separator"></div>
                 <div class="creator">
                     <span class="header-text">Erstellt von</span>
-                    <span class="channel-creator-name" *ngIf="selectedChannel">{{ creatorName }}</span>
+                    <span class="channel-creator-name" *ngIf="selectedChannel">{{ creatorName$ | async }}</span>
                 </div>
             </div>
             }
@@ -86,7 +86,7 @@
             <div class="separator"></div>
             <div class="creator">
                 <span class="header-text">Erstellt von</span>
-                <span class="channel-creator-name" *ngIf="selectedChannel">{{ creatorName }}</span>
+                <span class="channel-creator-name" *ngIf="selectedChannel">{{ creatorName$ | async }}</span>
             </div>
             }
 

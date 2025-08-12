@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit, inject, Input } from '@angular/core';
-import { Firestore, collection, doc, updateDoc, query, where, getDocs } from '@angular/fire/firestore';
+import { Component, EventEmitter, Output, OnInit, inject, Input, OnDestroy } from '@angular/core';
+import { Firestore, collection, doc, updateDoc, query, where, getDocs, onSnapshot } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { CloseButtonComponent } from '../../style-components/close-button/close-button.component';
 import { User } from '../../userManagement/user.interface';
@@ -11,6 +11,7 @@ import { ChannelNameComponent } from '../../style-components/channel-name/channe
 import { ChannelDescriptionComponent } from '../../style-components/channel-description/channel-description.component';
 import { FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DialogShowChannelMembersComponent } from '../dialog-show-channel-members/dialog-show-channel-members.component';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 /**
  * Component for editing the details of an existing channel.
@@ -24,7 +25,7 @@ import { DialogShowChannelMembersComponent } from '../dialog-show-channel-member
   templateUrl: './dialog-edit-channel.component.html',
   styleUrls: ['./../dialog-add-channel/dialog-add-channel.component.scss', './dialog-edit-channel.component.scss']
 })
-export class DialogEditChannelComponent implements OnInit {
+export class DialogEditChannelComponent implements OnInit, OnDestroy {
   channelNameControl = new FormControl<string>('', {
     nonNullable: true,
     validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
@@ -35,7 +36,6 @@ export class DialogEditChannelComponent implements OnInit {
   });
 
   channelMembers: User[] = [];
-  creatorName: string = '';
   isEditingName: boolean = false;
   isEditingDescription: boolean = false;
   channelExistsError: boolean = false;
@@ -54,6 +54,10 @@ export class DialogEditChannelComponent implements OnInit {
   private firestore = inject(Firestore);
   private channelUsersService = inject(ChannelUsersService);
   public sharedUser = inject(UserSharedService);
+  private subMembership = new Subscription();
+  private subUser = new Subscription();
+  private unsubscribeChannelMembers?: () => void;
+  public creatorName$ = new BehaviorSubject<string>('');
 
   /**
   * Lifecycle hook that runs when the component is initialized.
@@ -71,6 +75,8 @@ export class DialogEditChannelComponent implements OnInit {
 
     this.loadCreatorName();
     this.loadChannelMembers();
+    this.subscribeMembershipChanges();
+    this.subscribeUserDetails();
   }
 
   /**
@@ -82,9 +88,72 @@ export class DialogEditChannelComponent implements OnInit {
     const validUsers = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
     const creator = validUsers.find(user => user.id === this.selectedChannel?.channelCreatorId);
 
-    if (creator) {
-      this.creatorName = creator.name;
-    }
+    if (creator) this.creatorName$.next(creator.displayName || creator.name);
+  }
+
+  /**
+   * Subscribes to real-time updates of the users who are members of the selected channel.
+   * Updates the local channelMembers list whenever user data changes in Firestore.
+   */
+  private loadChannelMembers(): void {
+    if (!this.selectedChannel) return;
+    if (this.unsubscribeChannelMembers) this.unsubscribeChannelMembers();
+
+    const q = query(collection(this.firestore, 'users'),
+      where(`channelIds.${this.selectedChannel.channelId}`, '==', true));
+
+    this.unsubscribeChannelMembers = onSnapshot(q, (snapshot) => {
+      const users: User[] = snapshot.docs.map((doc) => ({
+        ...(doc.data() as User), id: doc.id,
+      }));
+
+      this.channelMembers = users;
+    });
+  }
+
+  /**
+   * Subscribes to changes in the channel member list.
+   * When `channelMembersChanged$` emits, the list of channel members is reloaded.
+   * 
+   * This ensures that the UI reflects the latest state after members are added or removed,
+   * especially in the mobile view where the member dialog is nested.
+   */
+  subscribeMembershipChanges() {
+    this.subMembership.add(this.sharedUser.channelMembersChanged$.subscribe(() => {
+      this.loadChannelMembers();
+    })
+    );
+  }
+
+  /**
+   * Subscribes to changes in user details from the shared user service.
+   * 
+   * Updates user data in the `channelMembers` list and updates the creator name
+   * if the updated user is the creator of the selected channel.
+   */
+  subscribeUserDetails(): void {
+    this.subUser.add(
+      this.sharedUser.userDetails$.subscribe(updatedUser => {
+        const index = this.channelMembers.findIndex(user => user.id === updatedUser.id);
+
+        if (index !== -1) this.channelMembers[index] = { ...updatedUser };
+
+        if (updatedUser.id === this.selectedChannel?.channelCreatorId) {
+          this.creatorName$.next(updatedUser.displayName || updatedUser.name);
+
+        }
+      })
+    );
+  }
+
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   * 
+   * Unsubscribes from all active subscriptions to prevent memory leaks.
+   */
+  ngOnDestroy() {
+    this.subMembership.unsubscribe();
+    this.subUser.unsubscribe();
   }
 
   /**
@@ -149,6 +218,7 @@ export class DialogEditChannelComponent implements OnInit {
     const channelsCollection = collection(this.firestore, 'channels');
     const q = query(channelsCollection, where('channelName', '==', updatedName));
     const result = await getDocs(q);
+
     return !result.empty;
   }
 
@@ -227,17 +297,7 @@ export class DialogEditChannelComponent implements OnInit {
   }
 
   /**
-   * Loads the list of users who are members of the channel.
-   */
-  private async loadChannelMembers(): Promise<void> {
-    if (!this.selectedChannel) return;
-
-    const users = await this.channelUsersService.getUsersForChannel(this.selectedChannel.channelId);
-    this.channelMembers = users;
-  }
-
-  /**
-   * Opens the user´s profile.
+   * Emits the selected user to the parent component in order to open the user's profile.
    * 
    * @param user - The selected user.
    */
@@ -245,14 +305,14 @@ export class DialogEditChannelComponent implements OnInit {
     this.openUserProfile.emit(user);
   }
 
+  /**
+   * Emits an event to open the "add member" dialog in the mobile view.
+   * 
+   * Used when the member list is displayed inside the mobile edit channel dialog.
+   */
   onAddUserMobile() {
     this.openAddUser.emit();
   }
-
-
-
-
-
 
   /**
    * Removes the current user from the selected channel.

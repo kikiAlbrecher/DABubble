@@ -4,9 +4,11 @@
         [style.left.px]="asOverlay ? position.left : null" (click)="$event.stopPropagation()"
         #addMemberAfterwardsForm="ngForm" (ngSubmit)="saveMember()">
 
+        @if (!asOverlay) {
         <div class="closing-sign" (click)="animateCloseAndExit()">
             <span class="rectangle"></span>
         </div>
+        }
 
         <div class="header">
             <div class="add-headline">

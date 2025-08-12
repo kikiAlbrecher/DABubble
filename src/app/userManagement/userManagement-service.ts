@@ -187,6 +187,7 @@ export class UserSharedService {
      */
     private setUserDetails(user: any) {
         const uid = user.uid;
+
         (this.userDetails as any).uid = uid;
         (this.userDetails as any).displayName = this.userDetails.name;
     }
@@ -516,9 +517,14 @@ export class UserSharedService {
      */
     async updateName(newName: string) {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
-        await updateDoc(currentUser, { name: newName });
 
-        const updated = { ...this._userDetails.value, name: newName, displayName: newName };
+        await updateDoc(currentUser, { name: newName, displayName: newName });
+
+        const updated = {
+            ...this._userDetails.value, id: this.actualUserID, name: newName, displayName: newName,
+            status: true
+        };
+
         this._userDetails.next(updated);
     }
 
@@ -529,9 +535,12 @@ export class UserSharedService {
      */
     async changeAvatar(picture: string) {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
-        await updateDoc(currentUser, {
-            picture: picture
-        });
+
+        await updateDoc(currentUser, { picture: picture });
+
+        const updated = { ...this._userDetails.value, picture, status: true };
+
+        this._userDetails.next(updated);
     }
 
     /**
@@ -549,9 +558,7 @@ export class UserSharedService {
      */
     async updateOnlineStatusOffline() {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
-        await updateDoc(currentUser, {
-            status: false
-        });
+        await updateDoc(currentUser, { status: false });
     }
 
     /**
