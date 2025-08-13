@@ -1,5 +1,5 @@
 /**
-* SignUpComponent
+ * SignUpComponent
  * ----------------
  * This component handles user registration by collecting name, email, password,
  * and privacy consent using a reactive form. It performs input validation and
@@ -36,7 +36,7 @@ export class SignUpComponent {
   mailError: boolean = false;
   passwordError: boolean = false;
   privacyError: boolean = false;
-  
+
   /**
    * Reactive form group to handle user input during sign-up.
    * Fields:
@@ -52,14 +52,12 @@ export class SignUpComponent {
     privacy: new FormControl(false, Validators.requiredTrue)
   });
 
-  
   /**
    * Resets the input-datafields on pageload
    */
   ngOnInit() {
-   this.signUpForm.reset();  
+    this.signUpForm.reset();
   }
-
 
   /**
    * Returns true if all inputs pass validation.

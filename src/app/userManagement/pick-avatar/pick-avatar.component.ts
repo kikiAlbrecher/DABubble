@@ -18,8 +18,8 @@ import { UserSharedService } from '../userManagement-service';
   selector: 'app-pick-avatar',
   standalone: true,
   imports: [
-      CommonModule,
-      RouterModule,
+    CommonModule,
+    RouterModule,
   ],
   templateUrl: './pick-avatar.component.html',
   styleUrl: './pick-avatar.component.scss'
@@ -27,9 +27,9 @@ import { UserSharedService } from '../userManagement-service';
 export class PickAvatarComponent {
   constructor(
     public shared: UserSharedService,
-    private router: Router) {}
+    private router: Router) { }
 
-  avatarImg:string = 'assets/img/avatar-placeholder.svg';
+  avatarImg: string = 'assets/img/avatar-placeholder.svg';
   picturePicked: boolean = false;
   noPicturePicked: boolean = false;
 
@@ -43,14 +43,14 @@ export class PickAvatarComponent {
     'assets/img/avatar4.svg',
     'assets/img/avatar5.svg',
     'assets/img/avatar6.svg',
-  ]
+  ];
 
   /**
    * Sets the selected image as the user's avatar.
    * Also toggles the picturePicked flag for UI feedback.
    * @param item - Path to the selected avatar image
    */
-  setImage(item:string) {
+  setImage(item: string) {
     this.avatarImg = item;
     this.picturePicked = true;
   }
@@ -61,13 +61,12 @@ export class PickAvatarComponent {
    * If no image is selected, sets an error flag for the UI.
    */
   onSubmit() {
-    if (this.picturePicked) {   
+    if (this.picturePicked) {
       this.shared.userDetails.picture = this.avatarImg ?? '';
       this.shared.submitUser()
-      this.router.navigate(['/login']);    
+      this.router.navigate(['/login']);
     } else {
       this.noPicturePicked = true;
     }
   }
- 
 }

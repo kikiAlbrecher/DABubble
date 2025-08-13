@@ -11,7 +11,6 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { UserSharedService } from '../userManagement-service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';; '@angular/core';
-import { getAuth } from "firebase/auth";
 
 @Component({
   selector: 'app-change-password',
@@ -26,9 +25,7 @@ import { getAuth } from "firebase/auth";
 })
 export class ChangePasswordComponent {
   actionCode: string = "";
-
   passwordError: boolean = false;
-
   newPasswordForm = new FormGroup({
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)]),

@@ -35,7 +35,7 @@ export class LoginComponent {
    * Reactive form group for user login inputs.
    * Contains email and password fields, both required.
    */
-    logInForm = new FormGroup({
+  logInForm = new FormGroup({
     email: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required),
   })
@@ -44,8 +44,8 @@ export class LoginComponent {
    * Resets the input-datafields on pageload
    */
   ngOnInit() {
-   this.logInForm.reset();  
-   this.shared.inputData = false;
+    this.logInForm.reset();
+    this.shared.inputData = false;
   }
 
   /**
@@ -62,14 +62,8 @@ export class LoginComponent {
         if (success) {
           this.shared.inputData = false;
           this.router.navigate(['/main-content']);
-        } else {
-          this.shared.inputData = true;
-          
-        }
+        } else this.shared.inputData = true;
       });
-    } else {
-      this.shared.inputData = true;
-      
-    }
+    } else this.shared.inputData = true;
   }
 }

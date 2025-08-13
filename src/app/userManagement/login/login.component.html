@@ -1,7 +1,8 @@
 <section class="login-section">
     <form [formGroup]="logInForm" (ngSubmit)="submitLogData()" class="login-container">
         <span class="login-header">Anmeldung</span>
-        <span class="login-text">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</span>
+        <span class="login-text">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+            verwendest.</span>
         <div class="input-container">
             <div class="input-field-container">
                 <input class="input-field mail" type="text" formControlName="email">
@@ -28,8 +29,5 @@
             <button type="submit" class="login-button button-log-in">Anmelden</button>
             <div (click)="shared.guestLogIn()" class="login-button button-guest">Gäste-Login</div>
         </div>
-
-
     </form>
-
 </section>

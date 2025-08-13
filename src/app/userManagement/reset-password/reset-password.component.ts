@@ -1,17 +1,16 @@
 /**
-* ResetPasswordComponent
+ * ResetPasswordComponent
  * -----------------------
  * This component handles the password reset request process.
  * Users can enter their email address, and the system sends a password reset link
  * if the input is valid. The form uses reactive validation to ensure a valid email format.
  *
  */
-
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet, Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { UserSharedService } from '../userManagement-service';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';;'@angular/core';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';; '@angular/core';
 
 @Component({
   selector: 'app-reset-password',
@@ -29,23 +28,22 @@ export class ResetPasswordComponent {
 
   constructor(
     public shared: UserSharedService,
-    private router: Router) {}
+    private router: Router) { }
 
   mailError: boolean = false;
-  
+
   /**
    * Reactive form for capturing the user's email address.
    * Uses built-in validators: required and email format pattern.
    */
   resetForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/)]),
-    });
-    
+    email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/)]),
+  });
+
   /**
    * Checks if the form input is valid.
    * Used to control form submission.
    */
-
   get allInputsChecked() {
     return this.resetForm.valid
   }
@@ -57,9 +55,11 @@ export class ResetPasswordComponent {
    */
   onSubmit() {
     this.mailError = this.resetForm.controls.email?.invalid ?? false;
+
     if (this.resetForm.valid) {
-      const email = this.resetForm.value.email ?? ''
-      this.shared.changePasswordMail(email);      
+      const email = this.resetForm.value.email ?? '';
+
+      this.shared.changePasswordMail(email);
     }
   }
 }

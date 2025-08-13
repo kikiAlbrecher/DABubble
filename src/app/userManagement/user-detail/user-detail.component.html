@@ -3,17 +3,17 @@
         <span class="header">Profil</span>
         <img (click)="sharedUser.userEditOverlay" src="assets/icons/close.svg" alt="">
     </div>
+
     <img class="profile-image" src="{{sharedMessages.selectedUser?.picture}}" alt="">
-    
 
     <div class="change-container-info">
         <div class="dropdown-container">
-            <span class="name">{{sharedMessages.selectedUser?.displayName}}</span>      
+            <span class="name">{{sharedMessages.selectedUser?.displayName}}</span>
         </div>
         <div class="baseline-container">
             @if (sharedMessages.selectedUser?.status) {
-                <div class="check-status online"></div>
-                <span class="active">Aktiv</span>
+            <div class="check-status online"></div>
+            <span class="active">Aktiv</span>
             }@else {
             <div class="check-status offline"></div>
             <span class="inactive">Abwesend</span>
@@ -24,8 +24,7 @@
             <div class="mail-container">
                 <span class="mailtext">E-Mail Adresse</span>
                 <span class="mail-adress">{{sharedMessages.selectedUser?.email}}</span>
-            </div>    
+            </div>
         </div>
-    </div>    
-
+    </div>
 </section>

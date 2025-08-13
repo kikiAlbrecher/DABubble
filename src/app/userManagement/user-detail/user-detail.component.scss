@@ -1,29 +1,33 @@
- @import './../../../styles/shared';
- 
- .user-detail-section {
+@import './../../../styles/shared';
+
+.user-detail-section {
     height: 650px;
     width: 450px;
     background-color: #FFFFFF;
     border-radius: 30px;
     @include dFlex(column, space-between, center, 0);
     padding: 10% 0;
- }
+}
 
- .dropdown-container {
+.dropdown-container {
     @include dFlex(row, space-between, center, 0);
     width: 100%;
     padding: 0 8%;
+
     img {
         height: 34px;
         width: 34px;
         cursor: pointer;
     }
+
     .header {
         @include fontNunito(24px, 700);
     }
-    .name{
+
+    .name {
         @include fontNunito(32px, 700);
     }
+
     .edit {
         @include fontNunito(18px, 600);
         color: #535AF1;
@@ -46,21 +50,26 @@
     @include dFlex(row, baseline, center, 15px);
     width: 100%;
     padding: 0 8%;
+
     .check-status {
         width: 16px;
         height: 16px;
         border-radius: 50%;
     }
+
     .online {
         background-color: #92C83E;
     }
+
     .offline {
         background-color: #686868;
     }
+
     .active {
         @include fontNunito(20px, 400);
         color: #92C83E;
     }
+
     .inactive {
         @include fontNunito(20px, 400);
         color: #686868;
@@ -71,18 +80,20 @@
     @include dFlex(row, baseline, flex-start, 15px);
     width: 100%;
     padding: 0 8%;
+
     .mail-icon {
         width: 30px;
         height: 30px;
     }
-
 }
 
 .mail-container {
     @include dFlex(column, baseline, baseline, 15px);
+
     .mailtext {
         @include fontNunito(20px, 700);
     }
+
     .mail-adress {
         @include fontNunito(18px, 500);
         color: #1381FF;
@@ -96,14 +107,14 @@
     background-color: #444DF2;
     border-radius: 50px;
     margin-top: 10px;
-    .img{
+
+    .img {
         width: 24px;
         height: 24px;
     }
+
     span {
         @include fontNunito(18px, 700);
         color: white;
     }
 }
-
-

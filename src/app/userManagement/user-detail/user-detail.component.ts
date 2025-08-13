@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { UserSharedService } from '../../userManagement/userManagement-service';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageSharedService } from '../../main-content/message-service';
 
 @Component({
@@ -12,9 +10,8 @@ import { MessageSharedService } from '../../main-content/message-service';
   styleUrl: './user-detail.component.scss'
 })
 export class UserDetailComponent {
-constructor(
-    public sharedUser: UserSharedService,  
+  constructor(
+    public sharedUser: UserSharedService,
     public sharedMessages: MessageSharedService
-
-  ) {}
+  ) { }
 }
