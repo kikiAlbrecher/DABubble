@@ -11,25 +11,18 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     CommonModule,
-    OwnMessageComponent, 
+    OwnMessageComponent,
     UserMessageComponent],
   templateUrl: './threads-main-chat.component.html',
   styleUrl: './threads-main-chat.component.scss'
 })
 export class ThreadsMainChatComponent {
-  
-  
   constructor(
-      public sharedUser: UserSharedService,
-      public sharedMessages: MessageSharedService
-    ) {}
-  
-  get selectedMessage(): ChatMessage | undefined {     
-      return this.sharedMessages.selectedMessage;
-  }
+    public sharedUser: UserSharedService,
+    public sharedMessages: MessageSharedService
+  ) { }
 
-  ngOnChanges() {
-    
+  get selectedMessage(): ChatMessage | undefined {
+    return this.sharedMessages.selectedMessage;
   }
-
 }

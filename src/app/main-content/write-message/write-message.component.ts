@@ -279,10 +279,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * @returns A Promise that resolves when the submission process is complete.
    */
   async onSubmit() {
-    if (this.devspaceOpen) {
-      const valid = await this.handleDevspaceEntry();
-      if (!valid) return;
-    }
+    // if (this.devspaceOpen) {
+    //   const valid = await this.handleDevspaceEntry();
+    //   if (!valid) return;
+    // }
+
+    if (this.devspaceOpen) await this.handleDevspaceEntry();
 
     const message = this.removeMentionsFromDOM();
     if (!message) return;
@@ -301,12 +303,8 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
       .filter(m => m.startsWith('#'))
       .map(m => m.substring(1).toLowerCase());
 
-    const mentionedUsers = this.users.filter(u =>
-      users.includes((u.displayName || u.name).toLowerCase())
-    );
-    const mentionedChannels = this.channels.filter(c =>
-      channels.includes(c.channelName.toLowerCase())
-    );
+    const mentionedUsers = this.users.filter(u => users.includes((u.displayName || u.name).toLowerCase()));
+    const mentionedChannels = this.channels.filter(c => channels.includes(c.channelName.toLowerCase()));
 
     return { mentionedUsers, mentionedChannels };
   }
@@ -373,6 +371,11 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.devspaceMentions = [];
   }
 
+  /**
+   * Removes mention elements (e.g., @username tags) from the editor's DOM content.
+   *
+   * @returns {string} The plain text content of the editor after mentions have been removed.
+   */
   private removeMentionsFromDOM(): string {
     return MentionUtilsService.removeMentionsFromElement(this.editor.nativeElement);
   }

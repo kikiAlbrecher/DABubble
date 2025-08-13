@@ -10,7 +10,6 @@ import { ChangePasswordComponent } from "../../userManagement/change-password/ch
   styleUrl: './imprint.component.scss'
 })
 export class ImprintComponent {
-    constructor(
-      private router: Router) {}
-
+  constructor(
+    private router: Router) { }
 }

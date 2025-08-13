@@ -10,7 +10,7 @@ import { Component, Output, EventEmitter } from '@angular/core';
 export class EmojiPickerComponent {
   @Output() emojiSelected = new EventEmitter<string>();
 
-   emojis = [
+  emojis = [
     '👍', '❤️', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙌',
     '😉', '😊', '😇', '🎉', '😍', '🤩', '😘', '😗', '☺️', '😚',
     '😛', '😜', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '👎',
@@ -19,10 +19,12 @@ export class EmojiPickerComponent {
     '🤧', '🤯', '🥳', '😎', '🤓'
   ];
 
+  /**
+   * Emits the selected emoji to external listeners.
+   *
+   * @param {string} emoji - The emoji character selected by the user.
+   */
   selectEmoji(emoji: string) {
     this.emojiSelected.emit(emoji);
   }
 }
-
-
-

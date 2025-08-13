@@ -38,7 +38,9 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     mentionContext: 'none' | 'user' | 'channel' = 'none';
     mentionCompleted: boolean = false;
+    selectedResult: SearchResult | null = null;
 
+    public isEditorEmpty: boolean = true;
     public searchService = inject(SearchService);
     public sharedUsers = inject(UserSharedService);
     public channelService = inject(ChannelSharedService);
@@ -48,8 +50,6 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
     private channelsSub?: Subscription;
     public editorNativeElement?: HTMLElement;
     public placeholderQuote: string = 'Devspace durchsuchen';
-    public isEditorEmpty = true;
-    selectedResult: SearchResult | null = null;
 
     @ViewChild('editor', { static: false }) editor!: ElementRef<HTMLDivElement>;
     @ViewChild(MentionComponent) mentionComponent?: MentionComponent;

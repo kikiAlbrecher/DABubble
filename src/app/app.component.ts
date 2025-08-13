@@ -16,7 +16,7 @@ import { MessageSharedService } from './main-content/message-service';
     RouterModule,
     RouterOutlet,
     IntroComponent,
-    MainContentComponent, 
+    MainContentComponent,
     UserDetailComponent,
   ],
   templateUrl: './app.component.html',
@@ -34,28 +34,28 @@ export class AppComponent {
     public sharedMessages: MessageSharedService
   ) { this.sharedUser.initAuth(); }
 
-  
-/**
- * Angular lifecycle hook - called once the component is initialized.
- * 
- * Purpose:
- * - Checks if the user has already seen the intro (e.g., onboarding or tutorial screen).
- * - Uses localStorage to persist that state across sessions.
- * - Sets flags to determine whether to show the intro on first visit.
- */
+
+  /**
+   * Angular lifecycle hook - called once the component is initialized.
+   * 
+   * Purpose:
+   * - Checks if the user has already seen the intro (e.g., onboarding or tutorial screen).
+   * - Uses localStorage to persist that state across sessions.
+   * - Sets flags to determine whether to show the intro on first visit.
+   */
   ngOnInit() {
     const introShown = localStorage.getItem('introShown');
     this.showIntro = introShown !== 'true';
     this.hasPlayedIntro = this.showIntro;
   }
-  
-/**
- * Triggered when the intro sequence has been completed by the user.
- * 
- * Purpose:
- * - Hides the intro UI.
- * - Saves a flag in localStorage to ensure the intro does not show again on future visits.
- */
+
+  /**
+   * Triggered when the intro sequence has been completed by the user.
+   * 
+   * Purpose:
+   * - Hides the intro UI.
+   * - Saves a flag in localStorage to ensure the intro does not show again on future visits.
+   */
   onIntroDone() {
     this.showIntro = false;
     localStorage.setItem('introShown', 'true');

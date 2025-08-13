@@ -114,7 +114,6 @@
     .create-account-link {
         border: 1px solid #797EF3;
         border-radius: 25px;
-        cursor: pointer;
     }
 }
 
@@ -177,7 +176,6 @@
 
 .slide-out {
     animation: slide-out 0.3s forwards;
-
 }
 
 @keyframes slide-out {
@@ -236,33 +234,21 @@ footer {
     }
 
     .create-account-container {
-        position: absolute;
+        gap: 10px;
         top: 25px;
         right: 25px;
-        gap: 10px;
         bottom: auto;
         left: auto;
     }
 
     .create-account-text {
         @include fontNunito(16px, 400);
-        color: black;
     }
 
     .create-account-link {
         @include fontNunito(16px, 400);
-        color: #797EF3;
-        text-decoration: none;
-        padding: 10px 15px;
         border: 1px solid #797EF3;
         border-radius: 25px;
-        cursor: pointer;
-
-        &:hover {
-            color: #444DF2;
-            border: 1px solid #444DF2;
-            border-radius: 30px;
-        }
     }
 
     footer {
@@ -331,7 +317,6 @@ footer {
     }
 
     .create-account-container {
-        position: absolute;
         bottom: 100px;
         left: 50%;
         transform: translateX(-50%);
@@ -342,23 +327,12 @@ footer {
 
     .create-account-text {
         @include fontNunito(18px, 400);
-        color: black;
     }
 
     .create-account-link {
         @include fontNunito(18px, 400);
-        color: #797EF3;
-        text-decoration: none;
-        padding: 10px 15px;
         border: 1px solid #797EF3;
         border-radius: 25px;
-        cursor: pointer;
-
-        &:hover {
-            color: #444DF2;
-            border: 1px solid #444DF2;
-            border-radius: 30px;
-        }
     }
 
     footer {
@@ -391,13 +365,11 @@ footer {
     }
 
     .create-account-container {
-        position: absolute;
         bottom: 52px;
     }
 
     .create-account-text {
         @include fontNunito(16px, 400);
-        color: black;
     }
 
     .create-account-link {

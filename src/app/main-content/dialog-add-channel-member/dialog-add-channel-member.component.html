@@ -1,7 +1,7 @@
 <div class="outside-overlay out-ov-for-below" (click)="closeAddMember()">
     <div class="overlay-content">
-        <form (click)="$event.stopPropagation()" (ngSubmit)="saveMember()" #addMemberForm="ngForm" [ngClass]="{
-    'dialog-add-channel': true, 'dialog-add-member': true, 'slide-out': isClosing }">
+        <form (click)="$event.stopPropagation()" (ngSubmit)="saveMember()" #addMemberForm="ngForm" 
+        [ngClass]="{ 'dialog-add-channel': true, 'dialog-add-member': true, 'slide-out': isClosing }">
 
             <div class="closing-sign" (click)="animateCloseAndExit()">
                 <span class="rectangle"></span>

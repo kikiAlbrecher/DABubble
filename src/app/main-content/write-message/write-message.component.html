@@ -1,10 +1,10 @@
 <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="write-message-section">
-    <textarea #editor contenteditable="true" class="editable-input"
+    <div #editor contenteditable="true" class="editable-input"
         (input)="onContentInput(); mentionComponent?.saveCursorPosition()"
         (click)="onEditorClick(); mentionComponent?.saveCursorPosition()"
         (keyup)="mentionComponent?.saveCursorPosition()" (keydown)="onEditorKeyDown($event)"
         [attr.placeholder]="placeHolderText">
-    </textarea>
+    </div>
     <app-mention *ngIf="editorNativeElement" [users]="users" [channels]="channels"
         [targetInputElement]="editorNativeElement" contextClass="in-write-message"
         (mentionSelected)="onMentionSelected($event)">

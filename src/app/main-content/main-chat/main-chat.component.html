@@ -65,8 +65,8 @@
     </app-devspace>
     }
     @if (!devspace) {
-    <app-message-board class="main-content" (selectUser)=$event
-        (selectChannel)=$event (showUserProfileMessage)="openProfile()"></app-message-board>
+    <app-message-board class="main-content" (selectUser)=$event (selectChannel)=$event
+        (showUserProfileMessage)="openProfile()"></app-message-board>
     }
     <app-write-message class="write-message-container" (click)="$event.stopPropagation()"
         [selectedChannel]="selectedChannel" [selectedUser]="selectedUser" [devspaceOpen]="devspace"

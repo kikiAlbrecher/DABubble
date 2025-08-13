@@ -14,7 +14,6 @@ export class ChannelsComponent {
   @Input() selectedChannelId: string | null = null;
   @Output() channelSelected = new EventEmitter<Channel>();
 
-
   /**
    * Emits the channel that was selected.
    * 

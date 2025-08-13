@@ -10,11 +10,7 @@ import { MessageSharedService } from '../../main-content/message-service';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule
-  ],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss',
 })
@@ -49,7 +45,6 @@ export class UserProfileComponent implements OnInit {
     name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)] }),
   });
   nameLength: boolean = false;
-
 
   /**
    * On component initialization, populate the update form with the user's current name.

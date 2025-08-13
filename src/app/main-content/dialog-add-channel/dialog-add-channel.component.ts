@@ -58,10 +58,10 @@ export class DialogAddChannelComponent implements OnInit {
   }
 
   /**
-   * Main method to validate and create the channel.
-   * Emits appropriate success or error events.
+   * Validates and saves a new channel.
+   * Ensures the name is valid, checks for duplicates, and handles success or failure.
    */
-  async saveChannel() {
+  async saveChannel(): Promise<void> {
     this.markControlsTouched();
     if (this.channelNameControl.invalid) return;
 
@@ -69,11 +69,7 @@ export class DialogAddChannelComponent implements OnInit {
       await this.prepareChannelData();
 
       const exists = await this.checkIfChannelExists();
-      if (exists) {
-        this.showErrorHint();
-        return;
-      }
-
+      if (this.channelAlreadyExists(exists)) return;
       await this.createChannel();
       this.emitSuccess();
     } catch (error) {
@@ -108,6 +104,19 @@ export class DialogAddChannelComponent implements OnInit {
   private async checkIfChannelExists(): Promise<boolean> {
     const channelsCollection = collection(this.firestore, 'channels');
     return await this.queryChannelNames(channelsCollection);
+  }
+
+  /**
+   * Handles the case when a channel with the same name already exists.
+   *
+   * @param {boolean} exists - Whether the channel already exists.
+   * @returns {boolean} True if the method handled the case and execution should stop; false otherwise.
+   */
+  private channelAlreadyExists(exists: boolean): boolean {
+    if (!exists) return false;
+
+    this.showErrorHint();
+    return true;
   }
 
   /**

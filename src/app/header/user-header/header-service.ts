@@ -15,12 +15,20 @@ export class HeaderSharedService {
     private profileOpenSubject = new Subject<void>();
     profileOpen$ = this.profileOpenSubject.asObservable();
 
+    /**
+     * Emits a signal to open the user profile via the profile subject.
+     * Can be used to request the profile to open without altering UI state.
+     */
     requestProfileOpen(): void {
         this.profileOpenSubject.next();
     }
 
+    /**
+     * Closes the preceded dropdown (if open) and emits a signal to open the profile overlay when chosen.
+     */
     openProfileOverlay(): void {
         this.dropdownProfile = false;
+
         this.profileOpenSubject.next();
     }
 

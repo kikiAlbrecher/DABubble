@@ -68,6 +68,9 @@ export class DialogShowChannelMembersComponent implements OnChanges {
     }
   }
 
+  /**
+   * Emits an event to open the "add members" view in mobile mode.
+   */
   addMemberEditMobile() {
     this.openAddMembersMobile.emit();
   }

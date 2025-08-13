@@ -1,24 +1,19 @@
 <section class="main-blocks threads">
-  
-        <header class="header">
-            <div class="threads-header">
+    <header class="header">
+        <div class="threads-header">
             <div class="threads-header-left">
                 <span class="threads-header-headline">Thread</span>
                 <span class="threads-header-channel">{{this.sharedMessages.threadChannelOrUserName}}</span>
             </div>
-                <img (click)="closeThreads()" src="assets/icons/close.svg" alt="">
-            </div>
-        </header>
-
-        <main class="threads-main-chat">
-            <app-threads-main-chat></app-threads-main-chat>
-        </main>
-
-
-        <div class="write-message-container">
-            <app-write-message mode="thread" class="write-message-form"></app-write-message>
+            <img (click)="closeThreads()" src="assets/icons/close.svg" alt="">
         </div>
- 
-    
+    </header>
 
+    <main class="threads-main-chat">
+        <app-threads-main-chat></app-threads-main-chat>
+    </main>
+
+    <div class="write-message-container">
+        <app-write-message mode="thread" class="write-message-form"></app-write-message>
+    </div>
 </section>

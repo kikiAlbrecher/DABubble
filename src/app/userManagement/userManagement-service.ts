@@ -431,7 +431,6 @@ export class UserSharedService {
         }, 3000);
     }
 
-
     /**
      * Sends a password reset email to the specified email address.
      * 
@@ -462,7 +461,6 @@ export class UserSharedService {
      * @param actionCode - The password reset action code received via email.
      * @param newPassword - The new password to be set for the user.
      * 
-     * @remarks
      * On success, shows a confirmation message and navigates to the login page.
      * On failure, displays an error message for 3 seconds.
      */
@@ -495,7 +493,6 @@ export class UserSharedService {
             }, 300);
         }, 3000);
     }
-
 
     /**
      * Subscribes to real-time updates of the current user's Firestore document.

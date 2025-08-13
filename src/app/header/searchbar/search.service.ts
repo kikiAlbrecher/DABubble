@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { collection, collectionGroup, Firestore, getDocs } from '@angular/fire/firestore';
+import { collection, collectionGroup, DocumentData, Firestore, getDocs, QuerySnapshot } from '@angular/fire/firestore';
 import { Channel } from '../../../models/channel.class';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { MessageSharedService } from '../../main-content/message-service';
@@ -64,30 +64,98 @@ export class SearchService {
     return results;
   }
 
+  /**
+ * Searches direct messages for a specific user, filtered by query and user filters.
+ *
+ * @param {string} query - The text query to search for within messages.
+ * @param {string[]} userFilter - A list of user IDs to filter results by.
+ * @param {string} actualUserId - The ID of the currently authenticated user.
+ * @returns {Promise<SearchResult[]>} A promise resolving to a list of matched search results.
+ */
   private async searchDirectMessages(query: string, userFilter: string[], actualUserId: string): Promise<SearchResult[]> {
-    const collectionRef = collection(this.firestore, 'directMessages');
-    const chatDocs = await getDocs(collectionRef);
+    const chatDocs = await this.fetchDirectMessageChats();
     const results: SearchResult[] = [];
 
     for (const docSnap of chatDocs.docs) {
       const chatId = docSnap.id;
-      if (!chatId.includes(actualUserId)) continue;
+      if (!this.isUserInChat(chatId, actualUserId)) continue;
 
-      const otherUser = chatId.split('_').find(id => id !== actualUserId);
+      const otherUser = this.getOtherUserFromChatId(chatId, actualUserId);
       if (!otherUser) continue;
 
-      const messagesCol = collection(this.firestore, `directMessages/${chatId}/messages`);
-      const messagesSnap = await getDocs(messagesCol);
-
-      messagesSnap.forEach(messageDoc => {
-        const data = messageDoc.data() as ChatMessage;
-        if (!this.matchesQuery(data, query)) return;
-        if (!this.matchesDirectMessageFilters(otherUser, userFilter)) return;
-
-        const enrichedMessage: ChatMessage = { ...data, id: messageDoc.id, user: otherUser };
-        results.push({ message: enrichedMessage, path: messageDoc.ref.path });
-      });
+      const messages = await this.fetchMessages(chatId);
+      const matched = this.filterMessages(messages, query, otherUser, userFilter);
+      results.push(...matched);
     }
+
+    return results;
+  }
+
+  /**
+   * Fetches all direct message chat documents from Firestore.
+   *
+   * @returns {Promise<QuerySnapshot<DocumentData>>} A promise resolving to the collection of chat documents.
+   */
+  private async fetchDirectMessageChats() {
+    const collectionRef = collection(this.firestore, 'directMessages');
+
+    return await getDocs(collectionRef);
+  }
+
+  /**
+   * Checks if the current user is part of a given chat ID.
+   *
+   * @param {string} chatId - The ID of the chat.
+   * @param {string} actualUserId - The ID of the currently authenticated user.
+   * @returns {boolean} True if the user is part of the chat; otherwise, false.
+   */
+  private isUserInChat(chatId: string, actualUserId: string): boolean {
+    return chatId.includes(actualUserId);
+  }
+
+  /**
+   * Extracts the other user's ID from a direct message (chatId).
+   *
+   * @param {string} chatId - The ID of the chat (formatted like "userA_userB").
+   * @param {string} actualUserId - The ID of the currently authenticated user.
+   * @returns {string | undefined} The ID of the other user, or undefined if not found.
+   */
+  private getOtherUserFromChatId(chatId: string, actualUserId: string): string | undefined {
+    return chatId.split('_').find(id => id !== actualUserId);
+  }
+
+  /**
+   * Fetches all messages from a given direct message chat.
+   *
+   * @param {string} chatId - The ID of the chat to fetch messages from.
+   * @returns {Promise<QuerySnapshot<DocumentData>>} A promise resolving to the message documents.
+   */
+  private async fetchMessages(chatId: string) {
+    const messagesCol = collection(this.firestore, `directMessages/${chatId}/messages`);
+
+    return await getDocs(messagesCol);
+  }
+
+  /**
+   * Filters messages based on a query and user filter criteria.
+   *
+   * @param {QuerySnapshot<DocumentData>} messagesSnap - Snapshot of message documents to filter.
+   * @param {string} query - The text query to search for within messages.
+   * @param {string} otherUser - The ID of the other user in the chat.
+   * @param {string[]} userFilter - A list of user IDs to include in the results.
+   * @returns {SearchResult[]} A list of matched messages with enriched data.
+   */
+  private filterMessages(messagesSnap: QuerySnapshot<DocumentData>, query: string, otherUser: string, userFilter: string[]): SearchResult[] {
+    const results: SearchResult[] = [];
+
+    messagesSnap.forEach(messageDoc => {
+      const data = messageDoc.data() as ChatMessage;
+      if (!this.matchesQuery(data, query)) return;
+      if (!this.matchesDirectMessageFilters(otherUser, userFilter)) return;
+
+      const enrichedMessage: ChatMessage = { ...data, id: messageDoc.id, user: otherUser };
+      results.push({ message: enrichedMessage, path: messageDoc.ref.path });
+    });
 
     return results;
   }
@@ -168,6 +236,7 @@ export class SearchService {
   private matchesFilters(data: ChatMessage, userFilter: string[], channelFilter: string[]): boolean {
     const matchesUser = userFilter.length === 0 || userFilter.includes(data.user);
     const matchesChannel = channelFilter.length === 0 || (!!data.channelId && channelFilter.includes(data.channelId));
+
     return matchesUser && matchesChannel;
   }
 }

@@ -1,42 +1,32 @@
 <section *ngIf="selectedMessage">
     @if (sharedMessages.selectedMessage?.user === sharedUser.actualUserID) {
-    <app-own-message 
-        [message]="sharedMessages.selectedMessage!" 
-        [mode]="'thread'">
+    <app-own-message [message]="sharedMessages.selectedMessage!" [mode]="'thread'">
     </app-own-message>
     } @else {
-        <app-user-message
-            [message]="sharedMessages.selectedMessage!" 
-            [mode]="'thread'">
-        </app-user-message>
+    <app-user-message [message]="sharedMessages.selectedMessage!" [mode]="'thread'">
+    </app-user-message>
     }
 
     <div class="thread-border">
         @if (sharedMessages.answerMessages.length == 1) {
-            <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antwort</span>
+        <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antwort</span>
         } @else {
-            <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antworten</span>
+        <span class="thread-border-text">{{sharedMessages.answerMessages.length}} Antworten</span>
         }
         <div class="thread-border-line"></div>
     </div>
 
     @for (item of sharedMessages.answerMessages; track $index) {
-        @if (item.user === sharedUser.actualUserID) {
-            <div class="messages-container">
-            <app-own-message 
-                [message]="item" 
-                [mode]="'thread'">                
-            </app-own-message>
-        </div>
-        } @else {
-            <div class="messages-container">
-                <app-user-message
-                    [message]="item" 
-                    [mode]="'thread'">
-                </app-user-message>
-            </div>
-        }
-}
-
-
+    @if (item.user === sharedUser.actualUserID) {
+    <div class="messages-container">
+        <app-own-message [message]="item" [mode]="'thread'">
+        </app-own-message>
+    </div>
+    } @else {
+    <div class="messages-container">
+        <app-user-message [message]="item" [mode]="'thread'">
+        </app-user-message>
+    </div>
+    }
+    }
 </section>

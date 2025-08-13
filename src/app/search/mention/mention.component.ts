@@ -29,7 +29,7 @@ export class MentionComponent implements OnInit {
   trigger: '@' | '#' | null = null;
   query: string = '';
 
-  private savedRange: Range | null = null;
+  public savedRange: Range | null = null;
   public mentionService = inject(MentionService);
   public showOverlay: boolean = false;
   public listEmpty: boolean = true;
@@ -49,7 +49,6 @@ export class MentionComponent implements OnInit {
       this.showOverlay = val;
     });
   }
-
 
   /**
    * Filters users or channels based on the current trigger and query.
@@ -151,6 +150,9 @@ export class MentionComponent implements OnInit {
     input.setSelectionRange(cursorPos + text.length + 1, cursorPos + text.length + 1);
   }
 
+  /**
+   * Deletes the trigger word (e.g. @user or #channel) immediately before the cursor, if present.
+   */
   private deleteTriggerWordBeforeCursor(): void {
     if (!this.savedRange) return;
 
@@ -158,66 +160,100 @@ export class MentionComponent implements OnInit {
     const container = range.startContainer;
     const offset = range.startOffset;
 
-    if (container.nodeType !== Node.TEXT_NODE) return;
+    if (!this.isTextNode(container)) return;
 
     const textNode = container as Text;
+    const { newText, newOffset } = this.getTextAfterTriggerRemoved(textNode, offset);
+    if (newText === null) return;
+
+    textNode.textContent = newText;
+    this.resetCursorPosition(textNode, newOffset);
+  }
+
+  /**
+   * Checks whether a given node is a text node.
+   *
+   * @param {Node} node - The DOM node to check.
+   * @returns {boolean} True if the node is a text node.
+   */
+  private isTextNode(node: Node): boolean {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+
+  /**
+   * Returns updated text content and new cursor offset with trigger word removed.
+   *
+   * @param {Text} textNode - The text node being edited.
+   * @param {number} offset - Cursor offset within the text node.
+   * @returns {{ newText: string | null, newOffset: number }} Resulting text and new offset, or null if no trigger found.
+   */
+  private getTextAfterTriggerRemoved(textNode: Text, offset: number): { newText: string | null, newOffset: number } {
     const text = textNode.textContent ?? '';
     const beforeCursor = text.slice(0, offset);
     const match = beforeCursor.match(/(?:^|\s)([@#])(\w*)$/);
 
-    if (!match) return;
+    if (!match) return { newText: null, newOffset: 0 };
 
     const triggerStart = offset - match[0].length;
     const newOffset = Math.max(0, Math.min(triggerStart, text.length));
-
     const newText = beforeCursor.slice(0, newOffset) + text.slice(offset);
-    textNode.textContent = newText;
+
+    return { newText, newOffset };
+  }
+
+  /**
+   * Updates the saved range to a new cursor position after text change.
+   *
+   * @param {Text} textNode - The text node where the cursor should be placed.
+   * @param {number} offset - New offset for the cursor.
+   */
+  private resetCursorPosition(textNode: Text, offset: number): void {
+    if (!this.savedRange) return;
 
     try {
-      this.savedRange.setStart(textNode, newOffset);
-      this.savedRange.setEnd(textNode, newOffset);
+      this.savedRange.setStart(textNode, offset);
+      this.savedRange.setEnd(textNode, offset);
     } catch (e) {
       throw new Error('Failed to set cursor position.');
     }
   }
 
-  /**
-   * Finds a trigger word (e.g. @word or #word) before the cursor.
-   * @param {Text} textNode - The text node containing the cursor.
-   * @param {number} offset - The offset of the cursor within the node.
-   * @returns {RegExpMatchArray | null}
-   */
-  private findTriggerMatch(textNode: Text, offset: number): RegExpMatchArray | null {
-    const text = textNode.textContent ?? '';
-    const beforeCursor = text.slice(0, offset);
-    return beforeCursor.match(/(?:^|\s)([@#])(\w*)$/);
-  }
+  // /**
+  //  * Finds a trigger word (e.g. @word or #word) before the cursor.
+  //  * @param {Text} textNode - The text node containing the cursor.
+  //  * @param {number} offset - The offset of the cursor within the node.
+  //  * @returns {RegExpMatchArray | null}
+  //  */
+  // private findTriggerMatch(textNode: Text, offset: number): RegExpMatchArray | null {
+  //   const text = textNode.textContent ?? '';
+  //   const beforeCursor = text.slice(0, offset);
+  //   return beforeCursor.match(/(?:^|\s)([@#])(\w*)$/);
+  // }
 
-  /**
-   * Removes the matched trigger word from the text node and updates the cursor position.
-   * @param {Text} textNode - The text node to update.
-   * @param {number} offset - The current cursor offset.
-   * @param {number} matchLength - The length of the matched trigger word.
-   */
-  private removeTriggerMatch(textNode: Text, offset: number, matchLength: number): void {
-    const text = textNode.textContent ?? '';
-    const triggerStart = offset - matchLength;
-    const newText = text.slice(0, triggerStart) + text.slice(offset);
+  // /**
+  //  * Removes the matched trigger word from the text node and updates the cursor position.
+  //  * @param {Text} textNode - The text node to update.
+  //  * @param {number} offset - The current cursor offset.
+  //  * @param {number} matchLength - The length of the matched trigger word.
+  //  */
+  // private removeTriggerMatch(textNode: Text, offset: number, matchLength: number): void {
+  //   const text = textNode.textContent ?? '';
+  //   const triggerStart = offset - matchLength;
+  //   const newText = text.slice(0, triggerStart) + text.slice(offset);
 
-    textNode.textContent = newText;
-    this.savedRange!.setStart(textNode, triggerStart);
-    this.savedRange!.setEnd(textNode, triggerStart);
-  }
+  //   textNode.textContent = newText;
+  //   this.savedRange!.setStart(textNode, triggerStart);
+  //   this.savedRange!.setEnd(textNode, triggerStart);
+  // }
 
   /**
    * Inserts a mention into a contenteditable element at the current cursor position.
    *
    * This method focuses the editor, ensures a valid cursor range exists,
-   * deletes any trigger word (like "@name" or "#channel") before the cursor,
+   * deletes any trigger word (like "@user" or "#channel") before the cursor,
    * inserts the formatted mention span, updates the selection,
    * and saves the new cursor position.
    *
-   * @private
    * @param div - The contenteditable HTML element where the mention should be inserted.
    * @param text - The mention text to insert (e.g., "@username" or "#channel").
    */
@@ -240,6 +276,7 @@ export class MentionComponent implements OnInit {
    */
   private insertMentionAtRange(range: Range, text: string): void {
     const fragment = this.createMentionSpan(text);
+
     range.deleteContents();
     range.insertNode(fragment);
     range.collapse(false);
@@ -258,7 +295,6 @@ export class MentionComponent implements OnInit {
   /**
    * Creates a span element representing a mention, surrounded by non-breaking spaces.
    *
-   * @private
    * @param text - The mention text (e.g., "@username" or "#channel").
    * @returns A DocumentFragment containing a mention span and surrounding spaces.
    */
@@ -306,7 +342,6 @@ export class MentionComponent implements OnInit {
    * Ensures that a cursor position is set within the given element.
    * If no cursor range is saved, this function creates one and applies it.
    *
-   * @private
    * @param div - The editor element where the cursor should be ensured.
    */
   private ensureCursorPosition(div: HTMLElement): void {
