@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MainContentComponent } from '../main-content.component';
 import { ElementRef } from '@angular/core';
 
 /**
@@ -9,6 +10,62 @@ import { ElementRef } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class DevspaceService {
   private editorRef: ElementRef<HTMLDivElement> | null = null;
+
+  /**
+    * Toggles the Devspace visibility based on the current device type.
+    * 
+    * @param context - The MainContentComponent instance.
+    */
+  toggleDevspace(context: MainContentComponent): void {
+    context.isMobile ? this.toggleMobileDevspace(context) : context.showDevspace = !context.showDevspace;
+  }
+
+  /**
+   * Toggles the Devspace on mobile devices.
+   * 
+   * @param context - The MainContentComponent instance.
+   */
+  private toggleMobileDevspace(context: MainContentComponent): void {
+    context.showMainChat ? this.closeMobileDevspace(context) : this.prepareMobileDevspaceOpening(context);
+  }
+
+  /**
+   * Opens Devspace on mobile view, ensures proper context selected.
+   * 
+   * @param context - The MainContentComponent instance.
+   */
+  private prepareMobileDevspaceOpening(context: MainContentComponent): void {
+    if (!context.selectedChannel || !context.selectedUser) this.selectDefaultChannel(context);
+
+    context.showMainChat = true;
+
+    setTimeout(() => context.showDevspace = true, 0);
+  }
+
+  /**
+   * Closes Devspace and resets selection in mobile view.
+   * 
+   * @param context - The MainContentComponent instance.
+   */
+  private closeMobileDevspace(context: MainContentComponent): void {
+    context.showMainChat = false;
+    context.selectedUser = null;
+    context.selectedChannel = null;
+
+    setTimeout(() => context.showDevspace = false, 0);
+  }
+
+  /**
+   * Selects the default channel if available.
+   * 
+   * @param context - The MainContentComponent instance.
+   */
+  private selectDefaultChannel(context: MainContentComponent): void {
+    context.sideNavComponent?.defaultChannel();
+
+    context.selectedChannel =
+      context.sideNavComponent?.channels.find(c => c.channelId === context.sideNavComponent?.selectedChannelId) || null;
+  }
 
   /**
     * Sets a reference to the editor element.

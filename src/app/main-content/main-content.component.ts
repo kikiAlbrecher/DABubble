@@ -19,6 +19,8 @@ import { UserProfileComponent } from '../header/user-profile/user-profile.compon
 import { DialogShowChannelMembersComponent } from './dialog-show-channel-members/dialog-show-channel-members.component';
 import { HeaderSharedService } from '../header/user-header/header-service';
 import { MainContentLayoutService } from './main-content-layout.service';
+import { DevspaceService } from './devspace/devspace.service';
+import { MainContentService } from './main-content.service';
 
 @Component({
   selector: 'app-main-content',
@@ -44,10 +46,12 @@ import { MainContentLayoutService } from './main-content-layout.service';
 })
 export class MainContentComponent implements OnInit {
   constructor(
+    public mainContentService: MainContentService,
     public shared: UserSharedService,
     public messageService: MessageSharedService,
     public sharedHeader: HeaderSharedService,
-    private layoutService: MainContentLayoutService
+    private layoutService: MainContentLayoutService,
+    public devspaceService: DevspaceService
   ) { }
 
   users: User[] = [];
@@ -79,43 +83,9 @@ export class MainContentComponent implements OnInit {
 
   /**
    * Lifecycle hook that runs on component initialization.
-   * Starts the display logic and subscribes to valid users.
    */
   ngOnInit() {
-    this.startDisplay();
-
-    this.shared.subscribeValidUsers();
-
-    this.shared.allValidUsers$.subscribe(users => {
-      this.users = users;
-    });
-
-    this.userHasMadeSelection = false;
-
-    this.sharedHeader.profileOpen$.subscribe(() => {
-      this.selectedUser = this.shared.actualUser;
-      this.showProfile = true;
-    });
-  }
-
-  /**
-   * Handles initial display state depending on whether the app runs on mobile or desktop.
-   */
-  startDisplay() {
-    if (this.isMobile) {
-      this.showMainChat = false;
-      this.selectedChannel = null;
-      this.selectedUser = null;
-      this.isInitializing = false;
-    } else {
-      setTimeout(() => {
-        if (!this.userHasMadeSelection) {
-          this.sideNavComponent?.defaultChannel();
-          this.showMainChat = true;
-        }
-        this.isInitializing = false;
-      });
-    }
+    this.mainContentService.handleInit(this);
   }
 
   /**
@@ -182,16 +152,7 @@ export class MainContentComponent implements OnInit {
    * @param event - Result event containing success flag, message, and optional channel
    */
   createChannel(event: { success: boolean; message: string; channel?: Channel }) {
-    this.statusMessageAlternatives(event);
-
-    if (event.success && event.channel) {
-      this.selectedChannel = event.channel;
-
-      setTimeout(() => {
-        this.showAddChannelDialog = false;
-        this.addChannelMember = true;
-      }, 2000);
-    } else return;
+    this.mainContentService.handleCreateChannel(this, event);
   }
 
   /**
@@ -294,49 +255,14 @@ export class MainContentComponent implements OnInit {
   }
 
   /**
-   * Opens the "Add Member" dialog and positions it based on the triggering event or coordinates.
-   * Adjusts behavior depending on whether the application is in mobile or desktop view.
+   * Opens the "Add Member" dialog and delegates the handling to the service.
+   * Determines the dialog position based on the provided event or coordinates,
+   * and adjusts the behavior for mobile or desktop view accordingly.
    *
-   * @param event - Optional event or position object. Can be a MouseEvent (used for positioning
-   *                based on click) or an object with explicit `top` and `left` coordinates.
+   * @param event - Optional MouseEvent or an object with explicit top and left coordinates
    */
   openDialogAddMember(event?: MouseEvent | { top: number; left: number }): void {
-    this.isMobileEditContext = false;
-    const position = this.extractPosition(event);
-
-    this.isMobile ? this.mobileAddMember(position) : this.desktopAddMember(position);
-  }
-
-  /**
-   * Extracts the position from a MouseEvent or explicit coordinates.
-   */
-  private extractPosition(event?: MouseEvent | { top: number; left: number }): { top: number; left: number } {
-    if (event && 'top' in event && 'left' in event) return event;
-    if (event instanceof MouseEvent) return { top: event.clientY, left: event.clientX };
-
-    return { top: 200, left: 0 };
-  }
-
-  /**
-   * Handles opening the add member dialog on mobile.
-   */
-  private mobileAddMember(position: { top: number; left: number }): void {
-    this.addMemberPosition = position;
-    this.showAddMemberDialog = false;
-    this.showMembers = true;
-
-    setTimeout(() => {
-      this.showMembers = false;
-      this.showAddMemberDialog = true;
-    }, 50);
-  }
-
-  /**
-   * Handles opening the add member dialog on desktop.
-   */
-  private desktopAddMember(position: { top: number; left: number }): void {
-    this.addMemberPosition = position;
-    this.showAddMemberDialog = true;
+    this.mainContentService.openDialogAddMember(this, event);
   }
 
   /**
@@ -438,57 +364,12 @@ export class MainContentComponent implements OnInit {
   }
 
   /**
-   * Toggles the Devspace visibility based on the current device type (mobile or desktop).
-   * On mobile, handles more complex logic depending on selection and chat visibility.
+   * Toggles the visibility of the Devspace.
+   * 
+   * Delegates the toggle logic to the Devspace service, passing the current component context.
    */
   toggleDevspaceMobile(): void {
-    this.isMobile ? this.toggleMobileDevspace() : this.showDevspace = !this.showDevspace;
-  }
-
-  /**
-   * Toggles the Devspace on mobile view.
-   * Opens the Devspace if the main chat is not shown, otherwise closes it.
-   */
-  private toggleMobileDevspace(): void {
-    if (!this.showMainChat) {
-      this.prepareMobileDevspaceOpening();
-    } else {
-      this.closeMobileDevspace();
-    }
-  }
-
-  /**
-   * Prepares and opens the Devspace in mobile view.
-   * Ensures a channel is selected before showing the Devspace.
-   */
-  private prepareMobileDevspaceOpening(): void {
-    if (!this.selectedChannel || !this.selectedUser) this.selectDefaultChannel();
-
-    this.showMainChat = true;
-
-    setTimeout(() => this.showDevspace = true, 0);
-  }
-
-  /**
-   * Closes the Devspace and resets the current selection in mobile view.
-   */
-  private closeMobileDevspace(): void {
-    this.showMainChat = false;
-    this.selectedUser = null;
-    this.selectedChannel = null;
-
-    setTimeout(() => this.showDevspace = false, 0);
-  }
-
-  /**
-   * Selects the default channel using the side navigation component.
-   * Updates the selectedChannel property based on the selectedChannelId.
-   */
-  private selectDefaultChannel(): void {
-    this.sideNavComponent?.defaultChannel();
-
-    this.selectedChannel =
-      this.sideNavComponent?.channels.find(c => c.channelId === this.sideNavComponent?.selectedChannelId) || null;
+    this.devspaceService.toggleDevspace(this);
   }
 
   /**
