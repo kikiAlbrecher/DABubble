@@ -32,9 +32,7 @@ export class DevspaceService {
    * Clears the inner HTML content of the editor.
    */
   clearEditor() {
-    if (this.editorRef) {
-      this.editorRef.nativeElement.innerHTML = '';
-    }
+    if (this.editorRef) this.editorRef.nativeElement.innerHTML = '';
   }
 
   /**

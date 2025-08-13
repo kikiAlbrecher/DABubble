@@ -15,7 +15,7 @@
                 <div class="add-emoji-container">
                     <div (click)="toggleEmojiOverlay()" class="smiley" src="assets/icons/smiley-button.svg" alt="">
                     </div>
-                    @if(emojiOverlay || (this.mode === 'thread' && emojiThreadOverlay) ){
+                    @if(emojiOverlay || (this.mode === 'thread' && emojiThreadOverlay)) {
                     <div class="emoji-picker-container">
                         <emoji-mart (emojiSelect)="addEmoji($event)" [showPreview]="false" [enableSearch]="false"
                             [isNative]="true"></emoji-mart>

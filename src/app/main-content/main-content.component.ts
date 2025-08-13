@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { SideNavComponent } from './side-nav/side-nav.component';
-import { Router } from '@angular/router';
 import { UserSharedService } from '../userManagement/userManagement-service';
 import { StatusMessagesComponent } from '../style-components/status-messages/status-messages.component';
 import { DialogAddChannelComponent } from './dialog-add-channel/dialog-add-channel.component';
@@ -19,6 +18,7 @@ import { DialogEditChannelComponent } from './dialog-edit-channel/dialog-edit-ch
 import { UserProfileComponent } from '../header/user-profile/user-profile.component';
 import { DialogShowChannelMembersComponent } from './dialog-show-channel-members/dialog-show-channel-members.component';
 import { HeaderSharedService } from '../header/user-header/header-service';
+import { MainContentLayoutService } from './main-content-layout.service';
 
 @Component({
   selector: 'app-main-content',
@@ -47,8 +47,7 @@ export class MainContentComponent implements OnInit {
     public shared: UserSharedService,
     public messageService: MessageSharedService,
     public sharedHeader: HeaderSharedService,
-    private router: Router,
-    private ngZone: NgZone
+    private layoutService: MainContentLayoutService
   ) { }
 
   users: User[] = [];
@@ -192,9 +191,7 @@ export class MainContentComponent implements OnInit {
         this.showAddChannelDialog = false;
         this.addChannelMember = true;
       }, 2000);
-    } else {
-      return;
-    }
+    } else return;
   }
 
   /**
@@ -248,7 +245,6 @@ export class MainContentComponent implements OnInit {
     this.statusMessageAlternatives(event);
   }
 
-
   /**
    * Closes the channel editing dialog.
    */
@@ -297,38 +293,61 @@ export class MainContentComponent implements OnInit {
     setTimeout(() => this.openProfile(), 10);
   }
 
-  openDialogAddMember(event?: MouseEvent | { top: number; left: number }) {
+  /**
+   * Opens the "Add Member" dialog and positions it based on the triggering event or coordinates.
+   * Adjusts behavior depending on whether the application is in mobile or desktop view.
+   *
+   * @param event - Optional event or position object. Can be a MouseEvent (used for positioning
+   *                based on click) or an object with explicit `top` and `left` coordinates.
+   */
+  openDialogAddMember(event?: MouseEvent | { top: number; left: number }): void {
     this.isMobileEditContext = false;
-    let position = { top: 200, left: 0 };
+    const position = this.extractPosition(event);
 
-    if (event && 'top' in event && 'left' in event) {
-      position = event;
-    } else if (event instanceof MouseEvent) {
-      position = { top: event.clientY, left: event.clientX };
-    }
-
-    if (this.isMobile) {
-      this.isMobileEditContext = false;
-      this.addMemberPosition = position;
-      this.showAddMemberDialog = false;
-      this.showMembers = true;
-
-
-      setTimeout(() => {
-        this.showMembers = false;
-        this.showAddMemberDialog = true;
-      }, 50);
-    } else {
-      this.addMemberPosition = position;
-      this.showAddMemberDialog = true;
-    }
+    this.isMobile ? this.mobileAddMember(position) : this.desktopAddMember(position);
   }
 
+  /**
+   * Extracts the position from a MouseEvent or explicit coordinates.
+   */
+  private extractPosition(event?: MouseEvent | { top: number; left: number }): { top: number; left: number } {
+    if (event && 'top' in event && 'left' in event) return event;
+    if (event instanceof MouseEvent) return { top: event.clientY, left: event.clientX };
 
-  openDialogAddMemberMobile() {
-    this.isMobileEdit = true;
-    this.isMobileEditContext = true;
+    return { top: 200, left: 0 };
+  }
+
+  /**
+   * Handles opening the add member dialog on mobile.
+   */
+  private mobileAddMember(position: { top: number; left: number }): void {
+    this.addMemberPosition = position;
+    this.showAddMemberDialog = false;
+    this.showMembers = true;
+
+    setTimeout(() => {
+      this.showMembers = false;
+      this.showAddMemberDialog = true;
+    }, 50);
+  }
+
+  /**
+   * Handles opening the add member dialog on desktop.
+   */
+  private desktopAddMember(position: { top: number; left: number }): void {
+    this.addMemberPosition = position;
     this.showAddMemberDialog = true;
+  }
+
+  /**
+   * Opens the "Add Member" dialog in mobile edit mode in context of the edit-channel-dialog.
+   */
+  openDialogAddMemberMobile() {
+    if (this.isMobile) {
+      this.isMobileEdit = true;
+      this.isMobileEditContext = true;
+      this.showAddMemberDialog = true;
+    }
   }
 
   /**
@@ -368,13 +387,8 @@ export class MainContentComponent implements OnInit {
     this.messageService.setSelectedChannel(null);
     this.showProfile = false;
 
-    if (this.isMobile && this.editChannel) {
-      this.editChannel = false;
-    }
-
-    if (this.isMobile && !this.isInitializing) {
-      this.showMainChat = true;
-    }
+    if (this.isMobile && this.editChannel) this.editChannel = false;
+    if (this.isMobile && !this.isInitializing) this.showMainChat = true;
 
     setTimeout(() => {
       if (this.mainChatComponent) this.mainChatComponent.focusWriteMessageInput();
@@ -402,117 +416,11 @@ export class MainContentComponent implements OnInit {
     this.isMobile = width <= 1000;
 
     if (wasMobile !== this.isMobile) {
-      this.handleResponsiveChange();
-      this.handleEditChannel();
+      this.layoutService.handleResponsiveChange(this);
+      this.layoutService.handleEditChannel(this);
     }
 
-    this.updateOverlayPositions();
-  }
-
-  /**
-   * Handles layout changes when switching between mobile and desktop views.
-   */
-  handleResponsiveChange() {
-    if (!this.isMobile) {
-      if (this.selectedChannel || this.selectedUser) {
-        this.showMainChat = true;
-      } else if (!this.userHasMadeSelection) {
-        this.sideNavComponent?.defaultChannel();
-        this.showMainChat = true;
-      }
-    } else {
-      if (!this.userHasMadeSelection) {
-        this.showMainChat = false;
-        this.sideNavComponent?.clearSelection();
-        this.selectedChannel = null;
-        this.selectedUser = null;
-      } else if (this.selectedChannel || this.selectedUser) {
-        this.showMainChat = true;
-      }
-    }
-  }
-
-  /**
-   * Ensures correct positioning of the edit-channel dialog on responsive changes.
-   */
-  handleEditChannel() {
-    if (!this.isMobile && this.editChannel) {
-      this.ngZone.onStable.pipe().subscribe(() => {
-        this.dynamicPositionEditChannel();
-      });
-    }
-  }
-
-  /**
-   * Updates all floating element positions (edit, members, add-member).
-   */
-  private updateOverlayPositions() {
-    this.dynamicPositionEditChannel();
-    this.dynamicPositionShowMembers();
-    this.dynamicPositionAddMembers();
-  }
-
-  /**
-   * Calculates and sets the position of the edit-channel dialog.
-   */
-  dynamicPositionEditChannel() {
-    const trigger = document.querySelector('[data-edit-channel-btn]');
-    if (trigger) {
-      this.editChannelPosition = this.isMobile
-        ? { top: 0, left: 0 }
-        : this.calculatePosition(trigger as HTMLElement, 0, 'left');
-
-      this.isMobileEdit = this.isMobile;
-    }
-  }
-
-  /**
-   * Calculates and sets the position for the members dialog.
-   */
-  dynamicPositionShowMembers() {
-    if (this.showMembers) {
-      if (this.isMobile) {
-        const trigger = document.querySelector('[data-add-member-btn]');
-        if (trigger) {
-          this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 300, 'right');
-        }
-      } else {
-        const trigger = document.querySelector('[data-show-members-btn]');
-        if (trigger) this.showMembersPosition = this.calculatePosition(trigger as HTMLElement, 415, 'right');
-      }
-    }
-  }
-
-  /**
-   * Calculates and sets the position for the add-member dialog.
-   */
-  dynamicPositionAddMembers() {
-    if (this.showAddMemberDialog) {
-      const trigger = document.querySelector('[data-add-member-btn]');
-
-      if (trigger) {
-        const dialogWidth = this.isMobile ? 300 : 514;
-        this.addMemberPosition = this.calculatePosition(trigger as HTMLElement, dialogWidth, 'right');
-      }
-    }
-  }
-
-  /**
-   * Calculates the screen position for a floating UI element.
-   * 
-   * @param el - Triggering element
-   * @param dialogWidth - Width of the dialog
-   * @param align - Alignment (left or right)
-   * @returns Coordinates { top, left }
-   */
-  private calculatePosition(el: HTMLElement, dialogWidth: number, align: 'left' | 'right' = 'right'): { top: number; left: number } {
-    const rect = el.getBoundingClientRect();
-    const top = rect.bottom + window.scrollY + 8;
-    let left: number;
-
-    (align === 'right') ? left = rect.right + window.scrollX - dialogWidth : left = rect.left + window.scrollX;
-
-    return { top, left };
+    this.layoutService.updateOverlayPositions(this);
   }
 
   /**
@@ -529,28 +437,58 @@ export class MainContentComponent implements OnInit {
     this.showDevspace = false;
   }
 
-  toggleDevspaceMobile() {
-    if (this.isMobile) {
-      if (!this.showMainChat) {
-        if (this.selectedChannel === null || this.selectedUser === null) {
-          this.sideNavComponent?.defaultChannel();
+  /**
+   * Toggles the Devspace visibility based on the current device type (mobile or desktop).
+   * On mobile, handles more complex logic depending on selection and chat visibility.
+   */
+  toggleDevspaceMobile(): void {
+    this.isMobile ? this.toggleMobileDevspace() : this.showDevspace = !this.showDevspace;
+  }
 
-          this.selectedChannel = this.sideNavComponent?.channels.find(c => c.channelId === this.sideNavComponent?.selectedChannelId) || null;
-        }
-        this.showMainChat = true;
-
-        setTimeout(() => {
-          this.showDevspace = true;
-        }, 0);
-      } else {
-        this.showMainChat = false;
-        this.selectedUser = null;
-        this.selectedChannel = null;
-        setTimeout(() => this.showDevspace = false, 0);
-      }
+  /**
+   * Toggles the Devspace on mobile view.
+   * Opens the Devspace if the main chat is not shown, otherwise closes it.
+   */
+  private toggleMobileDevspace(): void {
+    if (!this.showMainChat) {
+      this.prepareMobileDevspaceOpening();
     } else {
-      this.showDevspace = !this.showDevspace;
+      this.closeMobileDevspace();
     }
+  }
+
+  /**
+   * Prepares and opens the Devspace in mobile view.
+   * Ensures a channel is selected before showing the Devspace.
+   */
+  private prepareMobileDevspaceOpening(): void {
+    if (!this.selectedChannel || !this.selectedUser) this.selectDefaultChannel();
+
+    this.showMainChat = true;
+
+    setTimeout(() => this.showDevspace = true, 0);
+  }
+
+  /**
+   * Closes the Devspace and resets the current selection in mobile view.
+   */
+  private closeMobileDevspace(): void {
+    this.showMainChat = false;
+    this.selectedUser = null;
+    this.selectedChannel = null;
+
+    setTimeout(() => this.showDevspace = false, 0);
+  }
+
+  /**
+   * Selects the default channel using the side navigation component.
+   * Updates the selectedChannel property based on the selectedChannelId.
+   */
+  private selectDefaultChannel(): void {
+    this.sideNavComponent?.defaultChannel();
+
+    this.selectedChannel =
+      this.sideNavComponent?.channels.find(c => c.channelId === this.sideNavComponent?.selectedChannelId) || null;
   }
 
   /**
