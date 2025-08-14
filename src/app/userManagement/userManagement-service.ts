@@ -1,41 +1,20 @@
-/**
- * UserSharedService
- * 
- * Angular service handling user authentication, profile management,
- * and communication with Firebase Authentication and Firestore.
- * 
- * Features:
- * - User registration, login (email/password, Google, guest)
- * - Password reset and change
- * - Real-time user data syncing
- * - Online/offline status tracking
- * - User interface state flags and observables
- * 
- * Uses Angular Router for navigation and NgZone to run UI updates.
- * Maintains BehaviorSubjects to emit user-related state changes.
- * 
- * @providedIn root
- */
-
 import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from "./user.interface";
-import { Firestore, doc, updateDoc, setDoc, getDoc, onSnapshot, collection } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, getDoc, onSnapshot, collection } from '@angular/fire/firestore';
 import {
-    getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, confirmPasswordReset,
-    signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser, signOut,
-    signInAnonymously
+    confirmPasswordReset, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User as FirebaseUser
 } from "firebase/auth";
 import { NgZone } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { BehaviorSubject } from 'rxjs';
 import { Channel } from '../../models/channel.class';
+import { UserManagementHelperService } from './user-management-helper.service';
 
 @Injectable({
     providedIn: 'root'
 })
-
 export class UserSharedService {
     firestore = inject(Firestore);
     auth = inject(Auth);
@@ -63,10 +42,10 @@ export class UserSharedService {
     detailOverlay: boolean = false;
     firebaseFailure: boolean = false;
     isRegistering: boolean = false;
-    private _userDetails = new BehaviorSubject<User>({} as User);
+    public _userDetails = new BehaviorSubject<User>({} as User);
     public userDetails$ = this._userDetails.asObservable();
 
-    constructor(private router: Router, private ngZone: NgZone) { }
+    constructor(public router: Router, public ngZone: NgZone, private userHelperService: UserManagementHelperService) { }
 
     /**
      * Initializes the authentication state listener.
@@ -140,86 +119,15 @@ export class UserSharedService {
     */
     sendData() {
         this.accountSuccess = true;
-        setTimeout(() => {
-            this.accountSuccess = false;
-        }, 3000);
+
+        setTimeout(() => this.accountSuccess = false, 3000);
     }
 
     /**
      * Submits the user registration data by creating an account and saving user details to Firestore.
-     * Handles UI state changes and navigates to the login page after successful registration.
      */
     async submitUser() {
-        try {
-            this.isRegistering = true;
-            const userCredential = await this.createUserWithEmail();
-            const user = userCredential.user;
-
-            this.setUserDetails(user);
-            await this.saveUserDetailsToFirestore(user.uid);
-
-            this.infoSlider('accountSuccess');
-            await this.signOutAndRedirect();
-        } catch (error) {
-            this.handleRegistrationError();
-        } finally {
-            this.isRegistering = false;
-        }
-    }
-
-    /**
-     * Creates a new user with email and password using Firebase Authentication.
-     * 
-     * @returns The user credential object from Firebase.
-     */
-    private createUserWithEmail() {
-        return createUserWithEmailAndPassword(
-            this.auth,
-            this.userDetails.email ?? '',
-            this.userDetails.password ?? ''
-        );
-    }
-
-    /**
-     * Sets additional user details like uid and display names on the userDetails object.
-     * 
-     * @param user - The authenticated user object returned from Firebase.
-     */
-    private setUserDetails(user: any) {
-        const uid = user.uid;
-
-        (this.userDetails as any).uid = uid;
-        (this.userDetails as any).displayName = this.userDetails.name;
-    }
-
-    /**
-     * Saves the userDetails object into Firestore under the 'users' collection.
-     * 
-     * @param uid - The unique user ID to be used as the Firestore document ID.
-     */
-    private saveUserDetailsToFirestore(uid: string) {
-        const userDocRef = doc(this.firestore, 'users', uid);
-        return setDoc(userDocRef, this.userDetails);
-    }
-
-    /**
-     * Signs out the current user and navigates to the login page.
-     */
-    private async signOutAndRedirect() {
-        await signOut(this.auth);
-        this.ngZone.run(() => {
-            this.router.navigate(['/login']);
-        });
-    }
-
-    /**
-     * Handles registration errors by showing a failure message temporarily.
-     */
-    private handleRegistrationError() {
-        this.firebaseFailure = true;
-        setTimeout(() => {
-            this.firebaseFailure = false;
-        }, 3000);
+        await this.userHelperService.handleSubmitUser(this);
     }
 
     /**
@@ -256,192 +164,35 @@ export class UserSharedService {
 
     /**
      * Logs out the current user by updating their status and signing out from Firebase.
-     * Handles UI state changes and navigation after logout.
      */
     async logOutUser() {
-        await this.updateOnlineStatusOffline();
-        this.performSignOut()
-            .then(() => {
-                this.handlePostSignOut();
-            })
-            .catch(() => {
-                this.handleSignOutError();
-            });
-    }
-
-    /**
-     * Performs the Firebase sign-out operation.
-     * 
-     * @returns A promise that resolves when sign-out completes.
-     */
-    private performSignOut() {
-        return signOut(this.auth);
-    }
-
-    /**
-     * Handles UI updates and navigation after successful sign-out.
-     */
-    private handlePostSignOut() {
-        this.isAuthenticated = false;
-        this.actualUserID = '';
-        this.router.navigate(['/login']);
-        this.userEditOverlay = false;
-        localStorage.removeItem('introShown');
-    }
-
-    /**
-     * Handles errors during sign-out by showing a temporary failure message.
-     */
-    private handleSignOutError() {
-        this.firebaseFailure = true;
-        setTimeout(() => {
-            this.firebaseFailure = false;
-        }, 3000);
+        await this.userHelperService.handleLogout(this);
     }
 
     /**
      * Initiates Google sign-in with a popup and handles user data accordingly.
      */
     googleLogIn() {
-        const auth = getAuth();
-        const provider = new GoogleAuthProvider();
-
-        signInWithPopup(auth, provider)
-            .then(result => this.handleGoogleLoginSuccess(result))
-            .catch(() => this.handleGoogleLoginFailure());
-    }
-
-    /**
-     * Handles successful Google sign-in.
-     * Checks if the user exists in Firestore and updates or creates user document.
-     * Navigates to main content and updates online status.
-     * 
-     * @param result - The sign-in result from Firebase.
-     */
-    private async handleGoogleLoginSuccess(result: any) {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential!.accessToken;
-        const user = result.user;
-        const userDocRef = doc(this.firestore, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-            this.handleExistingUser(user);
-        } else {
-            await this.createNewUser(userDocRef, user);
-        }
-        this.ngZone.run(() => {
-            this.router.navigate(['/main-content']);
-        });
-        this.updateOnlineStatusOnline();
-    }
-
-    /**
-     * Handles the case when the Google user already exists in Firestore.
-     * 
-     * @param user - The authenticated Firebase user.
-     */
-    private handleExistingUser(user: any) {
-        this.actualUserID = user.uid;
-        this.inputData = false;
-        this.isAuthenticated = true;
-        this.router.navigate(['/main-content']);
-    }
-
-    /**
-     * Creates a new user document in Firestore with default values.
-     * 
-     * @param userDocRef - The Firestore document reference for the user.
-     * @param user - The authenticated Firebase user.
-     */
-    private async createNewUser(userDocRef: any, user: any) {
-        await setDoc(userDocRef, {
-            channelIds: { 'ClExENSKqKRsmjb17kGy': true },
-            uid: user.uid,
-            email: user.email,
-            name: user.displayName,
-            picture: 'assets/img/avatar-placeholder.svg',
-            status: false,
-            displayName: user.displayName
-        });
-        this.channelMembersChanged$.next();
-        this.router.navigate(['/main-content']);
-    }
-
-    /**
-     * Handles Google sign-in failure by showing a temporary error message.
-     */
-    private handleGoogleLoginFailure() {
-        this.firebaseFailure = true;
-        setTimeout(() => {
-            this.firebaseFailure = false;
-        }, 3000);
+        this.userHelperService.handleGoogleLogin(this);
     }
 
     /**
      * Logs in a user anonymously as a guest.
-     * Creates or updates the guest user document in Firestore and navigates to main content.
      */
     guestLogIn() {
-        const auth = getAuth();
-        signInAnonymously(auth)
-            .then(result => this.handleGuestLoginSuccess(result))
-            .catch(() => this.handleGuestLoginFailure());
-    }
-
-    /**
-     * Handles the success of an anonymous sign-in.
-     * Sets guest user data in Firestore and updates UI state.
-     * 
-     * @param result - The anonymous sign-in result containing the user.
-     */
-    private async handleGuestLoginSuccess(result: any) {
-        const user = result.user;
-        const userDocRef = doc(this.firestore, 'users', user.uid);
-        await this.setGuestUserData(userDocRef, user);
-        this.channelMembersChanged$.next();
-        this.router.navigate(['/main-content']);
-    }
-
-    /**
-     * Sets guest user details in Firestore.
-     * 
-     * @param userDocRef - Firestore document reference for the user.
-     * @param user - The authenticated Firebase user.
-     */
-    private setGuestUserData(userDocRef: any, user: any) {
-        return setDoc(userDocRef, {
-            channelIds: { 'ClExENSKqKRsmjb17kGy': true },
-            uid: user.uid,
-            email: "",
-            name: 'Gast',
-            picture: 'assets/img/avatar-placeholder.svg',
-            status: true,
-            guest: true,
-            displayName: 'Gast'
-        });
-    }
-
-    /**
-     * Handles anonymous sign-in failure by showing a temporary error message.
-     */
-    private handleGuestLoginFailure() {
-        this.firebaseFailure = true;
-        setTimeout(() => {
-            this.firebaseFailure = false;
-        }, 3000);
+        this.userHelperService.handleGuestLogin(this);
     }
 
     /**
      * Sends a password reset email to the specified email address.
-     * 
-     * @param email - The email address to which the password reset email will be sent.
-     * 
-     * @remarks
      * On successful sending, navigates the user to the login page and displays a confirmation message.
      * In case of failure, shows an error message for 3 seconds.
+     * 
+     * @param email - The email address to which the password reset email will be sent.
      */
     changePasswordMail(email: string) {
         const auth = this.auth;
+
         sendPasswordResetEmail(auth, email)
             .then(() => {
                 this.router.navigate(['/login']);
@@ -449,9 +200,8 @@ export class UserSharedService {
             })
             .catch((error) => {
                 this.firebaseFailure = true;
-                setTimeout(() => {
-                    this.firebaseFailure = false;
-                }, 3000);
+
+                setTimeout(() => this.firebaseFailure = false, 3000);
             });
     }
 
@@ -466,14 +216,14 @@ export class UserSharedService {
      */
     updatePassword(actionCode: string, newPassword: any) {
         const auth = this.auth;
+
         confirmPasswordReset(auth, actionCode, newPassword).then((resp) => {
             this.infoSlider('passwordChanged');
             this.router.navigate(['/login']);
         }).catch((error) => {
             this.firebaseFailure = true;
-            setTimeout(() => {
-                this.firebaseFailure = false;
-            }, 3000);
+
+            setTimeout(() => this.firebaseFailure = false, 3000);
         });
     }
 
@@ -513,16 +263,7 @@ export class UserSharedService {
      * @param newName - The new name to set for the user.
      */
     async updateName(newName: string) {
-        const currentUser = doc(this.firestore, "users", this.actualUserID);
-
-        await updateDoc(currentUser, { name: newName, displayName: newName });
-
-        const updated = {
-            ...this._userDetails.value, id: this.actualUserID, name: newName, displayName: newName,
-            status: true
-        };
-
-        this._userDetails.next(updated);
+        this.userHelperService.updateName(this, newName);
     }
 
     /**
@@ -531,13 +272,7 @@ export class UserSharedService {
      * @param picture - The new picture to set for the user.
      */
     async changeAvatar(picture: string) {
-        const currentUser = doc(this.firestore, "users", this.actualUserID);
-
-        await updateDoc(currentUser, { picture: picture });
-
-        const updated = { ...this._userDetails.value, picture, status: true };
-
-        this._userDetails.next(updated);
+        this.userHelperService.changeAvatar(this, picture);
     }
 
     /**
@@ -618,9 +353,7 @@ export class UserSharedService {
                 const user = docSnap.data() as User;
                 const id = docSnap.id;
 
-                if (user.name !== 'Gast' || (user.name === 'Gast' && user.status === true)) {
-                    users.push({ ...user, id });
-                }
+                if (user.name !== 'Gast' || (user.name === 'Gast' && user.status === true)) users.push({ ...user, id });
             });
 
             this.allValidUsers$.next(users);
@@ -645,9 +378,7 @@ export class UserSharedService {
 
         if (channelIds.hasOwnProperty(channelId)) delete channelIds[channelId];
 
-        await updateDoc(userDocRef, {
-            channelIds: channelIds
-        });
+        await updateDoc(userDocRef, { channelIds: channelIds });
     }
 
     /**

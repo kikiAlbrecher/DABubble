@@ -35,7 +35,6 @@ import { MentionHandlerService } from '../../search/mention-handler.service';
   styleUrl: './write-message.component.scss'
 })
 export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
-
   constructor(
     public shared: UserSharedService,
     public sharedMessages: MessageSharedService,
@@ -93,9 +92,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     if (this.editor?.nativeElement) {
       this.editor.nativeElement.innerHTML = '';
     }
-    setTimeout(() => {
-      this.editor.nativeElement.focus();
-    }, 0);
+    setTimeout(() => this.editor.nativeElement.focus(), 0);
   }
 
   /**
@@ -115,11 +112,11 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   /**
- * Subscribes to the observable stream of valid channels.
- * 
- * - Calls a method to initiate the channel subscription (`subscribeValidChannels()`).
- * - Stores the subscription to `allValidChannels$` and updates the `channels` array when new data is emitted.
- */
+   * Subscribes to the observable stream of valid channels.
+   * 
+   * - Calls a method to initiate the channel subscription (`subscribeValidChannels()`).
+   * - Stores the subscription to `allValidChannels$` and updates the `channels` array when new data is emitted.
+   */
   takeInChannels() {
     this.channelShared.subscribeValidChannels();
 
@@ -129,11 +126,11 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   /**
- * Subscribes to the observable stream of valid users.
- * 
- * - Calls a method to initiate the user subscription (`subscribeValidUsers()`).
- * - Stores the subscription to `allValidUsers$` and updates the `users` array when new data is emitted.
- */
+   * Subscribes to the observable stream of valid users.
+   * 
+   * - Calls a method to initiate the user subscription (`subscribeValidUsers()`).
+   * - Stores the subscription to `allValidUsers$` and updates the `users` array when new data is emitted.
+   */
   takeInUsers() {
     this.shared.subscribeValidUsers();
 
@@ -142,10 +139,8 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  /**
-   * Lifecycle hook that is called when the component is about to be destroyed.
-   * 
-   * - Cleans up active subscriptions to prevent memory leaks.
+  /** 
+   * Cleans up active subscriptions to prevent memory leaks.
    */
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
@@ -156,30 +151,24 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * Lifecycle hook that is called whenever input-bound properties change.
    * 
    * @param changes - An object of type `SimpleChanges` that holds the changed input properties.
-   * 
-   * - Checks if a new user or channel has been selected and triggers corresponding data loading.
-   * - Updates placeholder text accordingly.
    */
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedUser'] && this.selectedUser) {
-      this.checkChatExists();
-    } else if (changes['selectedChannel'] && this.selectedChannel) {
-      this.checkChannelMessagesExist();
-    }
+    if (changes['selectedUser'] && this.selectedUser) this.checkChatExists();
+    else if (changes['selectedChannel'] && this.selectedChannel) this.checkChannelMessagesExist();
+
     this.putPlaceHolderText();
+
     if (changes['selectedChannel'] && this.editor?.nativeElement) {
-      setTimeout(() => {
-        this.editor.nativeElement.focus();
-      }, 0);
+      setTimeout(() => this.editor.nativeElement.focus(), 0);
     }
   }
 
   /**
- * Handles the selection of a mention (user or channel) from the mention dropdown.
- * Delegates processing to the MentionHandlerService and updates component state accordingly.
- * 
- * @param name - The mention text or identifier selected by the user.
- */
+   * Handles the selection of a mention (user or channel) from the mention dropdown.
+   * Delegates processing to the MentionHandlerService and updates component state accordingly.
+   * 
+   * @param name - The mention text or identifier selected by the user.
+   */
   onMentionSelected(name: string): void {
     this.mentionHandler.handleMentionSelected(name, this.users, this.channels,
       mention => this.mentionComponent?.insertMention(mention),
@@ -203,36 +192,18 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
   /**
   * Checks whether a direct chat already exists between the current user and the selected user.
-  * 
-  * This method generates a unique `chatId` by sorting and joining the current user's UID
-  * and the selected user's ID. It then queries the Firestore `directMessages` collection
-  * to check if a chat document with that `chatId` already exists.
-  * 
-  * If such a document is found, `chatExists` is set to `true`; otherwise, it is set to `false`.
-  * 
-  * Uses Firestore's real-time listener (`onSnapshot`) to keep `chatExists` updated
-  * if the underlying data changes.
   */
   checkChatExists() {
     const sortedIds = [this.shared.actualUser.uid, this.selectedUser?.id].sort();
     const chatId = sortedIds.join('_');
     const directMessages = collection(this.firestore, "directMessages");
     const q = query(directMessages, where('chatId', '==', chatId));
-    onSnapshot(q, (querySnapshot) => {
-      this.chatExists = !querySnapshot.empty;
-    });
+
+    onSnapshot(q, (querySnapshot) => { this.chatExists = !querySnapshot.empty; });
   }
 
   /**
    * Asynchronously checks whether messages exist in the currently selected channel.
-   *
-   * This method retrieves the `channelId` from the selected channel and references
-   * the corresponding `messages` subcollection in Firestore.
-   * 
-   * It then fetches all documents from that subcollection using `getDocs`. If the snapshot
-   * is not empty, it sets `channelMessagesExist` to `true`; otherwise, it is set to `false`.
-   *
-   * This check helps determine whether a channel already contains messages.
    */
   async checkChannelMessagesExist() {
     const selectedId = this.selectedChannel?.channelId ?? '';
@@ -311,22 +282,16 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
   /**
    * Sends a message either as a default message or to specific users and channels.
-   *
    * This method checks whether there are any users or channels mentioned.
-   * - If no users or channels are provided, it sends the message using `sendDefaultMessage()`.
-   * - If users are provided, it sends a direct message to each user using `pushDirectChatMessages()`.
-   * - If channels are provided, it sends the message to each channel using `pushChannelMessages()`.
    *
    * @param message - The message content to be sent.
    * @param users - An array of `User` objects representing the recipients for direct messages.
    * @param channels - An array of `Channel` objects representing the target channels.
-   *
    * @returns A `Promise` that resolves once all messages have been sent.
    */
   private async sendMessages(message: string, users: User[], channels: Channel[]) {
-    if (users.length === 0 && channels.length === 0) {
-      await this.sendDefaultMessage(message);
-    } else {
+    if (users.length === 0 && channels.length === 0) await this.sendDefaultMessage(message);
+    else {
       for (const user of users) {
         await this.pushDirectChatMessages(message, user);
       }
@@ -338,7 +303,6 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
   /**
    * Sends a default message based on the current messaging context.
-   *
    * This function checks the current mode and context (thread, selected user, or selected channel)
    * and routes the message accordingly:
    * - If the mode is `'thread'`, it calls `pushAnswerMessageChannel()` to reply within a thread.
@@ -346,25 +310,16 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * - If a channel is selected, it sends a message to the selected channel using `pushChannelMessages()`.
    *
    * @param message - The message content to be sent.
-   *
    * @returns A `Promise` that resolves after the appropriate message has been dispatched.
    */
   private async sendDefaultMessage(message: string) {
-    if (this.mode === 'thread') {
-      await this.pushAnswerMessageChannel();
-    } else if (this.selectedUser) {
-      await this.pushDirectChatMessages(message, this.selectedUser);
-    } else if (this.selectedChannel) {
-      await this.pushChannelMessages(message, this.selectedChannel);
-    }
+    if (this.mode === 'thread') await this.pushAnswerMessageChannel();
+    else if (this.selectedUser) await this.pushDirectChatMessages(message, this.selectedUser);
+    else if (this.selectedChannel) await this.pushChannelMessages(message, this.selectedChannel);
   }
 
   /**
    * Clears the message editor and resets the mention list after a message is sent.
-   *
-   * This method:
-   * - Empties the HTML content of the editor.
-   * - Clears the list of collected mentions (`devspaceMentions`).
    */
   private clearAfterSend() {
     this.editor.nativeElement.innerHTML = '';
@@ -426,6 +381,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
     if (snapshot.empty) {
       const chatDocRef = doc(this.firestore, 'directMessages', chatId);
+
       await setDoc(chatDocRef, { chatId });
     }
   }
@@ -435,21 +391,13 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    *
    * @param cleanedMessage - The message text to send, typically sanitized or processed.
    * @param channel - The channel object to which the message should be sent.
-   *
    * @returns A Promise that resolves once the message has been successfully added to Firestore.
-   *
-   * This method:
-   * - Gets a reference to the 'messages' sub-collection of the specified channel.
-   * - Adds a new document with the message text, the current user's ID, a timestamp, and the channel ID.
-   * - Resets the message form after sending.
    */
   async pushChannelMessages(cleanedMessage: string, channel: Channel) {
     const messagesRef = collection(this.firestore, 'channels', channel.channelId, 'messages');
 
     await addDoc(messagesRef, {
-      user: this.shared.actualUser.uid,
-      text: cleanedMessage,
-      timeStamp: serverTimestamp(),
+      user: this.shared.actualUser.uid, text: cleanedMessage, timeStamp: serverTimestamp(),
       channelId: channel.channelId
     });
 
@@ -505,9 +453,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     this.sharedMessages.setSelectedChannel(channel);
 
     setTimeout(() => {
-      if (this.editor?.nativeElement) {
-        this.mentionComponent?.insertMention(`#${channel.channelName.slice(1)}`);
-      }
+      if (this.editor?.nativeElement) this.mentionComponent?.insertMention(`#${channel.channelName.slice(1)}`);
     }, 0);
   }
 
@@ -519,9 +465,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    */
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: MouseEvent) {
-    if (this.showChannels && !this.eRef.nativeElement.contains(event.target)) {
-      this.showChannels = false;
-    }
+    if (this.showChannels && !this.eRef.nativeElement.contains(event.target)) this.showChannels = false;
   }
 
   /**
@@ -552,13 +496,6 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * Listens for click events on the entire document.
    * Closes various UI overlays (channel list, emoji pickers) if the click happens outside
    * of specific elements related to these overlays.
-   * 
-   * Specifically, it checks if the click target or its ancestors have any of the following CSS classes:
-   * - 'list-overlay' (channel/user list overlay)
-   * - 'at' (the "@" mention button)
-   * - 'smiley' (emoji button)
-   * - 'emoji-picker-container' (emoji picker overlay)
-   * 
    * If the click occurred outside all of these elements, it hides the channel list and emoji overlays.
    * 
    * @param event - The MouseEvent triggered by the click.
@@ -587,13 +524,12 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * - If a user is selected (and it is not the current user), the placeholder shows "Message to [user name]".
    */
   putPlaceHolderText() {
-    if (this.mode === 'thread') {
-      this.placeHolderText = 'Antworten...';
-    } else {
-      if (this.sharedMessages.selectedUser?.id == this.shared.actualUserID) {
-        this.placeHolderText = 'Nachricht an dich selbst';
-      } else {
-        this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName : 'Nachricht an ' + this.selectedUser?.name
+    if (this.mode === 'thread') this.placeHolderText = 'Antworten...';
+    else {
+      if (this.sharedMessages.selectedUser?.id == this.shared.actualUserID) this.placeHolderText = 'Nachricht an dich selbst';
+      else {
+        this.placeHolderText = this.selectedChannel ? 'Nachricht an ' + this.selectedChannel.channelName
+          : 'Nachricht an ' + this.selectedUser?.name;
       }
     }
   }
@@ -612,8 +548,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   /**
-   * Sends a reply message to the currently selected thread, 
-   * whether it's in a channel or a direct chat.
+   * Sends a reply message to the currently selected thread, whether it's in a channel or a direct chat.
    */
   async pushAnswerMessageChannel(): Promise<void> {
     const messageText = this.messageForm.value.message ?? '';
@@ -621,12 +556,9 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     const channelId = this.sharedMessages.selectedMessage?.channelId ?? '';
 
     if (!messageText || !messageId || !channelId) return;
+    if (this.sharedMessages.channelSelected) await this.sendAnswerToChannel(channelId, messageId, messageText);
+    else if (this.sharedMessages.userSelected) await this.sendAnswerToDirectChat(channelId, messageId, messageText);
 
-    if (this.sharedMessages.channelSelected) {
-      await this.sendAnswerToChannel(channelId, messageId, messageText);
-    } else if (this.sharedMessages.userSelected) {
-      await this.sendAnswerToDirectChat(channelId, messageId, messageText);
-    }
     this.messageForm.reset();
   }
 
@@ -639,11 +571,8 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    */
   private async sendAnswerToChannel(channelId: string, messageId: string, text: string): Promise<void> {
     const answerRef = collection(this.firestore, 'channels', channelId, 'messages', messageId, 'answers');
-    await addDoc(answerRef, {
-      user: this.shared.actualUser.uid,
-      text,
-      timeStamp: serverTimestamp()
-    });
+
+    await addDoc(answerRef, { user: this.shared.actualUser.uid, text, timeStamp: serverTimestamp() });
   }
 
   /**
@@ -664,22 +593,14 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
 
   /**
    * Toggles the visibility of the emoji overlay based on the current mode.
-   * 
-   * - If the mode is 'thread', toggles the emoji overlay for thread replies (`emojiThreadOverlay`).
-   * - Otherwise, toggles the general emoji overlay (`emojiOverlay`).
-   * 
-   * This function switches the overlay's state between visible and hidden.
    */
   toggleEmojiOverlay() {
-    if (this.mode === 'thread') {
-      this.emojiThreadOverlay = !this.emojiThreadOverlay
-    } else {
-      this.emojiOverlay = !this.emojiOverlay
-    }
+    this.mode === 'thread' ? this.emojiThreadOverlay = !this.emojiThreadOverlay : this.emojiOverlay = !this.emojiOverlay;
   }
 
   /**
    * Main method to add an emoji to the contenteditable editor at the current cursor position.
+   * 
    * @param selected - The selected emoji object.
    */
   addEmoji(selected: any): void {
@@ -746,10 +667,7 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * Syncs the editor's HTML content back to the message form control.
    */
   private syncEditorContentToForm(): void {
-    MentionUtilsService.syncEditorToForm(
-      this.editor.nativeElement,
-      this.messageForm.controls['message']
-    );
+    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
   }
 
   /**
