@@ -139,28 +139,44 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  /**
+   * Handles changes to selected user or channel.
+   * Triggers existence checks, sets placeholder, and focuses the editor.
+   * 
+   * @param changes - An object of type `SimpleChanges` that holds the changed input properties.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedUser'] && this.selectedUser) {
+      this.checkChatExists();
+      this.focusEditorSafely();
+    }
+
+    if (changes['selectedChannel'] && this.selectedChannel) {
+      this.checkChannelMessagesExist();
+      this.focusEditorSafely();
+    }
+
+    this.putPlaceHolderText();
+  }
+
+  /**
+   * Focuses the editor and restores cursor position with a short delay.
+   */
+  private focusEditorSafely(): void {
+    setTimeout(() => {
+      if (this.editor?.nativeElement) {
+        this.editor.nativeElement.focus();
+        this.mentionComponent?.restoreCursorPosition();
+      }
+    }, 10);
+  }
+
   /** 
    * Cleans up active subscriptions to prevent memory leaks.
    */
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
     this.channelSub?.unsubscribe();
-  }
-
-  /**
-   * Lifecycle hook that is called whenever input-bound properties change.
-   * 
-   * @param changes - An object of type `SimpleChanges` that holds the changed input properties.
-   */
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedUser'] && this.selectedUser) this.checkChatExists();
-    else if (changes['selectedChannel'] && this.selectedChannel) this.checkChannelMessagesExist();
-
-    this.putPlaceHolderText();
-
-    if (changes['selectedChannel'] && this.editor?.nativeElement) {
-      setTimeout(() => this.editor.nativeElement.focus(), 0);
-    }
   }
 
   /**
