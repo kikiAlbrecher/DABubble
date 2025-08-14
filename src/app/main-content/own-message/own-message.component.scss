@@ -6,9 +6,11 @@
     @include dFlex(row, end, center, 10px);
     padding: 10px 45px;
     position: relative;
+
     &:hover {
         background-color: #ECEEFE;
     }
+
     &.thread-mode {
         padding: 0 15px;
     }
@@ -17,7 +19,8 @@
 .own-message-content {
     @include dFlex(row, end, flex-start, 30px);
     width: 100%;
-        &.thread-mode {
+
+    &.thread-mode {
         padding: 0 15px;
     }
 }
@@ -28,10 +31,12 @@
 
 .own-message-content-left-top-row {
     @include dFlex(row, end, center, 20px);
-    .timestamp{
+
+    .timestamp {
         @include fontNunito(14px, 400);
         color: #686868;
     }
+
     .user-name {
         @include fontNunito(18px, 700);
         color: black;
@@ -43,8 +48,8 @@
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
-
     padding: 10px 20px;
+
     span {
         @include fontNunito(18px, 400);
         color: white;
@@ -70,6 +75,7 @@
     background-size: contain;
     background-position: center;
     cursor: pointer;
+
     &:hover {
         background-image: url('./../../../assets/icons/add-reaction-hover.png');
     }
@@ -80,18 +86,17 @@
 }
 
 .emoji-picker-container {
-    
     width: 230px;
-    height:200px;
-    overflow-y: auto;   
+    height: 200px;
+    overflow-y: auto;
 }
 
 .emoji-picker-scroll-container {
     width: 245px;
-    height:215px;
+    height: 215px;
     position: absolute;
-    left:30px;
-    bottom:-185px;
+    left: 30px;
+    bottom: -185px;
     border-radius: 30px;
     border: 1px solid #797EF3;
     background-color: white;
@@ -100,16 +105,19 @@
 
 .answer-container {
     @include dFlex(row, center, center, 20px);
-        white-space: nowrap; 
-        flex-shrink: 0; 
+    white-space: nowrap;
+    flex-shrink: 0;
+
     .answer-count {
         @include fontNunito(18px, 400);
         cursor: pointer;
         color: #535AF1;
-        &:hover{
+
+        &:hover {
             @include fontNunito(18px, 700);
         }
     }
+
     .last-answer {
         @include fontNunito(14px, 400);
         color: #686868;
@@ -119,6 +127,7 @@
 .own-message-content-right {
     @include dFlex(column, center, flex-start, 0px);
     height: 100%;
+
     img {
         width: 70px;
         height: 70px;
@@ -131,7 +140,7 @@
 
 .edit-overlay {
     position: absolute;
-    top:0;
+    top: 0;
     left: 70px;
     background-color: white;
     padding: 3px 15px;
@@ -143,27 +152,31 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
-    
+
     .edit-overlay-image {
         width: 30px;
         height: 30px;
         padding: 5px;
         border-radius: 50%;
         cursor: pointer;
-        &:hover{
+
+        &:hover {
             background-color: #ECEEFE;
         }
+
         &.thread-mode {
             display: none;
         }
     }
+
     &.visible {
         opacity: 1;
         pointer-events: auto;
     }
+
     &.thread-mode {
         left: 10px;
-        top:0px;
+        top: 0px;
         padding: 3px 5px;
         width: 50px;
     }
@@ -174,16 +187,17 @@
     height: 30px;
     padding: 5px;
     border-radius: 50%;
-    &:hover{
+
+    &:hover {
         background-color: #ECEEFE;
     }
-
 }
 
 .smiley {
     background-image: url('./../../../assets/icons/add-reaction.png');
     background-repeat: no-repeat;
     background-position: center;
+
     &:hover {
         background-image: url('./../../../assets/icons/add-reaction-hover.png');
     }
@@ -193,9 +207,11 @@
     background-image: url('./../../../assets/img/comment.png');
     background-repeat: no-repeat;
     background-position: center;
+
     &:hover {
         background-image: url('./../../../assets/img/comment-hover.png');
     }
+
     &.thread-mode {
         display: none;
     }
@@ -207,13 +223,15 @@
     }
 }
 
-.points{
+.points {
     background-image: url('./../../../assets/img/thre-points-vertical.png');
     background-repeat: no-repeat;
     background-position: center;
+
     &:hover {
         background-image: url('./../../../assets/img/thee-points-vertical-hover.png');
     }
+
     &.thread-mode {
         display: none;
     }
@@ -221,7 +239,7 @@
 
 .edit-message {
     position: absolute;
-    top:30px;
+    top: 30px;
     left: 250px;
     background-color: white;
     padding: 10px 15px;
@@ -231,21 +249,25 @@
     border-top-right-radius: 25px;
     @include dFlex(row, center, flex-start, 5px);
     pointer-events: none;
-    transition: opacity 0.2s ease;    
+    transition: opacity 0.2s ease;
     z-index: 100;
+
     span {
         @include fontNunito(18px, 400);
         padding: 3px 8px;
         border-radius: 20px;
         cursor: pointer;
+
         &:hover {
             background-color: #ECEEFE;
         }
     }
+
     &.visible {
         opacity: 1;
         pointer-events: auto;
     }
+
     &.thread-mode {
         display: none;
     }
@@ -258,7 +280,8 @@
     min-width: 85%;
     border-radius: 20px;
     padding: 10px 15px;
-    .edit-message-input{
+
+    .edit-message-input {
         @include fontNunito(18px, 400);
         color: #686868;
         padding-bottom: 10px;
@@ -274,41 +297,46 @@
 }
 
 .edit-message-buttons-left {
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
-        border-radius: 50%;
-        position: relative;
-        @include dFlex(row, center, center, );
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    border-radius: 50%;
+    position: relative;
+    @include dFlex(row, center, center, );
 
-        &:hover {
-            background-color: #ECEEFE;
-        }
+    &:hover {
+        background-color: #ECEEFE;
+    }
 }
 
 .login-button-container {
     @include dFlex(row, center, center, 30px);
+
     .login-button {
         @include fontNunito(18px, 700);
         padding: 10px 15px;
         border-radius: 25px;
     }
+
     .button-log-in {
         background-color: #444DF2;
         border: none;
         color: white;
         border: 1px solid #444DF2;
         cursor: pointer;
+
         &:hover {
             background-color: #797EF3;
             border: 1px solid #797EF3;
         }
     }
+
     .button-guest {
         background-color: transparent;
         border: 1px solid #444DF2;
         color: #444DF2;
         cursor: pointer;
+
         &:hover {
             background-color: #444DF2;
             color: white;
@@ -317,12 +345,12 @@
 }
 
 .reactions-container {
-  display: flex;
-  justify-content: end;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-width: 100%; 
-  position: relative;
+    display: flex;
+    justify-content: end;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
+    position: relative;
 }
 
 .reaction {
@@ -333,17 +361,18 @@
     padding: 3px 8px;
     position: relative;
     cursor: pointer;
-    .reaction-count{
+
+    .reaction-count {
         @include fontNunito(16px, 700);
         color: black;
         @include dFlex(row, center, center, 0px);
-          line-height: 1;
-    }
-    .reaction-emoji {
-        @include dFlex(row, center, center, 0px);
-          line-height: 1;
+        line-height: 1;
     }
 
+    .reaction-emoji {
+        @include dFlex(row, center, center, 0px);
+        line-height: 1;
+    }
 }
 
 .reaction-info {
@@ -356,13 +385,14 @@
     position: absolute;
     bottom: 20px;
     left: 50%;
-    flex-wrap: nowrap; 
-    white-space: nowrap; 
+    flex-wrap: nowrap;
+    white-space: nowrap;
     z-index: 100;
 }
 
 .reaction-info-name-container {
     @include dFlex(column, center, center, 3px);
+
     .reaction-info-name {
         @include fontNunito(18px, 700);
         flex-wrap: nowrap;
@@ -380,7 +410,7 @@
     @include fontNunito(16px, 400);
 }
 
-@media (max-width: 1150px){
+@media (max-width: 1150px) {
     .answer-container {
         flex-direction: column;
         gap: 10px;
@@ -388,7 +418,7 @@
 }
 
 @media (max-width: 800px) {
-    .answer-emoji-container{
+    .answer-emoji-container {
         flex-direction: column-reverse;
         gap: 10px;
     }
@@ -397,9 +427,4 @@
         flex-direction: row;
         gap: 10px;
     }
-}
-
-
-.d-none {
-    display: none;
 }

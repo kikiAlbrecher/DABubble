@@ -78,6 +78,8 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
   private channelSub?: Subscription;
   public editorNativeElement?: HTMLElement;
   private devspaceMentions: string[] = [];
+  private mentionedUser: User | null = null;
+  private mentionedChannel: Channel | null = null;
 
   /**
   * Lifecycle hook that is called after Angular has initialized the component.
@@ -185,24 +187,15 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * 
    * @param name - The mention text or identifier selected by the user.
    */
-  onMentionSelected(name: string): void {
-    this.mentionHandler.handleMentionSelected(name, this.users, this.channels,
-      mention => this.mentionComponent?.insertMention(mention),
-      user => {
-        this.selectedUser = user;
-        this.selectedChannel = null;
-        this.selectUser.emit(user);
-      },
-      channel => {
-        this.selectedChannel = channel;
-        this.selectedUser = null;
-        this.selectChannel.emit(channel);
-      },
-      () => {
-        if (this.editor) {
-          MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
-        }
-      }
+  onMentionSelected(mention: string): void {
+    this.mentionHandler.handleMentionSelected(
+      mention,
+      this.users,
+      this.channels,
+      (m) => this.mentionComponent?.insertMention(m),
+      (user) => this.mentionedUser = user,
+      (channel) => this.mentionedChannel = channel,
+      () => MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message'])
     );
   }
 
@@ -277,8 +270,22 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     if (!message) return;
 
     const { mentionedUsers, mentionedChannels } = this.getMentionedEntities();
-    await this.sendMessages(message, mentionedUsers, mentionedChannels);
 
+    if (this.mentionedUser) {
+      this.selectedUser = this.mentionedUser;
+      this.selectedChannel = null;
+      this.selectUser.emit(this.mentionedUser);
+      this.mentionedUser = null;
+    }
+
+    if (this.mentionedChannel) {
+      this.selectedChannel = this.mentionedChannel;
+      this.selectedUser = null;
+      this.selectChannel.emit(this.mentionedChannel);
+      this.mentionedChannel = null;
+    }
+
+    await this.sendMessages(message, mentionedUsers, mentionedChannels);
     this.clearAfterSend();
   }
 

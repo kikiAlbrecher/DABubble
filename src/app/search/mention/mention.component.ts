@@ -218,34 +218,6 @@ export class MentionComponent implements OnInit {
     }
   }
 
-  // /**
-  //  * Finds a trigger word (e.g. @word or #word) before the cursor.
-  //  * @param {Text} textNode - The text node containing the cursor.
-  //  * @param {number} offset - The offset of the cursor within the node.
-  //  * @returns {RegExpMatchArray | null}
-  //  */
-  // private findTriggerMatch(textNode: Text, offset: number): RegExpMatchArray | null {
-  //   const text = textNode.textContent ?? '';
-  //   const beforeCursor = text.slice(0, offset);
-  //   return beforeCursor.match(/(?:^|\s)([@#])(\w*)$/);
-  // }
-
-  // /**
-  //  * Removes the matched trigger word from the text node and updates the cursor position.
-  //  * @param {Text} textNode - The text node to update.
-  //  * @param {number} offset - The current cursor offset.
-  //  * @param {number} matchLength - The length of the matched trigger word.
-  //  */
-  // private removeTriggerMatch(textNode: Text, offset: number, matchLength: number): void {
-  //   const text = textNode.textContent ?? '';
-  //   const triggerStart = offset - matchLength;
-  //   const newText = text.slice(0, triggerStart) + text.slice(offset);
-
-  //   textNode.textContent = newText;
-  //   this.savedRange!.setStart(textNode, triggerStart);
-  //   this.savedRange!.setEnd(textNode, triggerStart);
-  // }
-
   /**
    * Inserts a mention into a contenteditable element at the current cursor position.
    *

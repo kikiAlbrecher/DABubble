@@ -327,6 +327,9 @@ export class MainContentComponent implements OnInit {
   onBackToSideNav() {
     this.showMainChat = false;
     this.showDevspace = false;
+
+    // this.selectedChannel = null;
+    // this.selectedUser = null;
   }
 
   /**
