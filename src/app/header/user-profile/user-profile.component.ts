@@ -95,10 +95,16 @@ export class UserProfileComponent implements OnInit {
    * Updates the shared avatar if the user has selected a new one.
    */
   private updateAvatarIfNeeded() {
-    if (!this.sharedHeader.newPicture) return;
+    const updatedUser: User = {
+      ...(this.sharedUser.userDetails as User),
+      name: this.newName,
+      picture: this.sharedHeader.newPicture ? this.avatarImg
+        : this.user?.picture || 'assets/img/avatar-placeholder.svg',
+    };
 
-    this.sharedUser.userDetails.picture = this.avatarImg;
-    this.sharedUser.changeAvatar(this.avatarImg);
+    if (this.sharedHeader.newPicture) this.sharedUser.changeAvatar(updatedUser.picture);
+
+    this.sharedUser.updateUserDetails(updatedUser);
   }
 
   /**
@@ -109,8 +115,9 @@ export class UserProfileComponent implements OnInit {
 
     if (selected?.id !== this.sharedUser.actualUserID) return;
 
-    selected.name = this.newName;
-    selected.displayName = this.newName;
+    const updatedUser: User = { ...selected, name: this.newName, displayName: this.newName };
+
+    this.sharedMessages.setSelectedUser(updatedUser);
   }
 
   /**

@@ -34,9 +34,8 @@ export class DialogShowChannelMembersComponent implements OnChanges {
   ngOnChanges(): void {
     if (this.selectedUserId) {
       const user = this.users.find(u => u.id === this.selectedUserId);
-      if (user && user.id !== this.selectedUser?.id) {
-        this.selectedUser = user;
-      }
+
+      if (user && user.id !== this.selectedUser?.id) this.selectedUser = user;
     }
   }
 

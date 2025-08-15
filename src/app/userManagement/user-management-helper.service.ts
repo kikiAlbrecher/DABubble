@@ -6,6 +6,7 @@ import {
   signInAnonymously
 } from "firebase/auth";
 import { Router } from '@angular/router';
+import { User } from './user.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -213,11 +214,11 @@ export class UserManagementHelperService {
     await updateDoc(currentUser, { name: newName, displayName: newName });
 
     const updated = {
-      ...context['_userDetails'].value, id: context.actualUserID, name: newName, displayName: newName,
+      ...(context['userDetails'] as User), id: context.actualUserID, name: newName, displayName: newName,
       status: true
     };
 
-    context['_userDetails'].next(updated);
+    context.updateUserDetails(updated);
   }
 
   /**
@@ -231,9 +232,9 @@ export class UserManagementHelperService {
 
     await updateDoc(currentUser, { picture: picture });
 
-    const updated = { ...context['_userDetails'].value, picture, status: true };
+    const updated = { ...(context['userDetails'] as User), picture: picture, status: true };
 
-    context['_userDetails'].next(updated);
+    context.updateUserDetails(updated);
   }
 
   /**

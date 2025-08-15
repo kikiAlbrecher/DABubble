@@ -42,8 +42,8 @@ export class UserSharedService {
     detailOverlay: boolean = false;
     firebaseFailure: boolean = false;
     isRegistering: boolean = false;
-    public _userDetails = new BehaviorSubject<User>({} as User);
-    public userDetails$ = this._userDetails.asObservable();
+    private _userDetails = new BehaviorSubject<User>({} as User);
+    userDetails$ = this._userDetails.asObservable();
 
     constructor(public router: Router, public ngZone: NgZone, private userHelperService: UserManagementHelperService) { }
 
@@ -97,9 +97,7 @@ export class UserSharedService {
      */
     navigateToMainContentIfNeeded() {
         if (!location.pathname.includes('/main-content')) {
-            this.ngZone.run(() => {
-                this.router.navigate(['/main-content']);
-            });
+            this.ngZone.run(() => this.router.navigate(['/main-content']));
         }
     }
 
@@ -107,11 +105,7 @@ export class UserSharedService {
      * Navigates to the login page if the app is not running in development mode.
      */
     navigateToLoginIfNeeded() {
-        if (!this.isDev) {
-            this.ngZone.run(() => {
-                this.router.navigate(['/login']);
-            });
-        }
+        if (!this.isDev) this.ngZone.run(() => this.router.navigate(['/login']));
     }
 
     /**
@@ -251,9 +245,8 @@ export class UserSharedService {
     getActualUser() {
         const unsub = onSnapshot(doc(this.firestore, "users", this.actualUserID), (doc) => {
             const data = doc.data();
-            if (data) {
-                this.actualUser = { ...data, id: doc.id };
-            }
+
+            if (data) this.actualUser = { ...data, id: doc.id };
         });
     }
 
@@ -280,9 +273,8 @@ export class UserSharedService {
      */
     async updateOnlineStatusOnline() {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
-        await updateDoc(currentUser, {
-            status: true
-        });
+
+        await updateDoc(currentUser, { status: true });
     }
 
     /**
@@ -290,6 +282,7 @@ export class UserSharedService {
      */
     async updateOnlineStatusOffline() {
         const currentUser = doc(this.firestore, "users", this.actualUserID);
+
         await updateDoc(currentUser, { status: false });
     }
 
@@ -388,5 +381,15 @@ export class UserSharedService {
      */
     setSelectedUser(user: User) {
         this.selectedUser = user;
+    }
+
+    /**
+     * Updates the current user details and emits the new value to all subscribers.
+     *
+     * @param user - The updated user object.
+     */
+    updateUserDetails(user: User) {
+        this.userDetails = user;
+        this._userDetails.next(user);
     }
 }

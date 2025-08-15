@@ -140,7 +140,6 @@ export class DialogEditChannelComponent implements OnInit, OnDestroy {
 
         if (updatedUser.id === this.selectedChannel?.channelCreatorId) {
           this.creatorName$.next(updatedUser.displayName || updatedUser.name);
-
         }
       })
     );
@@ -173,7 +172,6 @@ export class DialogEditChannelComponent implements OnInit, OnDestroy {
     const isDuplicate = await this.checkForNameDuplicates(updatedName);
 
     if (isDuplicate) return this.duplicateName();
-
     await this.updateChannelName(updatedName);
   }
 

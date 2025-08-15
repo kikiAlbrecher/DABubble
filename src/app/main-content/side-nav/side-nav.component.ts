@@ -213,7 +213,6 @@ export class SideNavComponent implements OnInit, OnChanges, OnDestroy {
    * Clears the current channel and user selection.
    */
   public clearSelection() {
-    console.log('clearing selection from SideNavComponent');
     this.selectedChannelId = null;
     this.selectedUserId = null;
   }
@@ -296,6 +295,7 @@ export class SideNavComponent implements OnInit, OnChanges, OnDestroy {
       this.selectedChannelId = null;
       this.selectUser.emit(user);
       this.userService.threadsVisible$.next(false);
+
       if (this.devspaceOpen) this.closeDevspace.emit();
     }
   }
@@ -310,6 +310,7 @@ export class SideNavComponent implements OnInit, OnChanges, OnDestroy {
       this.selectedUserId = null;
       this.selectChannel.emit(channel);
       this.userService.threadsVisible$.next(false);
+
       if (this.devspaceOpen) this.closeDevspace.emit();
     }
   }

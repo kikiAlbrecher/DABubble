@@ -12,11 +12,13 @@ import { ChatMessage } from './message.model';
     providedIn: 'root'
 })
 export class MessageSharedService {
+    constructor(public shared: UserSharedService) { }
+
+    @Input() mode: 'default' | 'thread' = 'default';
 
     private firestore = inject(Firestore);
     private channelMessagesUnsubscribe: (() => void) | null = null;
     private answerMessagesUnsubscribe: (() => void) | null = null;
-    @Input() mode: 'default' | 'thread' = 'default';
     selectedUser: User | null = null;
     selectedChannel: Channel | null = null;
     userSelected: boolean = false;
@@ -31,13 +33,9 @@ export class MessageSharedService {
     alreadyExisitingReactionId: string = "";
     public answerMessages: ChatMessage[] = [];
     public answerMessages$ = new BehaviorSubject<ChatMessage[]>([]);
-    answerId: string = ""
+    answerId: string = "";
     public targetMessageText: string | null = null;
     public highlightedMessageId: string | null = null;
-
-    constructor(
-        public shared: UserSharedService) { }
-
     private selectedUserSubject = new BehaviorSubject<User | null>(null);
     private selectedChannelSubject = new BehaviorSubject<Channel | null>(null);
     selectedUser$ = this.selectedUserSubject.asObservable();
@@ -50,6 +48,7 @@ export class MessageSharedService {
      * @param user - The User object to set as selected, or null to clear selection.
      */
     setSelectedUser(user: User | null) {
+        this.selectedUser = user;
         this.selectedUserSubject.next(user);
     }
 
@@ -60,6 +59,7 @@ export class MessageSharedService {
      * @param channel - The Channel object to set as selected, or null to clear selection.
      */
     setSelectedChannel(channel: Channel | null) {
+        this.selectedChannel = channel;
         this.selectedChannelSubject.next(channel);
     }
 
@@ -217,9 +217,8 @@ export class MessageSharedService {
     private groupUserMessagesByDate(messages: ChatMessage[]): { [date: string]: ChatMessage[] } {
         return messages.reduce((groups: any, message: any) => {
             const date = formatDate(message.timeStamp, 'dd. MMMM yyyy', 'de-DE');
-            if (!groups[date]) {
-                groups[date] = [];
-            }
+
+            if (!groups[date]) groups[date] = [];
             groups[date].push(message);
             return groups;
         }, {});
@@ -291,12 +290,7 @@ export class MessageSharedService {
      * @param messageId - The ID of the message to update.
      * @param newText - The new text content for the message.
      */
-    private async updateMessageInFirestore(
-        collectionType: string,
-        parentId: string,
-        messageId: string,
-        newText: string
-    ) {
+    private async updateMessageInFirestore(collectionType: string, parentId: string, messageId: string, newText: string) {
         const messageRef = doc(this.firestore, collectionType, parentId, 'messages', messageId);
         await updateDoc(messageRef, { text: newText });
     }
@@ -323,9 +317,8 @@ export class MessageSharedService {
      * and starting a new subscription to answer messages.
      */
     async getChannelAnswerMessages() {
-        if (this.answerMessagesUnsubscribe) {
-            this.answerMessagesUnsubscribe();
-        }
+        if (this.answerMessagesUnsubscribe) this.answerMessagesUnsubscribe();
+
         this.answerMessages = [];
         this.subscribeToAnswerMessagesQuery(this.getAnswerMessagesQuery());
     }
@@ -497,7 +490,6 @@ export class MessageSharedService {
         const messageId = message.id ?? '';
         const collectionType = this.channelSelected ? 'channels' : 'directMessages';
         await deleteDoc(doc(reactionsRef, this.alreadyExisitingReactionId));
-
     }
 
     /**

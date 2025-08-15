@@ -38,8 +38,9 @@
     <div class="empty-channel-info-container">
         <div class="empty-channel-user-container">
             <img (click)="openProfileMessage()" src="{{ this.sharedMessages.selectedUser?.picture }}" alt="user image">
-            <span (click)="openProfileMessage()"
-                class="empty-channel-info-user-name">{{sharedMessages.selectedUser?.displayName}}</span>
+            <span (click)="openProfileMessage()" class="empty-channel-info-user-name">
+                {{ (sharedMessages.selectedUser$ | async)?.name }}
+            </span>
         </div>
         @if (this.sharedMessages.selectedUser?.id == sharedUser.actualUserID) {
         <div>
@@ -55,7 +56,6 @@
             <span class="empty-channel-info-channel-text">und dir statt. </span>
         </div>
         }
-
     </div>
     }
 </section>
