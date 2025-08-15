@@ -220,11 +220,8 @@ export class SearchbarComponent implements OnInit, OnDestroy, AfterViewInit {
      * @param channels - Array of mentioned channels
      */
     private setMentionContext(users: any[], channels: any[]) {
-        if (users.length > 0) {
-            this.mentionContext = 'user';
-        } else if (channels.length > 0) {
-            this.mentionContext = 'channel';
-        }
+        if (users.length > 0) this.mentionContext = 'user';
+        else if (channels.length > 0) this.mentionContext = 'channel';
 
         this.mentionCompleted = true;
     }

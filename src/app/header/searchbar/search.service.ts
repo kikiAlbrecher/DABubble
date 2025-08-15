@@ -181,16 +181,16 @@ export class SearchService {
   }
 
   /**
- * Determines whether a message should be included in the results.
- *
- * @param data - The message data.
- * @param query - The search term.
- * @param userFilter - Optional user ID filter.
- * @param channelFilter - Optional channel ID filter.
- * @param userId - ID of the current user.
- * @param allowedChannels - List of allowed channel IDs.
- * @returns True if the message passes all filters, false otherwise.
- */
+   * Determines whether a message should be included in the results.
+   *
+   * @param data - The message data.
+   * @param query - The search term.
+   * @param userFilter - Optional user ID filter.
+   * @param channelFilter - Optional channel ID filter.
+   * @param userId - ID of the current user.
+   * @param allowedChannels - List of allowed channel IDs.
+   * @returns True if the message passes all filters, false otherwise.
+   */
   private shouldIncludeMessage(data: ChatMessage, query: string, userFilter: string[],
     channelFilter: string[], userId: string, allowedChannels: string[]): boolean {
     return (

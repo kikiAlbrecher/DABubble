@@ -240,6 +240,7 @@ export class MentionComponent implements OnInit {
 
   /**
    * Inserts a mention span at the given range position.
+   * 
    * @param {Range} range - The current text range.
    * @param {string} text - The mention text to insert.
    */
@@ -253,6 +254,7 @@ export class MentionComponent implements OnInit {
 
   /**
    * Updates the current selection to match the modified range.
+   * 
    * @param {Range} range - The range to set the selection to.
    */
   private updateSelection(range: Range): void {
@@ -269,7 +271,6 @@ export class MentionComponent implements OnInit {
    */
   private createMentionSpan(text: string): DocumentFragment {
     const fragment = document.createDocumentFragment();
-
     const spaceBefore = document.createTextNode('\u00A0');
     const span = document.createElement('span');
     span.className = 'mention';
@@ -290,9 +291,8 @@ export class MentionComponent implements OnInit {
    */
   public saveCursorPosition() {
     const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      this.savedRange = selection.getRangeAt(0);
-    }
+
+    if (selection && selection.rangeCount > 0) this.savedRange = selection.getRangeAt(0);
   }
 
   /**
@@ -324,6 +324,7 @@ export class MentionComponent implements OnInit {
   /**
    * Creates a range based on the content of the div.
    * If the div is empty, it adds a text node and sets the range there.
+   * 
    * @param {HTMLElement} div - The editable container.
    * @returns {Range} - The newly created range.
    */
@@ -345,6 +346,7 @@ export class MentionComponent implements OnInit {
 
   /**
    * Applies the given range as the current selection.
+   * 
    * @param {Range} range - The range to apply.
    */
   private applySelection(range: Range): void {

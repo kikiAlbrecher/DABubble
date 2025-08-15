@@ -63,14 +63,12 @@ export class SearchForUserComponent implements OnInit, OnChanges {
       return;
     }
 
-    setTimeout(() => {
-      const lowerTerm = this.userSearchTerm.toLowerCase();
+    const lowerTerm = this.userSearchTerm.toLowerCase();
 
-      this.suggestedUsers = this.validUsers
-        .filter(user =>
-          (user.displayName?.toLowerCase().startsWith(lowerTerm) || user.name?.toLowerCase().startsWith(lowerTerm)))
-        .filter(u => !this.selectedUsers.find(su => su.id === u.id));
-    }, 10);
+    this.suggestedUsers = this.validUsers
+      .filter(user =>
+        (user.displayName?.toLowerCase().startsWith(lowerTerm) || user.name?.toLowerCase().startsWith(lowerTerm)))
+      .filter(u => !this.selectedUsers.find(su => su.id === u.id));
   }
 
   /**

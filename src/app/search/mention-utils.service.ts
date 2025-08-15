@@ -22,11 +22,11 @@ export class MentionUtilsService {
   }
 
   /**
-   * Extracts all mentions (@users and #channels) from the given editor element
-   * and also attempts to determine a search query (text outside mentions).
+   * Extracts user and channel mentions from the editor's DOM and returns
+   * a list of mentioned usernames, channel names, and the remaining text query.
    *
    * @param {HTMLElement} editor - The editor element containing mentions.
-   * @returns {{ users: string[], channels: string[], query: string }} - Extracted mentions and a possible query.
+   * @returns {{ users: string[], channels: string[], query: string }} - Extracted mentions and query text.
    */
   static extractMentionsFromEditor(editor: HTMLElement): {
     users: string[];
@@ -34,69 +34,105 @@ export class MentionUtilsService {
     query: string;
   } {
     const mentions = editor.querySelectorAll('.mention');
-    const mentionedUsers: string[] = [];
-    const mentionedChannels: string[] = [];
+    const mentionedUsers = this.extractMentionNames(mentions, '@');
+    const mentionedChannels = this.extractMentionNames(mentions, '#');
+    const clone = editor.cloneNode(true) as HTMLElement;
+
+    clone.querySelectorAll('.mention').forEach(m => m.remove());
+
+    const query = clone.innerText.trim();
+
+    return { users: mentionedUsers, channels: mentionedChannels, query };
+  }
+
+  /**
+   * Extracts mention names (usernames or channel names) from a list of mention elements.
+   *
+   * @param {NodeListOf<Element>} mentions - List of mention elements.
+   * @param {'@' | '#'} prefix - The prefix to filter mentions ('@' for users, '#' for channels).
+   * @returns {string[]} - Array of mention names without prefix, all lowercase and unique.
+   */
+  private static extractMentionNames(mentions: NodeListOf<Element>, prefix: '@' | '#'): string[] {
+    const results: string[] = [];
 
     mentions.forEach(mention => {
       const text = mention.textContent?.trim() ?? '';
-      if (text.startsWith('@')) {
+
+      if (text.startsWith(prefix)) {
         const name = text.slice(1).toLowerCase();
-        if (!mentionedUsers.includes(name)) {
-          mentionedUsers.push(name);
-        }
-      } else if (text.startsWith('#')) {
-        const name = text.slice(1).toLowerCase();
-        if (!mentionedChannels.includes(name)) {
-          mentionedChannels.push(name);
-        }
+
+        if (!results.includes(name)) results.push(name);
       }
     });
 
-    const clone = editor.cloneNode(true) as HTMLElement;
-    clone.querySelectorAll('.mention').forEach(m => m.remove());
-    const query = clone.innerText.trim();
+    return results;
+  }
+
+  /**
+   * Extracts full User and Channel objects from mention elements in the given element,
+   * matching them against provided user and channel lists.
+   *
+   * @param {HTMLElement} element - The element containing mention elements.
+   * @param {User[]} users - List of known users to match against.
+   * @param {Channel[]} channels - List of known channels to match against.
+   * @returns {{ users: User[], channels: Channel[] }} - Found users and channels.
+   */
+  static extractMentionsFromElement(element: HTMLElement, users: User[], channels: Channel[]
+  ): { users: User[], channels: Channel[] } {
+    const mentions = element.querySelectorAll('.mention');
 
     return {
-      users: mentionedUsers,
-      channels: mentionedChannels,
-      query
+      users: this.extractUsers(mentions, users),
+      channels: this.extractChannels(mentions, channels)
     };
   }
 
-  static extractMentionsFromElement(
-    element: HTMLElement,
-    users: User[],
-    channels: Channel[]
-  ): { users: User[], channels: Channel[] } {
-    const mentions = element.querySelectorAll('.mention');
-    const mentionedUsers: User[] = [];
-    const mentionedChannels: Channel[] = [];
+  /**
+   * Finds user objects mentioned by '@username' in the given mention elements.
+   *
+   * @param {NodeListOf<Element>} mentions - List of mention elements.
+   * @param {User[]} users - List of known users.
+   * @returns {User[]} - Array of matched User objects without duplicates.
+   */
+  private static extractUsers(mentions: NodeListOf<Element>, users: User[]): User[] {
+    const foundUsers: User[] = [];
 
-    mentions.forEach((mention) => {
+    mentions.forEach(mention => {
       const text = mention.textContent ?? '';
 
       if (text.startsWith('@')) {
         const name = text.slice(1).toLowerCase();
-        const user = users.find(u =>
-          (u.displayName || u.name).toLowerCase() === name
-        );
-        if (user && !mentionedUsers.some(u => u.id === user.id)) {
-          mentionedUsers.push(user);
-        }
-      }
+        const user = users.find(u => (u.displayName || u.name).toLowerCase() === name);
 
-      if (text.startsWith('#')) {
-        const name = text.slice(1).toLowerCase();
-        const channel = channels.find(c =>
-          c.channelName.replace(/^#/, '').toLowerCase() === name
-        );
-        if (channel && !mentionedChannels.some(c => c.channelId === channel.channelId)) {
-          mentionedChannels.push(channel);
-        }
+        if (user && !foundUsers.some(u => u.id === user.id)) foundUsers.push(user);
       }
     });
 
-    return { users: mentionedUsers, channels: mentionedChannels };
+    return foundUsers;
+  }
+
+  /**
+   * Finds channel objects mentioned by '#channelname' in the given mention elements.
+   *
+   * @param {NodeListOf<Element>} mentions - List of mention elements.
+   * @param {Channel[]} channels - List of known channels.
+   * @returns {Channel[]} - Array of matched Channel objects without duplicates.
+   */
+  private static extractChannels(mentions: NodeListOf<Element>, channels: Channel[]): Channel[] {
+    const foundChannels: Channel[] = [];
+
+    mentions.forEach(mention => {
+      const text = mention.textContent ?? '';
+
+      if (text.startsWith('#')) {
+        const name = text.slice(1).toLowerCase();
+        const channel = channels.find(c => c.channelName.replace(/^#/, '').toLowerCase() === name);
+
+        if (channel && !foundChannels.some(c => c.channelId === channel.channelId)) foundChannels.push(channel);
+      }
+    });
+
+    return foundChannels;
   }
 
   /**
@@ -149,8 +185,7 @@ export class MentionUtilsService {
     const range = selection.getRangeAt(0);
     const { startContainer, startOffset } = range;
 
-    if (this.isAtMentionStart(startContainer, startOffset) ||
-      this.isBeforeMention(startContainer, startOffset) ||
+    if (this.isAtMentionStart(startContainer, startOffset) || this.isBeforeMention(startContainer, startOffset) ||
       this.isDirectMention(startContainer)) {
       event.preventDefault();
       this.syncEditorToForm(editor, formControl);
@@ -161,7 +196,6 @@ export class MentionUtilsService {
    * Determines whether the cursor is placed immediately after a mention element.
    * If so, the mention element is removed.
    *
-   * @private
    * @param {Node} container - The current range start container.
    * @param {number} offset - The offset within the container.
    * @returns {boolean} - `true` if a mention was removed, otherwise `false`.
@@ -179,7 +213,6 @@ export class MentionUtilsService {
    * Checks whether a mention element exists immediately before the current offset,
    * and removes it if found.
    *
-   * @private
    * @param {Node} container - The current range start container.
    * @param {number} offset - The offset within the container.
    * @returns {boolean} - `true` if a mention was removed, otherwise `false`.
@@ -188,6 +221,7 @@ export class MentionUtilsService {
     if (container.nodeType === Node.ELEMENT_NODE) {
       const el = container as HTMLElement;
       const prevNode = el.childNodes[offset - 1];
+
       if (prevNode instanceof HTMLElement && prevNode.classList.contains('mention')) {
         prevNode.remove();
         return true;
@@ -197,10 +231,8 @@ export class MentionUtilsService {
   }
 
   /**
-   * Determines whether the current selection container is a mention element,
-   * and removes it if so.
+   * Determines whether the current selection container is a mention element, and removes it if so.
    *
-   * @private
    * @param {Node} container - The current range start container.
    * @returns {boolean} - `true` if a mention was removed, otherwise `false`.
    */
@@ -209,6 +241,7 @@ export class MentionUtilsService {
       (container as HTMLElement).remove();
       return true;
     }
+
     return false;
   }
 
@@ -225,11 +258,9 @@ export class MentionUtilsService {
   static async findEmails(text: string, firestore: Firestore): Promise<string[]> {
     const matches = [...text.matchAll(/[\w.-]+@[\w.-]+\.\w{2,}/g)];
     const results: string[] = [];
-
     const hasUnmatchedEmail = this.looksLikeEmail(text) && matches.length === 0;
-    if (hasUnmatchedEmail) {
-      throw new Error('Keine gültige E-Mail-Adresse erkannt.');
-    }
+
+    if (hasUnmatchedEmail) throw new Error('Keine gültige E-Mail-Adresse erkannt.');
 
     for (const match of matches) {
       const email = match[0].toLowerCase();
@@ -242,16 +273,16 @@ export class MentionUtilsService {
     return results;
   }
 
-/**
- * Determines whether a given string has a basic email-like format.
- *
- * This check only verifies that the string contains exactly one `@` symbol
- * with non-whitespace characters on both sides. It does not validate full
- * email syntax.
- *
- * @param text - The string to validate as an email-like pattern.
- * @returns `true` if the string appears to be in email format, otherwise `false`.
- */
+  /**
+   * Determines whether a given string has a basic email-like format.
+   *
+   * This check only verifies that the string contains exactly one `@` symbol
+   * with non-whitespace characters on both sides. It does not validate full
+   * email syntax.
+   *
+   * @param text - The string to validate as an email-like pattern.
+   * @returns `true` if the string appears to be in email format, otherwise `false`.
+   */
   private static looksLikeEmail(text: string): boolean {
     return /^[^\s@]+@[^\s@]+$/.test(text);
   }
@@ -273,7 +304,13 @@ export class MentionUtilsService {
   }
 
   /**
-   * Find @user mentions based on text and known user list.
+   * Extracts valid user mentions from the given text and matches them against the provided list of users.
+   *
+   * Each mention must follow the format `@username`.
+   *
+   * @param {string} text - The input text potentially containing user mentions.
+   * @param {User[]} users - The list of users to match mentions against.
+   * @returns {string[]} An array of matched user mentions in the format `@displayName` or `@name`.
    */
   static findUserMentions(text: string, users: User[]): string[] {
     const matches = [...text.matchAll(/@(\w{1,16})/g)];
@@ -281,9 +318,8 @@ export class MentionUtilsService {
 
     for (const [, username] of matches) {
       const name = username.toLowerCase();
-      const user = users.find(u =>
-        u.name?.toLowerCase() === name || u.displayName?.toLowerCase() === name
-      );
+      const user = users.find(u => u.name?.toLowerCase() === name || u.displayName?.toLowerCase() === name);
+
       if (user) mentions.push(`@${user.displayName || user.name}`);
     }
 
@@ -291,7 +327,13 @@ export class MentionUtilsService {
   }
 
   /**
-   * Find #channel mentions based on text and known channel list.
+   * Extracts valid channel mentions from the given text and matches them against the provided list of channels.
+   *
+   * Each mention must follow the format `#channelname`.
+   *
+   * @param {string} text - The input text potentially containing channel mentions.
+   * @param {Channel[]} channels - The list of channels to match mentions against.
+   * @returns {string[]} An array of matched channel mentions in the format `#channelName`.
    */
   static findChannelMentions(text: string, channels: Channel[]): string[] {
     const matches = [...text.matchAll(/#(\w{1,16})/g)];
@@ -299,13 +341,9 @@ export class MentionUtilsService {
 
     for (const [, name] of matches) {
       const lowerName = name.toLowerCase();
-      const channel = channels.find(c =>
-        c.channelName?.replace(/^#/, '').toLowerCase() === lowerName
-      );
+      const channel = channels.find(c => c.channelName?.replace(/^#/, '').toLowerCase() === lowerName);
 
-      if (channel) {
-        mentions.push(`${channel.channelName}`);
-      }
+      if (channel) mentions.push(`${channel.channelName}`);
     }
 
     return mentions;
