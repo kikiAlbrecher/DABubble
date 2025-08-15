@@ -46,7 +46,7 @@ export class SearchForUserComponent implements OnInit, OnChanges {
    */
   ngOnChanges(changes: SimpleChanges) {
     if (changes['validUsers']) {
-      this.onUserSearch(this.userSearchTerm);
+      setTimeout(() => this.onUserSearch(this.userSearchTerm), 20);
     }
   }
 
@@ -63,13 +63,14 @@ export class SearchForUserComponent implements OnInit, OnChanges {
       return;
     }
 
-    const lowerTerm = this.userSearchTerm.toLowerCase();
+    setTimeout(() => {
+      const lowerTerm = this.userSearchTerm.toLowerCase();
 
-    this.suggestedUsers = this.validUsers
-      .filter(user =>
-        (user.displayName?.toLowerCase().startsWith(lowerTerm) || user.name?.toLowerCase().startsWith(lowerTerm))
-      )
-      .filter(u => !this.selectedUsers.find(su => su.id === u.id));
+      this.suggestedUsers = this.validUsers
+        .filter(user =>
+          (user.displayName?.toLowerCase().startsWith(lowerTerm) || user.name?.toLowerCase().startsWith(lowerTerm)))
+        .filter(u => !this.selectedUsers.find(su => su.id === u.id));
+    }, 10);
   }
 
   /**

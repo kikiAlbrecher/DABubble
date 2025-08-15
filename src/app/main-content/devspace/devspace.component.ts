@@ -48,6 +48,7 @@ export class DevspaceComponent implements AfterViewInit {
 
   /**
    * Initializes user subscription and loads all available channels.
+   * Prepares the input field for writing.
    */
   ngOnInit() {
     this.loadAllChannels();
@@ -57,6 +58,8 @@ export class DevspaceComponent implements AfterViewInit {
     this.usersSub = this.sharedUsers.allValidUsers$.subscribe(users => {
       this.users = users;
     });
+
+    this.prepareForEntry();
   }
 
   /**
@@ -92,6 +95,15 @@ export class DevspaceComponent implements AfterViewInit {
   }
 
   /**
+   * Clears the editor content and sets focus to the editor element asynchronously
+   * to ensure the DOM is loaded completely.
+   */
+  private prepareForEntry() {
+    if (this.editor?.nativeElement) this.editor.nativeElement.innerHTML = '';
+    setTimeout(() => this.editor.nativeElement.focus(), 0);
+  }
+
+  /**
    * Handles selection of a mention suggestion and routes it to the
    * appropriate handler depending on type.
    * 
@@ -117,7 +129,7 @@ export class DevspaceComponent implements AfterViewInit {
    * @returns The mention type: 'user', 'channel', 'email', or null.
    */
   private detectMentionType(text: string): 'user' | 'channel' | 'email' | null {
-    const hasUser = /@\w{1,30}/.test(text);
+    const hasUser = /@\w{1,16}/.test(text);
     const hasChannel = /#\w{1,16}/.test(text);
     const hasEmail = /[\w.-]+@[\w.-]+\.\w{2,}/.test(text);
 
@@ -138,6 +150,7 @@ export class DevspaceComponent implements AfterViewInit {
     const textContent = this.getTrimmedTextContent();
 
     this.isEditorEmpty = textContent.length === 0;
+
     const mentionType = this.detectMentionType(textContent);
 
     mentionType ? this.foundNoMatch() : this.foundMatch(pre);
@@ -181,10 +194,7 @@ export class DevspaceComponent implements AfterViewInit {
    * Syncs the editor's inner HTML content to the reactive form control.
    */
   private syncEditorContent() {
-    MentionUtilsService.syncEditorToForm(
-      this.editor.nativeElement,
-      this.messageForm.controls['message']
-    );
+    MentionUtilsService.syncEditorToForm(this.editor.nativeElement, this.messageForm.controls['message']);
   }
 
   /**

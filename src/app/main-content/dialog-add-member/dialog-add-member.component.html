@@ -1,4 +1,4 @@
-<div class="outside-overlay" (click)="handleDialogCloseAddMember()">
+<div class="outside-overlay" [class.bottom-drawer]="!asOverlay" (click)="handleDialogCloseAddMember()">
     <form class="custom-scrollbar dialog-add-channel dialog-add-members" [class.bottom-drawer]="!asOverlay"
         [ngClass]="{ 'slide-out': isClosing }" [style.top.px]=" asOverlay ? position.top : null"
         [style.left.px]="asOverlay ? position.left : null" (click)="$event.stopPropagation()"

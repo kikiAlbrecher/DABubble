@@ -220,11 +220,16 @@ export class MentionUtilsService {
    * @param text - The input text containing one or more email addresses.
    * @param firestore - The Firestore instance to query the users collection.
    * @returns A Promise that resolves to an array of mention strings (e.g. ['@alice']).
-   * @throws If any email address does not match a user in Firestore.
+   * @throws If any email address does not match a user in Firestore an error is thrown.
    */
   static async findEmails(text: string, firestore: Firestore): Promise<string[]> {
     const matches = [...text.matchAll(/[\w.-]+@[\w.-]+\.\w{2,}/g)];
     const results: string[] = [];
+
+    const hasUnmatchedEmail = this.looksLikeEmail(text) && matches.length === 0;
+    if (hasUnmatchedEmail) {
+      throw new Error('Keine gültige E-Mail-Adresse erkannt.');
+    }
 
     for (const match of matches) {
       const email = match[0].toLowerCase();
@@ -235,6 +240,20 @@ export class MentionUtilsService {
     }
 
     return results;
+  }
+
+/**
+ * Determines whether a given string has a basic email-like format.
+ *
+ * This check only verifies that the string contains exactly one `@` symbol
+ * with non-whitespace characters on both sides. It does not validate full
+ * email syntax.
+ *
+ * @param text - The string to validate as an email-like pattern.
+ * @returns `true` if the string appears to be in email format, otherwise `false`.
+ */
+  private static looksLikeEmail(text: string): boolean {
+    return /^[^\s@]+@[^\s@]+$/.test(text);
   }
 
   /**
@@ -257,7 +276,7 @@ export class MentionUtilsService {
    * Find @user mentions based on text and known user list.
    */
   static findUserMentions(text: string, users: User[]): string[] {
-    const matches = [...text.matchAll(/@(\w{1,30})/g)];
+    const matches = [...text.matchAll(/@(\w{1,16})/g)];
     const mentions: string[] = [];
 
     for (const [, username] of matches) {
@@ -275,14 +294,18 @@ export class MentionUtilsService {
    * Find #channel mentions based on text and known channel list.
    */
   static findChannelMentions(text: string, channels: Channel[]): string[] {
-    const matches = [...text.matchAll(/#(\w{1,50})/g)];
+    const matches = [...text.matchAll(/#(\w{1,16})/g)];
     const mentions: string[] = [];
 
     for (const [, name] of matches) {
+      const lowerName = name.toLowerCase();
       const channel = channels.find(c =>
-        c.channelName?.toLowerCase() === name.toLowerCase()
+        c.channelName?.replace(/^#/, '').toLowerCase() === lowerName
       );
-      if (channel) mentions.push(`#${channel.channelName}`);
+
+      if (channel) {
+        mentions.push(`${channel.channelName}`);
+      }
     }
 
     return mentions;

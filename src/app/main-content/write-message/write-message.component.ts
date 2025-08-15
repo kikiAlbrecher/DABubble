@@ -245,7 +245,6 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
     mentions.push(...MentionUtilsService.findChannelMentions(input, this.channels));
 
     this.devspaceMentions = mentions;
-
     this.devspaceService.clearEditor();
     return mentions.length > 0;
   }
@@ -259,12 +258,14 @@ export class WriteMessageComponent implements OnInit, OnChanges, AfterViewInit {
    * @returns A Promise that resolves when the submission process is complete.
    */
   async onSubmit() {
-    // if (this.devspaceOpen) {
-    //   const valid = await this.handleDevspaceEntry();
-    //   if (!valid) return;
-    // }
-
-    if (this.devspaceOpen) await this.handleDevspaceEntry();
+    if (this.devspaceOpen) {
+      const valid = await this.handleDevspaceEntry();
+      if (!valid) {
+        this.editor.nativeElement.innerHTML = '';
+        this.devspaceService.clearEditor();
+        return;
+      }
+    }
 
     const message = this.removeMentionsFromDOM();
     if (!message) return;

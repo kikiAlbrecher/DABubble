@@ -2,6 +2,12 @@
 
 .outside-overlay {
     z-index: 800;
+
+    &.bottom-drawer {
+        @media(min-width: 1000px) {
+            display: none;
+        }
+    }
 }
 
 .dialog-add-members {
@@ -18,18 +24,28 @@
 }
 
 .bottom-drawer {
-    position: fixed;
-    width: 100% !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    top: auto !important;
-    z-index: 999 !important;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    padding: 20px 16px;
+    display: none;
+
+    @media (max-width: 1000px) {
+        display: flex;
+        position: fixed;
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+        z-index: 999 !important;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        padding: 20px 32px;
+        gap: 16px;
+    }
+
+    @media (max-width: 400px) {
+        padding: 20px;
+    }
 }
 
 .header {
