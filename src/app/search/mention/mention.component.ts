@@ -124,11 +124,8 @@ export class MentionComponent implements OnInit {
   public insertMention(text: string) {
     if (!this.targetInputElement) return;
 
-    if (this.targetInputElement instanceof HTMLInputElement) {
-      this.insertIntoInput(this.targetInputElement, text);
-    } else {
-      this.insertIntoContentEditable(this.targetInputElement, text);
-    }
+    if (this.targetInputElement instanceof HTMLInputElement) this.insertIntoInput(this.targetInputElement, text);
+    else this.insertIntoContentEditable(this.targetInputElement, text);
 
     this.mentionService.reset();
   }

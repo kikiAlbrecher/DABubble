@@ -17,8 +17,8 @@
                 (addChannel)="openDialogAddChannel()" [devspaceOpen]="showDevspace" (openDevspace)="onOpenDevspace()"
                 (closeDevspace)="onCloseDevspace()" (toggleDevspaceM)="toggleDevspaceMobile()"
                 [showAddChannelDialog]="showAddChannelDialog" [selectedUser]="selectedUser"
-                [selectedChannel]="selectedChannel" (searchMobile)="onSearchStarted()"
-                (mainChatOpened)="showMainChat = true">
+                [selectedChannel]="selectedChannel" [clearSelectionTrigger]="!selectedUser && !selectedChannel"
+                (searchMobile)="onSearchStarted()" (mainChatOpened)="showMainChat = true">
             </app-side-nav>
             }
 

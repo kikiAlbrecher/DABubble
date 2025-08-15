@@ -15,7 +15,6 @@
  * - `picture`: Path or URL to the user's avatar/profile picture.
  * - `displayName` (optional): A user-friendly display name, if different from `name`.
  */
-
 export interface User {
     id?: string;
     name: string;

@@ -323,13 +323,14 @@ export class MainContentComponent implements OnInit {
 
   /**
    * Handles the navigation back from main chat to side nav (mobile only).
+   * Removes the selection to null.
    */
   onBackToSideNav() {
     this.showMainChat = false;
     this.showDevspace = false;
-
-    // this.selectedChannel = null;
-    // this.selectedUser = null;
+    this.selectedChannel = null;
+    this.selectedUser = null;
+    setTimeout(() => this.sideNavComponent?.clearSelection(), 0);
   }
 
   /**

@@ -29,4 +29,18 @@ export class UsersComponent {
 
     this.userSelected.emit(user);
   }
+
+  /**
+   * Tracking function used by Angular's `*ngFor` directive to optimize rendering.
+   * 
+   * Returns a unique identifier for each user, which helps Angular track items in a list efficiently.
+   * If the user has an `id`, it is used as the tracking key. Otherwise, the index is used as a fallback.
+   * 
+   * @param {number} index - The index of the item in the iterable.
+   * @param {User} user - The user object for the current item.
+   * @returns {string} A unique identifier for tracking the user.
+   */
+  trackByUser(index: number, user: User): string {
+    return user.id ?? index.toString();
+  }
 }

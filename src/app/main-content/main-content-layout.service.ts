@@ -68,9 +68,9 @@ export class MainContentLayoutService {
    */
   private resetMobileSelection(context: MainContentComponent): void {
     context.showMainChat = false;
-    context.sideNavComponent?.clearSelection();
     context.selectedChannel = null;
     context.selectedUser = null;
+    setTimeout(() => context.sideNavComponent?.clearSelection(), 0);
   }
 
   /**

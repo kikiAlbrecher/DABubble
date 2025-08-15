@@ -1,4 +1,7 @@
-import { Component, EventEmitter, Output, inject, OnDestroy, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import {
+  Component, EventEmitter, Output, inject, OnDestroy, OnInit, Input, ChangeDetectorRef, OnChanges,
+  SimpleChanges
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserSharedService } from '../../userManagement/userManagement-service';
 import { Channel } from '../../../models/channel.class';
@@ -22,13 +25,14 @@ import { ChannelSharedService } from '../../channel-management/channel-shared.se
   templateUrl: './side-nav.component.html',
   styleUrl: './side-nav.component.scss'
 })
-export class SideNavComponent implements OnInit, OnDestroy {
+export class SideNavComponent implements OnInit, OnChanges, OnDestroy {
   @Input() showAddChannelDialog = false;
   @Input() isMobile: boolean = false;
   @Input() userHasMadeSelection: boolean = false;
   @Input() selectedChannel: Channel | null = null;
   @Input() selectedUser: User | null = null;
   @Input() devspaceOpen: boolean = false;
+  @Input() clearSelectionTrigger: boolean = false;
   @Output() addChannel = new EventEmitter<void>();
   @Output() selectChannel = new EventEmitter<Channel>();
   @Output() selectUser = new EventEmitter<User>();
@@ -164,6 +168,23 @@ export class SideNavComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Lifecycle hook that is called when any data-bound property of a directive changes.
+   * 
+   * This implementation checks if the `clearSelectionTrigger` input has changed.
+   * If its previous value was falsy and its current value is truthy, the `clearSelection()` method is called.
+   * 
+   * @param {SimpleChanges} changes - An object of changed properties.
+   */
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['clearSelectionTrigger']) {
+      const prev = changes['clearSelectionTrigger'].previousValue;
+      const curr = changes['clearSelectionTrigger'].currentValue;
+
+      if (!prev && curr) this.clearSelection();
+    }
+  }
+
+  /**
    * Lifecycle hook: Cleans up subscriptions.
    */
   ngOnDestroy(): void {
@@ -192,6 +213,7 @@ export class SideNavComponent implements OnInit, OnDestroy {
    * Clears the current channel and user selection.
    */
   public clearSelection() {
+    console.log('clearing selection from SideNavComponent');
     this.selectedChannelId = null;
     this.selectedUserId = null;
   }

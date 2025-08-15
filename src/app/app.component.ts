@@ -34,7 +34,6 @@ export class AppComponent {
     public sharedMessages: MessageSharedService
   ) { this.sharedUser.initAuth(); }
 
-
   /**
    * Angular lifecycle hook - called once the component is initialized.
    * 
