@@ -23,8 +23,6 @@ export class IntroComponent implements AfterViewInit {
   private animationBuilder = inject(AnimationBuilder);
   showLogoNameAnimation = false;
 
-  constructor() { }
-  
   /**
    * Lifecycle hook called after the component's view has been initialized.
    * Determines the screen size and orientation and triggers the corresponding animation.
@@ -43,7 +41,7 @@ export class IntroComponent implements AfterViewInit {
       this.animationMobileSmallPortrait();
     } else if (isPortrait && height > 950) {
       this.animationMobileBigPortrait();
-    } 
+    }
   }
 
   /**
@@ -76,7 +74,7 @@ export class IntroComponent implements AfterViewInit {
    * Plays the big tablet version of the intro animation.
    * Moves and scales the logo container similarly to desktop, but ends with background fade only.
    */
-  animationBigTablet () {
+  animationBigTablet() {
     if (this.logocontainer?.nativeElement) {
       const moveAndScaleFactory = this.animationBuilder.build([
         style({
@@ -137,9 +135,9 @@ export class IntroComponent implements AfterViewInit {
           position: 'absolute'
         }),
         animate('0.6s 1s ease-in-out', style({
-          top: '49px', 
+          top: '49px',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(0.4)',  
+          transform: 'translate(-50%, -50%) scale(0.4)',
           transformOrigin: 'center center',
           position: 'absolute'
         }))
@@ -156,27 +154,27 @@ export class IntroComponent implements AfterViewInit {
    * Plays the big portrait mobile version of the intro animation.
    */
   animationMobileBigPortrait() {
-      if (this.logocontainer?.nativeElement) {
-        const moveAndScaleFactory = this.animationBuilder.build([
-          style({
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(1)'
-          }),
-          animate('0.6s 1s ease-in-out', style({
-            top: '94px', 
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(0.5)',  
-            transformOrigin: 'center center',
-            position: 'absolute'
-          }))
-        ]);
-        this.animationPlayer = moveAndScaleFactory.create(this.logocontainer.nativeElement);
-        this.animationPlayer.play();
-        this.animationPlayer.onDone(() => {
-          this.animateWrapperBackgroundWithoutNameAnimation();
-        });
-      }
+    if (this.logocontainer?.nativeElement) {
+      const moveAndScaleFactory = this.animationBuilder.build([
+        style({
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) scale(1)'
+        }),
+        animate('0.6s 1s ease-in-out', style({
+          top: '94px',
+          left: '50%',
+          transform: 'translate(-50%, -50%) scale(0.5)',
+          transformOrigin: 'center center',
+          position: 'absolute'
+        }))
+      ]);
+      this.animationPlayer = moveAndScaleFactory.create(this.logocontainer.nativeElement);
+      this.animationPlayer.play();
+      this.animationPlayer.onDone(() => {
+        this.animateWrapperBackgroundWithoutNameAnimation();
+      });
+    }
   }
 
   /**
@@ -186,7 +184,7 @@ export class IntroComponent implements AfterViewInit {
     const animation = this.animationBuilder.build([
       style({ opacity: 1 }),
       animate('1s ease-in-out', style({ opacity: 0 }))
-    ]);  
+    ]);
     const player = animation.create(this.bgLayer.nativeElement);
     player.play();
     player.onDone(() => {
@@ -194,15 +192,15 @@ export class IntroComponent implements AfterViewInit {
     });
   }
 
-  
+
   /**
    * Fades out the background layer and emits the animationDone event without playing logo name animation.
    */
-  animateWrapperBackgroundWithoutNameAnimation() { 
+  animateWrapperBackgroundWithoutNameAnimation() {
     const animation = this.animationBuilder.build([
       style({ opacity: 1 }),
       animate('1s ease-in-out', style({ opacity: 0 }))
-    ]);  
+    ]);
     const player = animation.create(this.bgLayer.nativeElement);
     player.play();
     player.onDone(() => {

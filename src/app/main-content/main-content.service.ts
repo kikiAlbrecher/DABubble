@@ -6,8 +6,6 @@ import { Channel } from '../../models/channel.class';
   providedIn: 'root'
 })
 export class MainContentService {
-  constructor() { }
-
   /**
    * Handles component initialization logic for MainContentComponent.
    * Starts the display logic, subscribes to valid users and profile open events.
